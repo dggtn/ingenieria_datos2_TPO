@@ -1,15 +1,12 @@
-package com.example.demo.mongo.entidad;
+package com.example.demo.mongo.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.hibernate.query.sqm.tree.expression.Conversion;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
 
-public class Calificacion {
+public class CalificacionDTO {
     private String id;
     @Schema(example = "A*", description = "Formato original según sistema de origen")
     private String valorOriginal;
@@ -21,4 +18,3 @@ public class Calificacion {
 
 
 }
-
