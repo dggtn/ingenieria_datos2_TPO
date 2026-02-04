@@ -1,4 +1,4 @@
-package com.example.demo.entidad.dto;
+package com.example.demo.cassandra.dto;
 
 import java.util.ArrayList;
 

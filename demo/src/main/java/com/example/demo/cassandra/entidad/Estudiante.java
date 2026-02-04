@@ -1,4 +1,4 @@
-package com.example.demo.entidad;
+package com.example.demo.cassandra.entidad;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -21,7 +21,7 @@ public class Estudiante {
     private String apellido;
     private Institucion institucion;
     private Calificacion calificacion;
-    private List <Calificacion> calificaciones;
+    private List <Calificacion> trayectoria;
     private String nacionalidad;
 
 

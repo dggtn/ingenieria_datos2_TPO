@@ -1,9 +1,4 @@
-package com.example.demo.entidad;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+package com.example.demo.cassandra.entidad;
 
 import java.util.ArrayList;
 

@@ -1,7 +1,7 @@
-package com.example.demo.entidad.dto;
+package com.example.demo.cassandra.dto;
 
-import com.example.demo.entidad.Calificacion;
-import com.example.demo.entidad.Institucion;
+import com.example.demo.cassandra.entidad.Calificacion;
+import com.example.demo.cassandra.entidad.Institucion;
 import lombok.*;
 
 import java.util.List;
@@ -14,8 +14,9 @@ public class EstudianteDTO {
     private String apellido;
     private Institucion institucion;
     private Calificacion calificacion;
-    private List<Calificacion> calificaciones;
+    private List<Calificacion> trayectoria;
     private String nacionalidad;
+
 
 }
 

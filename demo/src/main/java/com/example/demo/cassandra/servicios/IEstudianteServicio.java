@@ -1,12 +1,10 @@
-package com.example.demo.servicios.estudiante;
+package com.example.demo.cassandra.servicios;
 
 
 import ar.com.uade.tiendaOnline.tpo.entidad.Categoria;
 import ar.com.uade.tiendaOnline.tpo.entidad.dto.CategoriaDTO;
 import ar.com.uade.tiendaOnline.tpo.excepciones.CategoriaDuplicateExcepcion;
-import com.example.demo.entidad.Estudiante;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import com.example.demo.cassandra.entidad.Estudiante;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
