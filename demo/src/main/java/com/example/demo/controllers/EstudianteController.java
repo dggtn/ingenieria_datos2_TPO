@@ -1,7 +1,6 @@
 package com.example.demo.controllers;
 
 
-import com.example.demo.cassandra.entidad.Estudiante;
 import com.example.demo.cassandra.servicios.IEstudianteServicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

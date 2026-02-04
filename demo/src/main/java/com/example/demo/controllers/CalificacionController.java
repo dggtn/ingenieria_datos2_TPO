@@ -1,9 +1,5 @@
 package com.example.demo.controllers;
 
-import com.example.demo.cassandra.entidad.Calificacion;
-
-import com.example.demo.cassandra.dto.CalificacionDTO;
-
 import com.example.demo.cassandra.servicios.ICalificacionServicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
