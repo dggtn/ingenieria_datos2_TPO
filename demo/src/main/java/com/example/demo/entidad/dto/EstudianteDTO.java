@@ -7,6 +7,9 @@ import lombok.*;
 
 public class EstudianteDTO {
     private String nombre;
+
+    public Object registrarCalificacion() {
+    }
 }
 
 
