@@ -3,12 +3,42 @@ package com.example.demo.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 @Document(collection = "calificaciones")
 public class Calificacion {
     @Id
     private String id;
-    private String tipo;
-    private String nota;
+    private String tipoPais;
+    private String valorNota;
+    private LocalDateTime fecha; // Timestamp
+    private String auditor;
+
+    public Calificacion() {
+    }
+
+    public Calificacion(String id, LocalDateTime fecha, String auditor) {
+        this.id = UUID.randomUUID().toString();
+        this.fecha = LocalDateTime.now();
+        this.auditor = "auditor";
+    }
+
+    public LocalDateTime getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(LocalDateTime fecha) {
+        this.fecha = fecha;
+    }
+
+    public String getAuditor() {
+        return auditor;
+    }
+
+    public void setAuditor(String auditor) {
+        this.auditor = auditor;
+    }
 
     public String getId() {
         return id;
@@ -18,19 +48,19 @@ public class Calificacion {
         this.id = id;
     }
 
-    public String getTipo() {
-        return tipo;
+    public String getTipoPais() {
+        return tipoPais;
     }
 
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
+    public void setTipoPais(String tipoPais) {
+        this.tipoPais = tipoPais;
     }
 
-    public String getNota() {
-        return nota;
+    public String getValorNota() {
+        return valorNota;
     }
 
-    public void setNota(String nota) {
-        this.nota = nota;
+    public void setValorNota(String valorNota) {
+        this.valorNota = valorNota;
     }
 }

@@ -11,10 +11,10 @@ public class CalificacionService {
     @Autowired
     private  CalificacionRepository calificacionRepository;
 
-   public Calificacion regstrarCalificacion (String nota, String tipo){
+   public Calificacion regstrarCalificacion (String nota, String tipoPais){
        Calificacion calificacion = new Calificacion();
-       calificacion.setTipo(tipo);
-       calificacion.setId(nota);
+       calificacion.setTipoPais(tipoPais);
+       calificacion.setValorNota(nota);
        return calificacionRepository.save(calificacion);
    }
 
