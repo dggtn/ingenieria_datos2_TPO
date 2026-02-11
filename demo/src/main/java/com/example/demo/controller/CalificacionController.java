@@ -12,13 +12,15 @@ public class CalificacionController {
     @Autowired
     private CalificacionService service;
 
+
     @PostMapping("/registrar")
     public Calificacion registrarCalificacion(@RequestParam String nota,@RequestParam String tipo) {
         return service.regstrarCalificacion(nota,tipo);
     }
 
-    public Calificacion convertirCalificacion() {
-        return null;
+    @PostMapping("/conversion")
+    public Calificacion convertir(@RequestParam String nota, @RequestParam String tipo) {
+        return service.convertirYGuardarConversion(nota, tipo);
     }
 }
 
