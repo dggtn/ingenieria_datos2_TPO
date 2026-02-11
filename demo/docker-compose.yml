@@ -20,7 +20,15 @@ services:
     ports:
       - "9042:9042"
     environment:
-      CASSANDRA_DC: datacenter1
+      - CASSANDRA_DC=datacenter1
+      - MAX_HEAP_SIZE=512M
+      - HEAP_NEWSIZE=100M
+
+    healthcheck:
+      test: ["CMD-SHELL", "cqlsh -e 'describe keyspaces'"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
 
   redis:
     image: redis:latest
@@ -30,12 +38,15 @@ services:
 
   app:
     build: .
-    image: demo-app:latest
     container_name: spring_backend
     ports:
       - "8080:8080"
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/edugrade
+      - SPRING_DATA_CASSANDRA_CONTACT_POINTS=cassandra
+      - SPRING_DATA_NEO4J_URI=bolt://neo4j:7687
     depends_on:
-      - mongodb
-      - neo4j
-      - cassandra
-      - redis
+      cassandra:
+        condition: service_healthy
+      mongodb:
+        condition: service_started

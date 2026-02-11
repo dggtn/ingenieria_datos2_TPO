@@ -3,24 +3,31 @@ package com.example.demo.controller;
 import com.example.demo.model.Calificacion;
 import com.example.demo.service.CalificacionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-@RestController("/api/calificaciones")
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/calificaciones")
 public class CalificacionController {
-    @Autowired
-    private CalificacionService service;
 
+    @Autowired
+    private CalificacionService calificacionService;
 
     @PostMapping("/registrar")
-    public Calificacion registrarCalificacion(@RequestParam String nota,@RequestParam String tipo) {
-        return service.regstrarCalificacion(nota,tipo);
-    }
+    public ResponseEntity<Calificacion> registrar(
+            @RequestParam String estudianteId,
+            @RequestParam String materiaId,
+            @RequestParam String pais,
+            @RequestParam String notaBase,
+            @RequestBody Map<String, Object> metadatos) {
 
-    @PostMapping("/conversion")
-    public Calificacion convertir(@RequestParam String nota, @RequestParam String tipo) {
-        return service.convertirYGuardarConversion(nota, tipo);
+        Calificacion nueva = calificacionService.registrarCalificacionOriginal(
+                estudianteId, materiaId, pais, notaBase, metadatos);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
     }
 }
 

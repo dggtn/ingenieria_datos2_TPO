@@ -9,4 +9,10 @@ public String nombreEstudiante;
 public String paisOrigen;
 public String nombreInstitucion;
 public List<Calificacion> calificacionesRevalidadas;
+
+    public TrayectoriaAcademica(String nombreInstitucion, String paisOrigen, List<Calificacion> calificacionesRevalidadas) {
+        this.nombreInstitucion = nombreInstitucion;
+        this.paisOrigen = paisOrigen;
+        this.calificacionesRevalidadas = calificacionesRevalidadas;
+    }
 }

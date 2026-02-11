@@ -12,22 +12,29 @@ import java.util.UUID;
 public class Calificacion {
     @Id
     private String id;
+    private String estudianteId;
+    private String materiaId;
     private String paisOrigen;
     private String notaOriginal;
     private String auditor;
-    private LocalDateTime fechaProcesamiento;// Timestamp
+    private LocalDateTime fechaProcesamiento;
+
+    // RF1: todos los bson de cada sistema (UK,AR,USA,GER)
+    private Map<String, Object> detallesOriginales = new HashMap<>();
+
+    // RF2: El mapa de conversiones
     private Map<String, String> conversiones = new HashMap<>();
 
     public Calificacion() {
     }
 
-    public Calificacion(String id, String notaOriginal, String paisOrigen, String auditor, LocalDateTime fechaProcesamiento, Map<String, String> conversiones) {
+    public Calificacion(String id, String notaOriginal, String paisOrigen, String auditor, LocalDateTime fechaProcesamiento) {
         this.id = id;
         this.notaOriginal = notaOriginal;
         this.paisOrigen = paisOrigen;
         this.auditor = auditor;
         this.fechaProcesamiento = fechaProcesamiento;
-        this.conversiones = conversiones;
+
     }
 
     public String getId() {
@@ -36,6 +43,22 @@ public class Calificacion {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getEstudianteId() {
+        return estudianteId;
+    }
+
+    public void setEstudianteId(String estudianteId) {
+        this.estudianteId = estudianteId;
+    }
+
+    public String getMateriaId() {
+        return materiaId;
+    }
+
+    public void setMateriaId(String materiaId) {
+        this.materiaId = materiaId;
     }
 
     public String getPaisOrigen() {
@@ -68,6 +91,14 @@ public class Calificacion {
 
     public void setFechaProcesamiento(LocalDateTime fechaProcesamiento) {
         this.fechaProcesamiento = fechaProcesamiento;
+    }
+
+    public Map<String, Object> getDetallesOriginales() {
+        return detallesOriginales;
+    }
+
+    public void setDetallesOriginales(Map<String, Object> detallesOriginales) {
+        this.detallesOriginales = detallesOriginales;
     }
 
     public Map<String, String> getConversiones() {

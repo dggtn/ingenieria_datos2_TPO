@@ -1,10 +1,15 @@
 package com.example.demo.repository.neo4j;
 
-import org.springframework.data.neo4j.repository.query.Query;
+
+import com.example.demo.model.Institucion;
+import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface InstitucionRepository {
-    @Query("MATCH (i:Institucion {institucion: $nombre, pais: $pais})-[:EQUIVALE_A]->(res) RETURN res.valor")
-    String encontrarEquivalencia(String nota, String pais);
-}
+import java.util.Optional;
+
+
+    public interface InstitucionRepository extends Neo4jRepository<Institucion, String> {
+
+        Institucion findByNombre(String nombre);
+        Institucion findByid(Long id);
+    }
