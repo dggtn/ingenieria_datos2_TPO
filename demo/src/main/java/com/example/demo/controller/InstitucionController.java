@@ -14,25 +14,20 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/instituciones")
 public class InstitucionController {
-    @Autowired
-    private EstudianteMONGORepository estudianteRepository; // Neo4j
-    @Autowired
-    private CalificacionMONGORepository calificacionRepository; // MongoDB
-    @Autowired
-    private InstitucionRepository institucionRepository; // Neo4j
+
     @Autowired
     private InstitucionService institucionService;
 
     @PostMapping("/registrar")
     public ResponseEntity<Institucion> registrar(
             @RequestParam String institucionId,
-            @RequestBody(required = false) Map<String, Object> metadatos ){
+            @RequestBody(required = false) Map<String, Object> metadatos ) {
 
-        Institucion nuevo = institucionService.registrarEstudiante(
+        Institucion nueva = institucionService.registrarInstitucion(
                 institucionId, metadatos);
 
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(nuevo);
+        return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
     }
-
 }
+
+

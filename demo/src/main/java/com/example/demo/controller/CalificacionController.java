@@ -30,13 +30,13 @@ public class CalificacionController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
     }
-    @PostMapping("/prueba")
-    public ResponseEntity<Calificacion> prueba(){
-        Calificacion nueva = calificacionService.registrarCalificacionOriginal(
-                "1","MAT45","GER","1", null);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
-    }
+//    @PostMapping("/prueba")
+//    public ResponseEntity<Calificacion> prueba(){
+//        Calificacion nueva = calificacionService.registrarCalificacionOriginal(
+//                "1","MAT45","GER","1", null);
+//
+//        return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
+//    }
 
 }
 

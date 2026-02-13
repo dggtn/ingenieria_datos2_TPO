@@ -15,11 +15,12 @@ public class InstitucionService {
     private InstitucionMONGORepository institucionRepository;
 
 
-    public Institucion registrarEstudiante(String institucionId, Map<String, Object> metadatos) {
-            Institucion i = new Institucion();
+    public Institucion registrarInstitucion(String institucionId, Map<String, Object> metadatos) {    Institucion i = new Institucion();
             i.setId(institucionId);
             Institucion guardada = institucionRepository.save(i);
             System.out.println("El ID generado es: " + guardada.getId());
             return guardada;
         }
-}
+        }
+
+
