@@ -2,7 +2,7 @@ package com.example.demo.service;
 
 
 import com.example.demo.model.Calificacion;
-import com.example.demo.repository.mongo.CalificacionRepository;
+import com.example.demo.repository.mongo.CalificacionMONGORepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +12,7 @@ import java.util.Map;
 @Service
 public class CalificacionService {
     @Autowired
-    private CalificacionRepository calificacionRepository;
+    private CalificacionMONGORepository calificacionRepository;
 
     public Calificacion registrarCalificacionOriginal(String estId, String matId, String pais, String nota, Map<String, Object> metadatos) {
         Calificacion c = new Calificacion();
