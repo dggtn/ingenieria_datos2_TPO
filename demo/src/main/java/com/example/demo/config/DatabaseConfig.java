@@ -1,14 +1,31 @@
 package com.example.demo.config;
 
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 
 @Configuration
-// Cada DB debe tener su propia carpeta de repositorios para no chocar
-@EnableMongoRepositories(basePackages = "com.example.demo.repository.mongo")
-@EnableNeo4jRepositories(basePackages = "com.example.demo.repository.neo4j")
-@EnableCassandraRepositories(basePackages = "com.example.demo.repository.cassandra")
 public class DatabaseConfig {
+
+    @Value("${mongodb.connectionString}")
+    private String connectionString;
+
+    @Value("${mongodb.databaseName}")
+    private String databaseName;
+
+    @Bean
+    public MongoClient mongoClient() {
+        return MongoClients.create(connectionString);
+    }
+
+    @Bean
+    MongoOperations mongoTemplate(MongoClient mongoClient) {
+        return new MongoTemplate(mongoClient, databaseName);
+    }
 }

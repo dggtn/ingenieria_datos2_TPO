@@ -19,10 +19,8 @@ public class Calificacion {
     private String auditor;
     private LocalDateTime fechaProcesamiento;
 
-    // RF1: todos los bson de cada sistema (UK,AR,USA,GER)
     private Map<String, Object> detallesOriginales = new HashMap<>();
 
-    // RF2: El mapa de conversiones
     private Map<String, String> conversiones = new HashMap<>();
 
     public Calificacion() {

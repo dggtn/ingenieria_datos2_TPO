@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Calificacion;
 import com.example.demo.service.CalificacionService;
+import com.typesafe.config.ConfigException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,12 +23,20 @@ public class CalificacionController {
             @RequestParam String materiaId,
             @RequestParam String pais,
             @RequestParam String notaBase,
-            @RequestBody Map<String, Object> metadatos) {
+            @RequestBody(required = false) Map<String, Object> metadatos ){
 
         Calificacion nueva = calificacionService.registrarCalificacionOriginal(
                 estudianteId, materiaId, pais, notaBase, metadatos);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
     }
+    @PostMapping("/prueba")
+    public ResponseEntity<Calificacion> prueba(){
+        Calificacion nueva = calificacionService.registrarCalificacionOriginal(
+                "1","MAT45","GER","1", null);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
+    }
+
 }
 

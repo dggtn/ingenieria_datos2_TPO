@@ -15,17 +15,15 @@ public class CalificacionService {
     private CalificacionRepository calificacionRepository;
 
     public Calificacion registrarCalificacionOriginal(String estId, String matId, String pais, String nota, Map<String, Object> metadatos) {
-        Calificacion c = new Calificacion(); // Ahora sí puedes instanciarla
-        c.setEstudianteId(estId); // Ahora el método existe
+        Calificacion c = new Calificacion();
+        c.setEstudianteId(estId);
         c.setMateriaId(matId);
         c.setPaisOrigen(pais);
         c.setNotaOriginal(nota);
         c.setDetallesOriginales(metadatos);
-        // RF5: Auditoría y Trazabilidad (Inmutable)
         c.setAuditor("SISTEMA_CARGA_OFICIAL");
         c.setFechaProcesamiento(LocalDateTime.now());
 
-        // RF2: Disparamos la conversión automática a Sudáfrica
         String resultadoSA = calcularConversionSudafrica(nota, pais, metadatos);
         c.getConversiones().put("sudafrica", resultadoSA);
 
@@ -37,7 +35,6 @@ public class CalificacionService {
 
         return switch (pais.toUpperCase()) {
             case "ARGENTINA" -> {
-                // En Argentina, si no mandan el promedio en los metadatos, usamos la notaBase
                 double promedio = metadatos.containsKey("promedio")
                         ? Double.parseDouble(metadatos.get("promedio").toString())
                         : Double.parseDouble(nota);
@@ -46,7 +43,6 @@ public class CalificacionService {
             }
 
             case "USA" -> {
-                // En USA, priorizamos el GPA si viene en la "ensalada"
                 double gpa = metadatos.containsKey("gpa")
                         ? Double.parseDouble(metadatos.get("gpa").toString())
                         : 0.0;
@@ -56,7 +52,6 @@ public class CalificacionService {
             }
 
             case "ALEMANIA" -> {
-                // Escala inversa: 1 es lo mejor, 4 es aprobado
                 double notaGer = Double.parseDouble(nota);
                 if (notaGer <= 1.5) yield "90% (Outstanding)";
                 if (notaGer <= 3.0) yield "70% (Satisfactory)";
@@ -64,7 +59,6 @@ public class CalificacionService {
             }
 
             case "UK" -> {
-                // Sistema GCSE/A-Levels: Generalmente basado en letras
                 yield switch (nota.toUpperCase()) {
                     case "A*", "A" -> "85% (Distinction)";
                     case "B", "C" -> "65% (Merit)";
