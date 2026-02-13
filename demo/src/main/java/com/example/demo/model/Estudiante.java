@@ -2,12 +2,14 @@ package com.example.demo.model;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.neo4j.core.schema.Node;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @Document(collection = "estudiantes")
+@Node("Estudiantes")
 public class Estudiante {
     @Id
     private String id;

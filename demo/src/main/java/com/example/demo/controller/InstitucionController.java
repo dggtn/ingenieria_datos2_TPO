@@ -1,9 +1,6 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Institucion;
-import com.example.demo.repository.mongo.CalificacionMONGORepository;
-import com.example.demo.repository.mongo.EstudianteMONGORepository;
-import com.example.demo.repository.neo4j.InstitucionRepository;
 import com.example.demo.service.InstitucionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

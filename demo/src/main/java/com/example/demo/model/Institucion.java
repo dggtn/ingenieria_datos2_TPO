@@ -2,9 +2,10 @@ package com.example.demo.model;
 
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.neo4j.core.schema.Node;
 
 import java.util.Map;
-
+@Node("Institucion")
 public class Institucion {
     @Id
     private String id;

@@ -1,21 +1,31 @@
 package com.example.demo.service;
-
-import com.example.demo.model.Calificacion;
 import com.example.demo.model.Estudiante;
 import com.example.demo.repository.mongo.EstudianteMONGORepository;
+import com.example.demo.repository.neo4j.EstudianteNeo4jRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 @Service
 public class EstudianteService {
     @Autowired
     private EstudianteMONGORepository estudianteRepository;
+    @Autowired
+    private EstudianteNeo4jRepository estudianteNeo4jRepository;
+
     public Estudiante registrarEstudiante(String institucionId, Map<String, Object> metadatos) {
         Estudiante e = new Estudiante();
         e.setInstitucionActual(institucionId);
         return estudianteRepository.save(e);
+    }
+
+
+    public void asociarInstitucionPrevia(String estudianteId, String institucionId, String pais, String titulo) {
+        estudianteNeo4jRepository.registrarHistorial(estudianteId, institucionId, pais, titulo);
+    }
+
+    public List<Map<String, Object>> consultarHistorial(String id) {
+        return estudianteNeo4jRepository.obtenerHistorialAcademico(id);
     }
 }
