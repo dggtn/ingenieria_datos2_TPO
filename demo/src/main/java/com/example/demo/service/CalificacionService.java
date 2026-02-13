@@ -21,7 +21,7 @@ public class CalificacionService {
         c.setPaisOrigen(pais);
         c.setNotaOriginal(nota);
         c.setDetallesOriginales(metadatos);
-        c.setAuditor("SISTEMA_CARGA_OFICIAL");
+        c.setAuditor("auditor");
         c.setFechaProcesamiento(LocalDateTime.now());
 
         String resultadoSA = calcularConversionSudafrica(nota, pais, metadatos);
@@ -30,44 +30,30 @@ public class CalificacionService {
         return calificacionRepository.save(c);
     }
 
-    private String calcularConversionSudafrica(String nota, String pais, Map<String, Object> metadatos) {
+    public String calcularConversionSudafrica(String nota, String pais, Map<String, Object> metadatos) {
         if (nota == null || pais == null) return "SIN_DATOS";
 
-        return switch (pais.toUpperCase()) {
-            case "ARGENTINA" -> {
-                double promedio = metadatos.containsKey("promedio")
-                        ? Double.parseDouble(metadatos.get("promedio").toString())
-                        : Double.parseDouble(nota);
+        String paisEnMinuscula = pais.toLowerCase();
+        double valor = Double.parseDouble(nota);
+        double resultado = 0;
 
-                yield (promedio >= 7.0) ? "75% (Merit)" : "50% (Pass)";
-            }
+        if (paisEnMinuscula.equals("argentina")) {
+            resultado = valor * 10;
+        }
+        else if (paisEnMinuscula.equals("alemania")) {
+            resultado = (5.0 - valor) * 25;
+        }
+        else if (paisEnMinuscula.equals("estados unidos") || paisEnMinuscula.equals("usa")) {
+            resultado = (valor / 4.0) * 100;
+        }
+        else if (paisEnMinuscula.equals("inglaterra") || paisEnMinuscula.equals("uk")) {
+            resultado = (valor / 9.0) * 100;
+        }
+        else {
+            return "No se permite conversión";
+        }
 
-            case "USA" -> {
-                double gpa = metadatos.containsKey("gpa")
-                        ? Double.parseDouble(metadatos.get("gpa").toString())
-                        : 0.0;
-
-                if (gpa >= 3.5 || nota.equalsIgnoreCase("A")) yield "80% (Distinction)";
-                yield "60% (Pass)";
-            }
-
-            case "ALEMANIA" -> {
-                double notaGer = Double.parseDouble(nota);
-                if (notaGer <= 1.5) yield "90% (Outstanding)";
-                if (notaGer <= 3.0) yield "70% (Satisfactory)";
-                yield "40% (Fail)";
-            }
-
-            case "UK" -> {
-                yield switch (nota.toUpperCase()) {
-                    case "A*", "A" -> "85% (Distinction)";
-                    case "B", "C" -> "65% (Merit)";
-                    default -> "REVISIÓN MANUAL REQUERIDA";
-                };
-            }
-
-            default -> "PAIS_NO_SOPORTADO";
-        };
+        return resultado + "%";
     }
 }
 
