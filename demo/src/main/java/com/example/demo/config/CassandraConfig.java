@@ -43,7 +43,13 @@ public class CassandraConfig extends AbstractCassandraConfiguration {
     @Override
     protected @Nullable DriverConfigLoaderBuilderConfigurer getDriverConfigLoaderBuilderConfigurer() {
         return config ->
-                config.withString(DefaultDriverOption.METADATA_SCHEMA_REQUEST_TIMEOUT, "30s");
+                config.withString(DefaultDriverOption.METADATA_SCHEMA_REQUEST_TIMEOUT, "30s")
+                        .withString(DefaultDriverOption.REQUEST_TIMEOUT, "30s");
+    }
+
+    @Override
+    protected @Nullable String getLocalDataCenter() {
+        return "datacenter1";
     }
 }
 
