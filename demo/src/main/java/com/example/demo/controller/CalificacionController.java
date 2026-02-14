@@ -4,7 +4,6 @@ import com.example.demo.model.Calificacion;
 import com.example.demo.repository.mongo.CalificacionMONGORepository;
 import com.example.demo.repository.mongo.EstudianteMONGORepository;
 import com.example.demo.service.CalificacionService;
-import com.typesafe.config.ConfigException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
