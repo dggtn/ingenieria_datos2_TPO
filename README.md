@@ -1,157 +1,162 @@
-<h1>EduGrade Global – Sistema Nacional de Calificaciones Multimodelo</h1>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>README - EduGrade Global</title>
+<style>
+    :root {
+        --primary: #4f46e5;
+        --secondary: #1e293b;
+        --accent: #10b981;
+        --bg: #f8fafc;
+        --text: #334155;
+    }
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: var(--text);
+        background-color: var(--bg);
+        margin: 0;
+        padding: 0;
+    }
+    .container {
+        max-width: 900px;
+        margin: 40px auto;
+        background: white;
+        padding: 40px;
+        border-radius: 12px;
+        shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        border: 1px solid #e2e8f0;
+    }
+    h1 { color: var(--secondary); border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
+    h2 { color: var(--primary); margin-top: 30px; border-bottom: 1px solid #e2e8f0; }
+    h3 { color: var(--secondary); }
+    code {
+        background: #f1f5f9;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: 'Courier New', Courier, monospace;
+        color: #be185d;
+    }
+    pre {
+        background: #1e293b;
+        color: #f8fafc;
+        padding: 15px;
+        border-radius: 8px;
+        overflow-x: auto;
+    }
+    .badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85em;
+        font-weight: bold;
+        margin-right: 5px;
+    }
+    .badge-mongo { background: #dcfce7; color: #166534; }
+    .badge-neo { background: #dbeafe; color: #1e40af; }
+    .badge-cass { background: #fef3c7; color: #92400e; }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+    }
+    th, td {
+        text-align: left;
+        padding: 12px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    th { background: #f1f5f9; }
+    .setup-step { margin-bottom: 20px; }
+</style>
+</head>
+<body>
 
-<h2>Grupo-10</h2>
+<div class="container">
+<h1>EduGrade Global - Sistema de Equivalencias</h1>
+<p>Plataforma de gestión académica integral diseñada para el registro de calificaciones internacionales y cálculo de equivalencias para el sistema de <strong>Sudáfrica</strong>.</p>
 
-<h2>Colaboradores</h2>
+<h2>Arquitectura Políglota</h2>
+<p>Este proyecto implementa tres modelos de persistencia distintos para optimizar cada flujo de datos:</p>
 <ul>
-  <li><strong>Daniela Gangotena</strong> – 1185437 [@dggtn]</li>
-  <li><strong>Marisol Semperena</strong> – 1160264</li>
-  <li><strong>Alejandro Valente</strong> – 1196776</li>
+    <li><span class="badge badge-mongo">MongoDB</span> Calificaciones originales y metadatos del estudiante.</li>
+    <li><span class="badge badge-neo">Neo4j</span> Historial de movilidad académica y relaciones institucionales.</li>
+    <li><span class="badge badge-cass">Cassandra</span> Reportes analíticos de promedios masivos para el Ministerio.</li>
 </ul>
 
+
+
+<h2>Requisitos del Sistema</h2>
+<ul>
+    <li>Docker Desktop (Motor de contenedores)</li>
+    <li>Java 17+ (Spring Boot Backend)</li>
+    <li>Node.js 18+ (React Frontend)</li>
+    <li>DBeaver (Visualización de datos)</li>
+</ul>
+
+<h2>Guía de Instalación</h2>
+
+<div class="setup-step">
+    <h3>1. Infraestructura (Bases de Datos)</h3>
+    <p>Levantar los contenedores desde la raíz:</p>
+    <pre>docker-compose up -d</pre>
+</div>
+
+<div class="setup-step">
+    <h3>2. Configuración de Cassandra</h3>
+    <p>Conectarse vía DBeaver y ejecutar el siguiente script para habilitar el espacio de nombres:</p>
+    <pre>CREATE KEYSPACE IF NOT EXISTS edugrade WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};</pre>
+</div>
+
+<div class="setup-step">
+    <h3>3. Ejecución del Backend</h3>
+    <pre>cd backend
+mvn spring-boot:run</pre>
+</div>
+
+<div class="setup-step">
+    <h3>4. Ejecución del Frontend</h3>
+    <pre>cd frontend
+npm install
+npm run dev</pre>
+</div>
+
+<h2>🔗 Endpoints Principales (API)</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Método</th>
+            <th>Ruta</th>
+            <th>Acción</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><code>POST</code></td>
+            <td>/api/calificaciones/registrar</td>
+            <td>Guarda en Mongo y convierte a Sudáfrica.</td>
+        </tr>
+        <tr>
+            <td><code>GET</code></td>
+            <td>/api/calificaciones/simular-conversion</td>
+            <td>Previsualiza la nota sin persistir.</td>
+        </tr>
+        <tr>
+            <td><code>GET</code></td>
+            <td>/api/reportes/promedio</td>
+            <td>Reportes analíticos desde Cassandra.</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
 <hr>
-
-<h2>Descripción General</h2>
-
-<p>
-<strong>EduGrade Global</strong> es un sistema nacional unificado de calificaciones que el Ministerio de Educación de Sudáfrica debe implementar para registrar, normalizar, convertir y analizar calificaciones de todos los niveles educativos. El sistema contempla trayectorias académicas mixtas y movilidad internacional entre los sistemas educativos del <strong>Reino Unido</strong>, <strong>Estados Unidos</strong>, <strong>Alemania</strong> y <strong>Argentina</strong>, preservando siempre la calificación original. Además, permite conversiones coexistentes entre múltiples escalas, soporta análisis oficiales para estadísticas, equivalencias y políticas públicas, y garantiza auditoría, trazabilidad e inmutabilidad de los registros mediante un enfoque <em>append-only</em>, utilizando al menos <strong>tres modelos de bases de datos NoSQL</strong> justificados por su función dentro del sistema.
+<p style="text-align: center; color: #94a3b8; font-size: 0.9em;">
+    TPO Desarrollo de Aplicaciones - Arquitectura de Datos - 2026
 </p>
+</div>
 
-<hr>
-
-<h2>Tecnologías Usadas en el Desarrollo del TPO</h2>
-
-<h3>Frontend</h3>
-<ul>
-  <li>HTML5</li>
-  <li>CSS3</li>
-  <li>JavaScript</li>
-  <li>React</li>
-  <li>Redux</li>
-</ul>
-
-<h3>Backend</h3>
-<ul>
-  <li>API REST</li>
-  <li>Java</li>
-  <li>Spring</li>
-  <li>Spring Boot</li>
-  <li>Git</li>
-</ul>
-
-<h3>Bases de Datos</h3>
-<ul>
-  <li>MongoDB</li>
-  <li>Cassandra DB</li>
-  <li>IRIS</li>
-  <li>Neo4j</li>
-</ul>
-
-<h3>Herramientas de Desarrollo</h3>
-<ul>
-  <li>IntelliJ IDEA</li>
-  <li>Postman</li>
-  <li>npm</li>
-</ul>
-
-<hr>
-
-<h2>Consignas del Sistema</h2>
-<ul>
-  <li>Registro de calificaciones en su <strong>formato original</strong>.</li>
-  <li>Conversión múltiple y simultánea entre escalas.</li>
-  <li>Modelado de relaciones académicas complejas.</li>
-  <li>Generación de análisis oficiales y reportes estadísticos.</li>
-  <li>Auditoría, trazabilidad e inmutabilidad de los registros.</li>
-</ul>
-
-<hr>
-
-<h2>Requisitos Funcionales</h2>
-
-<h3>1. Registro Académico Oficial</h3>
-<ul>
-  <li>Alta de estudiantes con múltiples trayectorias educativas.</li>
-  <li>Asociación a instituciones, niveles, ciclos lectivos y materias.</li>
-  <li>Registro de evaluaciones parciales, finales y extraordinarias.</li>
-  <li>Almacenamiento íntegro de la calificación original.</li>
-</ul>
-
-<h3>2. Conversión y Normalización</h3>
-<ul>
-  <li>Reglas de conversión versionadas entre sistemas.</li>
-  <li>Múltiples conversiones válidas simultáneas.</li>
-  <li>Registro de origen, método y fecha de conversión.</li>
-  <li>Prohibición de sobrescritura de la nota original.</li>
-</ul>
-
-<h3>3. Relaciones Académicas Complejas</h3>
-<ul>
-  <li>Cambio de país o sistema educativo.</li>
-  <li>Repetición de materias bajo distintos esquemas.</li>
-  <li>Equivalencias parciales.</li>
-  <li>Mapeo de materias equivalentes entre sistemas.</li>
-</ul>
-
-<h3>4. Análisis y Reportes Oficiales</h3>
-<ul>
-  <li>Promedios por región, institución, sistema y año lectivo.</li>
-  <li>Comparaciones históricas entre sistemas.</li>
-  <li>Detección de desvíos estadísticos.</li>
-</ul>
-
-<h3>5. Auditoría y Trazabilidad</h3>
-<ul>
-  <li>Trazabilidad completa de cambios.</li>
-  <li>Historial de correcciones, recalificaciones y cambios normativos.</li>
-  <li>Acceso para organismos de control.</li>
-</ul>
-
-<hr>
-
-<h2>Requisitos Técnicos de Entrega</h2>
-
-<h3>Persistencia Políglota en Docker</h3>
-<ul>
-  <li>Orquestación de al menos <strong>3 bases NoSQL</strong> con Docker Compose.</li>
-  <li>Volúmenes persistentes.</li>
-  <li>Configuración básica de clustering/replicación.</li>
-  <li>Healthchecks y redes internas.</li>
-</ul>
-
-<h3>API Backend 100% Operacional</h3>
-<ul>
-  <li>API REST funcional.</li>
-  <li>ABM completo de entidades principales.</li>
-  <li>Endpoints de negocio obligatorios.</li>
-  <li>Conversión múltiple implementada en backend.</li>
-  <li>Documentación con Swagger/OpenAPI o Postman.</li>
-</ul>
-
-<hr>
-
-<h2>Escalabilidad y Volumen</h2>
-<ul>
-  <li>Soporte para al menos <strong>1 millón de calificaciones</strong>.</li>
-  <li>Script de carga masiva.</li>
-  <li>Consultas analíticas eficientes.</li>
-</ul>
-
-<hr>
-
-<h2>Auditoría e Inmutabilidad</h2>
-<ul>
-  <li>Registros inmutables.</li>
-  <li>Estrategia append-only o versionado.</li>
-  <li>Timestamp, auditor y hash inmutable por registro.</li>
-</ul>
-
-<hr>
-
-<h2>Frontend (Optativo – Suma Nota Base)</h2>
-<ul>
-  <li>Formulario de registro de calificaciones.</li>
-  <li>Visualización de trayectorias y conversiones.</li>
-  <li>Reportes analíticos básicos.</li>
-  <li>Diseño responsive y usable.</li>
-</ul>
+</body>
+</html>
