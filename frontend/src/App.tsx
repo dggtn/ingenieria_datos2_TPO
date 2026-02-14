@@ -49,8 +49,8 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen p-8 bg-slate-50">
-      <div className="text-center mb-12 space-y-4">
+    <div className="p-8 bg-green-100 rounded-lg">
+      <div className="text-center mb-12 ">
         <p className="font-sans text-4xl font-bold text-slate-800">Bienvenido a EduGrade Global</p>
         <p className="font-sans text-2xl text-slate-600">Sistema de Equivalencias Internacionales</p>
       </div>
@@ -106,7 +106,7 @@ function App() {
             <button 
               type="submit" 
               disabled={loading}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-indigo-200 disabled:opacity-50"
+              className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-green-200 disabled:opacity-50"
             >
               {loading ? 'Procesando...' : 'Registrar y Convertir'}
             </button>
