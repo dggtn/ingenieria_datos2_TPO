@@ -1,8 +1,12 @@
 package com.example.demo.config;
 
+import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.cassandra.config.AbstractCassandraConfiguration;
+import org.springframework.data.cassandra.config.DriverConfigLoaderBuilderConfigurer;
+import org.springframework.data.cassandra.config.SchemaAction;
 import org.springframework.data.cassandra.core.cql.keyspace.CreateKeyspaceSpecification;
 import org.springframework.data.cassandra.core.cql.keyspace.KeyspaceOption;
 import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
@@ -30,6 +34,16 @@ public class CassandraConfig extends AbstractCassandraConfiguration {
                 .createKeyspace(keyspace).ifNotExists()
                 .with(KeyspaceOption.DURABLE_WRITES, true).withSimpleReplication();
         return Arrays.asList(specification);
+    }
+    @Override
+    public SchemaAction getSchemaAction() {
+        return SchemaAction.CREATE_IF_NOT_EXISTS;
+    }
+
+    @Override
+    protected @Nullable DriverConfigLoaderBuilderConfigurer getDriverConfigLoaderBuilderConfigurer() {
+        return config ->
+                config.withString(DefaultDriverOption.METADATA_SCHEMA_REQUEST_TIMEOUT, "30s");
     }
 }
 

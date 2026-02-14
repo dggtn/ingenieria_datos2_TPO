@@ -30,6 +30,7 @@ public class ReporteServcio {
             ReportePromedio reporte = new ReportePromedio();
             reporte.setPromedio(promedio);
             cassandraRepo.save(reporte);
+
             return reporte;
         }
 

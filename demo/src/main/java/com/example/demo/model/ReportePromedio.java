@@ -1,41 +1,36 @@
 package com.example.demo.model;
 
+import com.datastax.oss.driver.api.core.uuid.Uuids;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Table
 public class ReportePromedio {
-    @Id
-    private String id;
-    private Institucion instId;
+
     private double promedio;
     private LocalDate fecha;
+    @PrimaryKey
+    private UUID id;
 
-    public ReportePromedio(Institucion instId, double promedio, LocalDate fecha) {
-        this.instId = instId;
+    public ReportePromedio( double promedio, LocalDate fecha) {
         this.promedio = promedio;
         this.fecha = fecha;
     }
 
     public ReportePromedio() {
+        this.id = Uuids.timeBased();
     }
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
-    }
-
-    public Institucion getInstId() {
-        return instId;
-    }
-
-    public void setInstId(Institucion instId) {
-        this.instId = instId;
     }
 
     public double getPromedio() {
