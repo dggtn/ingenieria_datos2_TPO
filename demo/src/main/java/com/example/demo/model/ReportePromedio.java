@@ -1,7 +1,5 @@
 package com.example.demo.model;
-
 import com.datastax.oss.driver.api.core.uuid.Uuids;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 
