@@ -47,9 +47,25 @@ public class CalificacionService {
             resultado = ((5.0 - ((klassenArbeit+mundlichArbeit)/2)) * 25);
         }
         else if (paisEnMinuscula.equals("estados unidos") || paisEnMinuscula.equals("usa")) {
-            double semester= (Double) request.getMetadatos().get("semester");
-            double gpa=(Double) request.getMetadatos().get("gpa");
-            resultado = (((semester+gpa)/2) / 4.0) * 100;
+            String semester_original = (String) request.getMetadatos().get("semester");
+            Integer semester = 0;
+            if( semester_original.equals("A")){
+                semester = 100;
+            } else if (semester_original.equals("B")) {
+                semester = 80;
+            } else if (semester_original.equals("C")) {
+                semester = 70;
+            } else if (semester_original.equals("D")) {
+                semester = 60;
+            } else if (semester_original.equals("E")) {
+                semester = 50;
+            } else if (semester_original.equals( "F")) {
+                semester = 0;
+            }
+            double gpa=(Integer) request.getMetadatos().get("gpa");
+            double gpaConvertido = (gpa*100)/4;
+            resultado = (gpaConvertido+semester)/2;
+
         }
         else if (paisEnMinuscula.equals("inglaterra") || paisEnMinuscula.equals("uk")) {
             double courseWork= (Double) request.getMetadatos().get("courseWork");

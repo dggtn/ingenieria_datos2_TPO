@@ -1,14 +1,12 @@
 const usaForm = ({ setGradeDetails }: any) => {
   return (
     <div className="space-y-3">
-      <input type="number" placeholder="Semester 1 Final Exam"
+      <input type="string" placeholder="Semester 1 Final Exam"
         onChange={(e) =>
           setGradeDetails((prev: any) => ({
             ...prev,
-            semester_1: {
-              ...prev.semester_1,
-              final_exam: Number(e.target.value)
-            }
+              semester: String(e.target.value)
+            
           }))
         }
         className="w-full border p-2 rounded-lg"
@@ -18,7 +16,7 @@ const usaForm = ({ setGradeDetails }: any) => {
         onChange={(e) =>
           setGradeDetails((prev: any) => ({
             ...prev,
-            cumulative_gpa: Number(e.target.value)
+            gpa: Number(e.target.value)
           }))
         }
         className="w-full border p-2 rounded-lg"
