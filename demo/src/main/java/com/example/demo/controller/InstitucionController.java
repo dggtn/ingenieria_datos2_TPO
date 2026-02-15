@@ -18,7 +18,7 @@ public class InstitucionController {
 
     @PostMapping("/registrar")
     public ResponseEntity<Institucion> registrar(
-            @RequestParam String institucionId,
+            @RequestBody String institucionId,
             @RequestBody(required = false) Map<String, Object> metadatos ) {
 
         Institucion nueva = institucionService.registrarInstitucion(

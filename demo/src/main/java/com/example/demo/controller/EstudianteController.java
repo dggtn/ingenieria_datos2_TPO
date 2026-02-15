@@ -27,7 +27,7 @@ public class EstudianteController {
 
     @PostMapping("/registrar")
     public ResponseEntity<Estudiante> registrar(
-            @RequestParam String institucionId,
+            @RequestBody String institucionId,
             @RequestBody(required = false) Map<String, Object> metadatos) {
 
         Estudiante nuevo = estudianteService.registrarEstudiante(
@@ -38,12 +38,10 @@ public class EstudianteController {
 
     @PostMapping("/Historial")
     public ResponseEntity<String> guardarHistorial(
-            @RequestParam String estudianteId,
-            @RequestParam String institucionId,
-            @RequestParam String pais,
-            @RequestParam String titulo) {
+            @RequestBody String estudianteId,
+            String institucionId){
 
-        estudianteService.asociarInstitucionPrevia(estudianteId, institucionId, pais, titulo);
+        estudianteService.asociarInstitucionPrevia(estudianteId, institucionId);
 
         return ResponseEntity.ok("Vínculo histórico creado en Neo4j entre el estudiante y la institución.");
     }

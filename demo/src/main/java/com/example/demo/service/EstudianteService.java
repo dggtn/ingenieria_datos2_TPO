@@ -21,8 +21,8 @@ public class EstudianteService {
     }
 
 
-    public void asociarInstitucionPrevia(String estudianteId, String institucionId, String pais, String titulo) {
-        estudianteNeo4jRepository.registrarHistorial(estudianteId, institucionId, pais, titulo);
+    public void asociarInstitucionPrevia(String estudianteId, String institucionId) {
+        estudianteNeo4jRepository.registrarHistorial(estudianteId, institucionId);
     }
 
     public List<Map<String, Object>> consultarHistorial(String id) {
