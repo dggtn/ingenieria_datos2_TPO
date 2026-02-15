@@ -7,15 +7,13 @@ import USAForm from './components/usaForm';
 import EnglandForm from './components/englandForm'; 
 
 interface ConversionResponse {
-  nota_original: string;
-  pais_origen: string;
-  equivalencia_sudafrica: string;
+  equivalencia_sudafrica: number;
 }
 
 function App() {
   const [estudianteId, setEstudianteId] = useState('');
-  const [materiaId, setMateriaId] = useState('TPO-2026'); 
-  const [pais, setPais] = useState('Argentina');
+  const [materiaId, setMateriaId] = useState(''); 
+  const [pais, setPais] = useState('');
   const [gradeDetails, setGradeDetails] = useState<any>({});
   const [resultado, setResultado] = useState<ConversionResponse | null>(null);
   const [loading, setLoading] = useState(false);
@@ -24,19 +22,17 @@ function App() {
     e.preventDefault();
     setLoading(true);
     try {
-        const response = await axios.post(
-        'http://localhost:8080/api/calificaciones/registrar',
+      const response = await axios.post(
+        'http://localhost:8080/api/calificaciones/registrar', 
         {
-          estudianteId,
-          materiaId,
-          pais,
-          gradeDetails
-        }
-      );;
+          estudiante: estudianteId,
+            materia: materiaId,     
+            pais: pais,
+            metadatos: gradeDetails,
+          }, 
+      );
       console.log(response.data)
       setResultado({
-        nota_original: response.data.notaOriginal,
-        pais_origen: response.data.pais,
         equivalencia_sudafrica: response.data.conversiones.sudafrica 
       });
 
@@ -120,11 +116,7 @@ function App() {
         {resultado && (
           <section className="bg-indigo-900 text-white p-8 rounded-2xl shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
             <h2 className="text-xl font-semibold mb-6 border-b border-indigo-800 pb-2">Resultado de la Operación</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="text-center p-4 bg-indigo-800 rounded-xl">
-                <p className="text-indigo-300 text-sm uppercase tracking-wider mb-1">Nota {resultado.pais_origen}</p>
-                <p className="text-4xl font-bold">{resultado.nota_original}</p>
-              </div>
+            <div className="grid grid-cols-1  gap-8">
               <div className="text-center p-4 bg-emerald-600 rounded-xl">
                 <p className="text-emerald-100 text-sm uppercase tracking-wider mb-1">Equivalencia Sudáfrica</p>
                 <p className="text-4xl font-bold">{resultado.equivalencia_sudafrica}</p>

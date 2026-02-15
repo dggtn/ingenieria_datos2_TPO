@@ -5,7 +5,7 @@ const argentinaForm = ({ setGradeDetails }: any) => {
         onChange={(e) =>
           setGradeDetails((prev: any) => ({
             ...prev,
-            primer_parcial: Number(e.target.value)
+            primer_parcial: Number(e.target.value) * 1.0
           }))
         }
         className="w-full border p-2 rounded-lg"
@@ -14,7 +14,7 @@ const argentinaForm = ({ setGradeDetails }: any) => {
         onChange={(e) =>
           setGradeDetails((prev: any) => ({
             ...prev,
-            segundo_parcial: Number(e.target.value)
+            segundo_parcial: Number(e.target.value) * 1.0
           }))
         }
         className="w-full border p-2 rounded-lg"
@@ -23,7 +23,7 @@ const argentinaForm = ({ setGradeDetails }: any) => {
         onChange={(e) =>
           setGradeDetails((prev: any) => ({
             ...prev,
-            tercer_parcial: Number(e.target.value)
+            examen_final: Number(e.target.value) * 1.0
           }))
         }
         className="w-full border p-2 rounded-lg"

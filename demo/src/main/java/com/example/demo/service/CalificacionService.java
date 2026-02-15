@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 
 @Service
 public class CalificacionService {
@@ -20,7 +19,7 @@ public class CalificacionService {
         c.setEstudianteId(requestRegistrarCalificacion.getEstudiante());
         c.setMateriaId(requestRegistrarCalificacion.getMateria());
         c.setPaisOrigen(requestRegistrarCalificacion.getPaisOrigen());
-        c.setDetallesOriginales(requestRegistrarCalificacion.getMetadatos());
+        c.setMetadata(requestRegistrarCalificacion.getMetadatos());
         c.setAuditor("auditor");
         c.setFechaProcesamiento(LocalDateTime.now());
 
@@ -37,10 +36,10 @@ public class CalificacionService {
         double resultado = 0;
 
         if (paisEnMinuscula.equals("argentina")) {
-            double primer_parcial= (Double) request.getMetadatos().get("primer_parcial");
-            double segundo_parcial=(Double) request.getMetadatos().get("segundo_parcial");
-            double examen_final= (Double) request.getMetadatos().get("examen_final");
-            resultado = (primer_parcial+segundo_parcial+examen_final/3) * 10;
+            Integer primer_parcial= (Integer) request.getMetadatos().get("primer_parcial");
+            Integer segundo_parcial=(Integer) request.getMetadatos().get("segundo_parcial");
+            Integer examen_final= (Integer) request.getMetadatos().get("examen_final");
+            resultado = ((primer_parcial+segundo_parcial+examen_final)/3) * 10;
         }
         else if (paisEnMinuscula.equals("alemania")) {
             double klassenArbeit= (Double) request.getMetadatos().get("KlassenArbeit");

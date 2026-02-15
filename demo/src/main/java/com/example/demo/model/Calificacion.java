@@ -7,7 +7,6 @@ import org.springframework.data.neo4j.core.schema.Node;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @Document(collection = "calificaciones")
 @Node("Calificaciones")
@@ -21,7 +20,7 @@ public class Calificacion {
     private String auditor;
     private LocalDateTime fechaProcesamiento;
 
-    private Map<String, Object> detallesOriginales = new HashMap<>();
+    private Map<String, Object> metadata = new HashMap<>();
 
     private Map<String, String> conversiones = new HashMap<>();
 
@@ -93,12 +92,12 @@ public class Calificacion {
         this.fechaProcesamiento = fechaProcesamiento;
     }
 
-    public Map<String, Object> getDetallesOriginales() {
-        return detallesOriginales;
+    public Map<String, Object> getMetadata() {
+        return metadata;
     }
 
-    public void setDetallesOriginales(Map<String, Object> detallesOriginales) {
-        this.detallesOriginales = detallesOriginales;
+    public void setMetadata(Map<String, Object> metadata) {
+        this.metadata = metadata;
     }
 
     public Map<String, String> getConversiones() {

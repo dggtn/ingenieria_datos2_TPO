@@ -27,12 +27,6 @@ public class CalificacionController {
     public ResponseEntity<Calificacion> registrar(@RequestBody
                                                   RequestRegistrarCalificacion requestRegistrarCalificacion) {
 
-
-        String notaSudafrica = calificacionService.calcularConversionSudafrica(
-                requestRegistrarCalificacion);
-
-        requestRegistrarCalificacion.setMetadatos(("equivalencia_sudafrica"), notaSudafrica);
-
         Calificacion nueva = calificacionService.registrarCalificacionOriginal(
                 requestRegistrarCalificacion);
 
