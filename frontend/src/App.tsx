@@ -69,11 +69,33 @@ function App() {
   };
 
   return (
-    <div className="p-8 bg-green-100 rounded-lg">
+    <main className=" bg-green-50-100 min-h-screen py-10 px-4">
+    <div className="  rounded-lg">
       <div className="text-center mb-12 ">
         <p className="font-sans text-4xl font-bold text-slate-800">Bienvenido a EduGrade Global</p>
         <p className="font-sans text-2xl text-slate-600">Sistema de Equivalencias Internacionales</p>
       </div>
+      <button className="mb-3 mt-4 bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 ml-5" onClick={() => {
+          setEstudianteId("");
+        }}>
+          TOP 5 Instituciones
+        </button>
+         <button className="mb-3 mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 ml-5" onClick={() => {
+          setEstudianteId("");
+        }}>
+          Pais con mejores calificaciones
+        </button>
+          <button className="mb-3 mt-4 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 ml-5" onClick={() => {
+          setEstudianteId("");
+        }}>
+          Institucion con mejores calificaciones
+        </button>
+          <button className="mb-3 mt-4 bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 ml-5" onClick={() => {
+          setEstudianteId("");
+        }}>
+          Estudiante con mejores calificaciones
+        </button>
+
 
       <main className="max-w-2xl mx-auto space-y-8">
         <section className="bg-white p-8 rounded-2xl shadow-xl border border-slate-100">
@@ -206,6 +228,7 @@ function App() {
         </button>
       </main>
     </div>
+    </main>
   );
 }
 
