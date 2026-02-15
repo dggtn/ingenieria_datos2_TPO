@@ -18,7 +18,14 @@ function App() {
   const [gradeDetails, setGradeDetails] = useState<any>({});
   const [resultado, setResultado] = useState<ConversionResponse | null>(null);
   const [loading, setLoading] = useState(false);
-
+  const verRanking = async () => {
+  try {
+    const response = await axios.get('http://localhost:8080/api/reportes/ranking-alerta');
+    alert(response.data); 
+  } catch (error) {
+    alert("Todavía no hay datos calculados en Cassandra.");
+  }
+};
   const handleRegistrar = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -44,6 +51,7 @@ function App() {
       setLoading(false);
     }
   };
+  
   const handleHistorial = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -75,23 +83,23 @@ function App() {
         <p className="font-sans text-4xl font-bold text-slate-800">Bienvenido a EduGrade Global</p>
         <p className="font-sans text-2xl text-slate-600">Sistema de Equivalencias Internacionales</p>
       </div>
-      <button className="mb-3 mt-4 bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 ml-5" onClick={() => {
-          setEstudianteId("");
-        }}>
+     <button onClick={verRanking}
+className="mb-3 mt-4 bg-orange-600 hover:bg-amber-700 text-white font-bold py-2 px-4
+ rounded-lg transition-colors duration-200 ml-5">
           TOP 5 Instituciones
         </button>
          <button className="mb-3 mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 ml-5" onClick={() => {
-          setEstudianteId("");
+          alert(" Pais con mejores calificaciones es:");
         }}>
           Pais con mejores calificaciones
         </button>
-          <button className="mb-3 mt-4 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 ml-5" onClick={() => {
-          setEstudianteId("");
+          <button className="mb-3 mt-4 bg-purple-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 ml-5" onClick={() => {
+          alert("Institucion con mejores calificaciones es:");
         }}>
           Institucion con mejores calificaciones
         </button>
           <button className="mb-3 mt-4 bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 ml-5" onClick={() => {
-          setEstudianteId("");
+          alert("Estudiante con mejores calificaciones es:");
         }}>
           Estudiante con mejores calificaciones
         </button>

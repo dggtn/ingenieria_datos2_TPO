@@ -1,28 +1,46 @@
 package com.example.demo.model;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.cassandra.core.mapping.PrimaryKey;
+import org.springframework.data.cassandra.core.mapping.Table;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Node;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Data
+@Table
 @Document(collection = "estudiantes")
 @Node("Estudiantes")
 public class Estudiante {
+    @PrimaryKey
     @Id
-    private String id;
+    @GeneratedValue
+    private UUID id;
     private String nombre;
     private String paisOrigen;
     private List<String> calificacionIds = new ArrayList<>();
     private String institucionActual;
 
-    public String getId() {
+    public Estudiante() {
+    }
+
+    public Estudiante(UUID id, String nombre, String paisOrigen, List<String> calificacionIds, String institucionActual) {
+        this.id = id;
+        this.nombre = nombre;
+        this.paisOrigen = paisOrigen;
+        this.calificacionIds = calificacionIds;
+        this.institucionActual = institucionActual;
+    }
+
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

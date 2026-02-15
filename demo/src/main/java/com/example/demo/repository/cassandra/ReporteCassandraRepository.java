@@ -1,11 +1,15 @@
 package com.example.demo.repository.cassandra;
-import com.example.demo.model.ReportePromedio;
-import org.springframework.data.repository.CrudRepository;
+import com.example.demo.model.Reporte;
+import org.springframework.data.cassandra.repository.CassandraRepository;
+import org.springframework.data.cassandra.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.UUID;
+
+import java.util.List;
 
 
-public interface ReporteCassandraRepository extends CrudRepository<ReportePromedio, UUID> {
-
+@Repository
+public interface ReporteCassandraRepository extends CassandraRepository<Reporte, String> {
+    @Query("SELECT * FROM Reporte WHERE tipo_ranking = 'GLOBAL' LIMIT 5")
+    List<Reporte> obtenerTop5Global();
 }

@@ -17,7 +17,7 @@ import java.util.List;
 @Configuration
 @EnableCassandraRepositories("com.example.demo.repository.cassandra")
 public class CassandraConfig extends AbstractCassandraConfiguration {
-        @Value("${cassandra.keyspace}")
+        @Value("${cassandra.keyspace:edugrade_keyspace}")
         private String keyspace;
         @Override
         protected String getKeyspaceName() {
