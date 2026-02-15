@@ -1,7 +1,10 @@
 import './App.css'
 import { useState } from 'react';
 import axios from 'axios';
-
+import ArgentinaForm from './components/argentinaForm';
+import GermanyForm from './components/alemaniaForm';
+import USAForm from './components/usaForm';
+import EnglandForm from './components/englandForm'; 
 
 interface ConversionResponse {
   nota_original: string;
@@ -13,7 +16,7 @@ function App() {
   const [estudianteId, setEstudianteId] = useState('');
   const [materiaId, setMateriaId] = useState('TPO-2026'); 
   const [pais, setPais] = useState('Argentina');
-  const [notaBase, setNotaBase] = useState('');
+  const [gradeDetails, setGradeDetails] = useState<any>({});
   const [resultado, setResultado] = useState<ConversionResponse | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -21,18 +24,15 @@ function App() {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post(
-        'http://localhost:8080/api/calificaciones/registrar', 
-        {}, 
+        const response = await axios.post(
+        'http://localhost:8080/api/calificaciones/registrar',
         {
-          params: {
-            estudianteId: estudianteId,
-            materiaId: materiaId,     
-            pais: pais,
-            notaBase: notaBase 
-          }
+          estudianteId,
+          materiaId,
+          pais,
+          gradeDetails
         }
-      );
+      );;
       console.log(response.data)
       setResultado({
         nota_original: response.data.notaOriginal,
@@ -94,12 +94,16 @@ function App() {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-slate-700">Calificación Original</label>
-                <input 
-                  type="number" step="0.1" required
-                  className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
-                  value={notaBase} onChange={(e) => setNotaBase(e.target.value)}
-                  placeholder="Ej: 8.5"
-                />
+                <div>
+                  <label className="block text-sm font-medium mb-3 text-slate-700">
+                    Detalle de Calificación
+                  </label>
+
+                  {pais === "Argentina" && <ArgentinaForm setGradeDetails={setGradeDetails} />}
+                  {pais === "Alemania" && <GermanyForm setGradeDetails={setGradeDetails} />}
+                  {pais === "USA" && <USAForm setGradeDetails={setGradeDetails} />}
+                  {pais === "Inglaterra" && <EnglandForm setGradeDetails={setGradeDetails} />}
+                </div>
               </div>
             </div>
 

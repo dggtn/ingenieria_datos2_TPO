@@ -9,4 +9,7 @@ public class Materia {
     private String id;
 
     private String nombre;
+    private String pais;
+    private String calificacion;
+
 }

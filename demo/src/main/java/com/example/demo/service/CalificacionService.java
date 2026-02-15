@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 
 import com.example.demo.model.Calificacion;
+import com.example.demo.model.RequestRegistrarCalificacion;
 import com.example.demo.repository.mongo.CalificacionMONGORepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,40 +15,48 @@ public class CalificacionService {
     @Autowired
     private CalificacionMONGORepository calificacionRepository;
 
-    public Calificacion registrarCalificacionOriginal(String estId, String matId, String pais, String nota, Map<String, Object> metadatos) {
+    public Calificacion registrarCalificacionOriginal(RequestRegistrarCalificacion requestRegistrarCalificacion) {
         Calificacion c = new Calificacion();
-        c.setEstudianteId(estId);
-        c.setMateriaId(matId);
-        c.setPaisOrigen(pais);
-        c.setNotaOriginal(nota);
-        c.setDetallesOriginales(metadatos);
+        c.setEstudianteId(requestRegistrarCalificacion.getEstudiante());
+        c.setMateriaId(requestRegistrarCalificacion.getMateria());
+        c.setPaisOrigen(requestRegistrarCalificacion.getPaisOrigen());
+        c.setDetallesOriginales(requestRegistrarCalificacion.getMetadatos());
         c.setAuditor("auditor");
         c.setFechaProcesamiento(LocalDateTime.now());
 
-        String resultadoSA = calcularConversionSudafrica(nota, pais, metadatos);
+        String resultadoSA = calcularConversionSudafrica(requestRegistrarCalificacion);
         c.getConversiones().put("sudafrica", resultadoSA);
 
         return calificacionRepository.save(c);
     }
 
-    public String calcularConversionSudafrica(String nota, String pais, Map<String, Object> metadatos) {
-        if (nota == null || pais == null) return "SIN_DATOS";
+    public String calcularConversionSudafrica(RequestRegistrarCalificacion request) {
+        if (request == null) return "SIN_DATOS";
 
-        String paisEnMinuscula = pais.toLowerCase();
-        double valor = Double.parseDouble(nota);
+        String paisEnMinuscula = request.getPaisOrigen().toLowerCase();
         double resultado = 0;
 
         if (paisEnMinuscula.equals("argentina")) {
-            resultado = valor * 10;
+            double primer_parcial= (Double) request.getMetadatos().get("primer_parcial");
+            double segundo_parcial=(Double) request.getMetadatos().get("segundo_parcial");
+            double examen_final= (Double) request.getMetadatos().get("examen_final");
+            resultado = (primer_parcial+segundo_parcial+examen_final/3) * 10;
         }
         else if (paisEnMinuscula.equals("alemania")) {
-            resultado = (5.0 - valor) * 25;
+            double klassenArbeit= (Double) request.getMetadatos().get("KlassenArbeit");
+            double mundlichArbeit=(Double) request.getMetadatos().get("MundlichArbeit");
+            resultado = ((5.0 - ((klassenArbeit+mundlichArbeit)/2)) * 25);
         }
         else if (paisEnMinuscula.equals("estados unidos") || paisEnMinuscula.equals("usa")) {
-            resultado = (valor / 4.0) * 100;
+            double semester= (Double) request.getMetadatos().get("semester");
+            double gpa=(Double) request.getMetadatos().get("gpa");
+            resultado = (((semester+gpa)/2) / 4.0) * 100;
         }
         else if (paisEnMinuscula.equals("inglaterra") || paisEnMinuscula.equals("uk")) {
-            resultado = (valor / 9.0) * 100;
+            double courseWork= (Double) request.getMetadatos().get("courseWork");
+            double mockExam=(Double) request.getMetadatos().get("mockExam");
+            double final_grade=(Double) request.getMetadatos().get("final_grade");
+            resultado = ((courseWork+mockExam+final_grade)/ 9.0) * 100;
         }
         else {
             return "No se permite conversión";

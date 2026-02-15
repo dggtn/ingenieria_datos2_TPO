@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Calificacion;
+import com.example.demo.model.RequestRegistrarCalificacion;
 import com.example.demo.repository.mongo.CalificacionMONGORepository;
 import com.example.demo.repository.mongo.EstudianteMONGORepository;
 import com.example.demo.service.CalificacionService;
@@ -23,37 +24,29 @@ public class CalificacionController {
     private CalificacionService calificacionService;
 
     @PostMapping("/registrar")
-    public ResponseEntity<Calificacion> registrar(
-            @RequestParam String estudianteId,
-            @RequestParam String materiaId,
-            @RequestParam String pais,
-            @RequestParam String notaBase,
-            @RequestBody(required = false) Map<String, Object> metadatos) {
+    public ResponseEntity<Calificacion> registrar(@RequestBody
+                                                  RequestRegistrarCalificacion requestRegistrarCalificacion) {
 
-        if (metadatos == null) {
-            metadatos = new HashMap<>();
-        }
 
-        String notaSudafrica = calificacionService.calcularConversionSudafrica(notaBase, pais, metadatos);
+        String notaSudafrica = calificacionService.calcularConversionSudafrica(
+                requestRegistrarCalificacion);
 
-        metadatos.put("equivalencia_sudafrica", notaSudafrica);
+        requestRegistrarCalificacion.setMetadatos(("equivalencia_sudafrica"), notaSudafrica);
 
         Calificacion nueva = calificacionService.registrarCalificacionOriginal(
-                estudianteId, materiaId, pais, notaBase, metadatos);
+                requestRegistrarCalificacion);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
     }
 
     @GetMapping("/simular-conversion")
-    public ResponseEntity<Map<String, String>> verConversion(
-            @RequestParam String nota,
-            @RequestParam String pais) {
+    public ResponseEntity<Map<String, Object>> verConversion(
+            RequestRegistrarCalificacion requestRegistrarCalificacion) {
 
-        String resultado = calificacionService.calcularConversionSudafrica(nota, pais, null);
+        String resultado = calificacionService.calcularConversionSudafrica(requestRegistrarCalificacion);
 
-        Map<String, String> respuesta = new HashMap<>();
-        respuesta.put("pais_origen", pais);
-        respuesta.put("nota_original", nota);
+        Map<String, Object> respuesta = new HashMap<>();
+        respuesta.put("pais_origen", requestRegistrarCalificacion.getPaisOrigen());
         respuesta.put("equivalencia_sudafrica", resultado);
 
         return ResponseEntity.ok(respuesta);
