@@ -2,42 +2,31 @@ const englandForm = ({ setGradeDetails }: any) => {
   return (
     <div className="space-y-4">
       <h3 className="font-semibold">Autumn Term</h3>
-      <input type="number" placeholder="Coursework"
+      <input type="string" placeholder="Coursework"
         onChange={(e) =>
           setGradeDetails((prev: any) => ({
             ...prev,
-            terms: {
-              ...prev.terms,
-              autumn_term: {
-                ...prev.terms?.autumn_term,
-                coursework: Number(e.target.value)
-              }
-            }
+                coursework: String(e.target.value)
           }))
         }
         className="w-full border p-2 rounded-lg"
       />
-      <input type="number" placeholder="Mock Exam"
+      <input type="string" placeholder="Mock Exam"
         onChange={(e) =>
           setGradeDetails((prev: any) => ({
             ...prev,
-            terms: {
-              ...prev.terms,
-              autumn_term: {
-                ...prev.terms?.autumn_term,
-                mock_exam: Number(e.target.value)
-              }
-            }
+                mock_exam: String(e.target.value)
+            
           }))
         }
         className="w-full border p-2 rounded-lg"
       />
 
-      <input type="number" placeholder="Final Grade"
+      <input type="string" placeholder="Final Grade"
         onChange={(e) =>
           setGradeDetails((prev: any) => ({
             ...prev,
-            final_grade: Number(e.target.value)
+            final_grade: String(e.target.value)
           }))
         }
         className="w-full border p-2 rounded-lg"
