@@ -7,6 +7,8 @@
 <body>
 
 <div class="container">
+    <<img width="1158" height="843" alt="{73982787-AA62-49BE-B42F-3CE1B83E4DD6}" src="https://github.com/user-attachments/assets/a4404a8f-637f-43bf-8662-11591bfa408d" />
+
 <h1>EduGrade Global - Sistema de Equivalencias</h1>
 <p>Plataforma de gestión académica integral diseñada para el registro de calificaciones internacionales y cálculo de equivalencias para el sistema de <strong>Sudáfrica</strong>.</p>
 
