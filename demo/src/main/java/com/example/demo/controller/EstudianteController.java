@@ -35,23 +35,4 @@ public class EstudianteController {
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevo);
     }
 
-//    @PostMapping("/sincronizar-historial/{id}")
-//    public ResponseEntity<String> guardarHistorial(@PathVariable String id) {
-//        UUID uuid = UUID.fromString(id);
-//        return estudianteMongoRepo.findById(String.valueOf(uuid))
-//                .map(estudiante -> {
-//                    historialService.sincronizarHistorialAMongo(estudiante);
-//                    return ResponseEntity.ok("Sincronización de historial a Neo4j exitosa.");
-//                })
-//                .orElse(ResponseEntity.notFound().build());
-//    }
-
-//    @GetMapping("/historial/{id}")
-//    public ResponseEntity<List<Map<String, Object>>> verHistorial(@PathVariable String id) {
-//        List<Map<String, Object>> historial = historialService.getEstudianteNeo4jRepo()
-//                .obtenerHistorialAcademico(UUID.fromString(id));
-//        return ResponseEntity.ok(historial);
-//    }
-
-
 }

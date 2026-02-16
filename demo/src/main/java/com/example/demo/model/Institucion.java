@@ -3,6 +3,7 @@ package com.example.demo.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Node;
 
 import java.util.UUID;
@@ -12,6 +13,7 @@ import java.util.UUID;
 public class Institucion {
     @PrimaryKey
     @Id
+    @GeneratedValue
     private UUID id;
     private String nombre;
     private String pais;

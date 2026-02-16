@@ -26,4 +26,13 @@ public interface EstudianteNeo4jRepository extends Neo4jRepository<Estudiante, U
             "RETURN i.nombre AS institucion, r.periodo AS periodo, r.nivel AS nivel")
     List<Map<String, Object>> obtenerHistorialAcademico(UUID estudianteId);
 
+    @Query("MATCH (e:Estudiante)-[CURSO]->(m:Materia), " +
+            "(e)-[:ESTUDIO_EN]->(i:Institucion) " +
+            "RETURN e.nombre AS estudiante, i.nombre AS institucion, " +
+            "e.pais AS pais, avg(c.nota) AS promedio")
+    List<Map<String, Object>> obtenerEstadisticasGlobales();
 }
+
+//e ESTUDIO_EN i
+// e CURSO m CON_NOTA r
+//m DICTA_EN i

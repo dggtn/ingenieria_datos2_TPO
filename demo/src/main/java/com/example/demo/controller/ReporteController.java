@@ -1,11 +1,10 @@
 package com.example.demo.controller;
 import com.example.demo.model.Reporte;
-import com.example.demo.repository.cassandra.ReporteCassandraRepository;
+import com.example.demo.service.ReporteServicio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
@@ -13,18 +12,19 @@ import java.util.List;
 public class ReporteController {
 
     @Autowired
-    private ReporteCassandraRepository reporteRepository;
+    private ReporteServicio reporte;
 
-    @GetMapping("/ranking-alerta")
-    public ResponseEntity<String> obtenerRankingParaAlert() {
-        List<Reporte> top = reporteRepository.obtenerTop5Global();
-
-        StringBuilder sb = new StringBuilder(" TOP 5 ESTUDIANTES :\n\n");
-        for (int i = 0; i < top.size(); i++) {
-            Reporte r = top.get(i);
-            sb.append((i + 1) + ". " + r.getEstudianteid() + " - Promedio: " + r.getPromedio() + "%\n");
-        }
-
-        return ResponseEntity.ok(sb.toString());
+    @PostMapping("/reportes/procesar")
+    public ResponseEntity<String> procesar() {
+        reporte.actualizarRankingsDesdeNeo4j();
+        return ResponseEntity.ok("Reportes actualizados en Cassandra.");
     }
+    @GetMapping("/top")
+    public ResponseEntity<Map<String, Object>> obtenerTop() {
+
+        Map<String, Object>cuadroDeHonor = reporte.obtenerCuadroDeHonor();
+
+        return ResponseEntity.ok(cuadroDeHonor);
+    }
+
 }

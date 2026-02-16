@@ -1,6 +1,7 @@
 package com.example.demo.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
+import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
@@ -11,6 +12,7 @@ import java.util.*;
 public class Estudiante {
     @PrimaryKey
     @Id
+    @GeneratedValue
     private UUID id;
     private String nombre;
     private String email;
@@ -21,6 +23,9 @@ public class Estudiante {
     @Relationship(type = "ESTUDIO_EN", direction = Relationship.Direction.OUTGOING)
     private List<EstudioEn> historialAcademico = new ArrayList<>();
     private List<Map<String,Object>> historial ;
+
+    @Relationship(type = "CURSO", direction = Relationship.Direction.OUTGOING)
+    private List<CursoMateria> materias = new LinkedList<>();
 
     public Estudiante() {
     }
@@ -107,6 +112,10 @@ public class Estudiante {
 
     public void setHistorial(List<Map<String, Object>> historial) {
         this.historial = historial;
+    }
+
+    public void curso(CursoMateria relacion) {
+        materias.add(relacion);
     }
 }
 

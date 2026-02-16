@@ -6,10 +6,12 @@ import org.springframework.stereotype.Repository;
 
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
 public interface ReporteCassandraRepository extends CassandraRepository<Reporte, String> {
-    @Query("SELECT * FROM Reporte WHERE tipo_ranking = 'GLOBAL' LIMIT 5")
-    List<Reporte> obtenerTop5Global();
-}
+        @Query("SELECT * FROM reporte WHERE tipo_ranking = ?0 LIMIT 1")
+        Optional<Reporte> obtenerMejorPorTipo(String tipoReporte);
+    }
+
