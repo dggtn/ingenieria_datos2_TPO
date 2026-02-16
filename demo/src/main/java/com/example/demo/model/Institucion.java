@@ -11,11 +11,15 @@ public class Institucion {
     private String id;
     private String nombre;
     private String pais;
+    private String sistema;
+    private String provincia;
     private Map<String, Object> metadatos;
-    public Institucion(String id, String nombre, String pais) {
+    public Institucion(String id, String nombre, String pais, String sistema, String provincia) {
         this.id = id;
         this.nombre = nombre;
         this.pais = pais;
+        this.sistema = sistema;
+        this.provincia = provincia;
     }
 
     public Institucion() {
@@ -43,6 +47,22 @@ public class Institucion {
 
     public void setPais(String pais) {
         this.pais = pais;
+    }
+
+    public String getSistema() {
+        return sistema;
+    }
+
+    public void setSistema(String sistema) {
+        this.sistema = sistema;
+    }
+
+    public String getProvincia() {
+        return provincia;
+    }
+
+    public void setProvincia(String provincia) {
+        this.provincia = provincia;
     }
 
     public Map<String, Object> getMetadatos() {
