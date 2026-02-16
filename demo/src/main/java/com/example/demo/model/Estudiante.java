@@ -1,19 +1,13 @@
 package com.example.demo.model;
-import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
-import org.springframework.data.cassandra.core.mapping.Table;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.neo4j.core.schema.Node;
+import org.springframework.data.neo4j.core.schema.Relationship;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
-@Data
-@Document(collection = "estudiantes")
-@Node("Estudiantes")
+
+@Node("Estudiante")
 public class Estudiante {
     @PrimaryKey
     @Id
@@ -23,35 +17,32 @@ public class Estudiante {
     private String paisOrigen;
     private List<String> calificacionIds = new ArrayList<>();
     private String institucionActual;
-    private Map<String,Object> historial ;
+
+    @Relationship(type = "ESTUDIO_EN", direction = Relationship.Direction.OUTGOING)
+    private List<EstudioEn> historialAcademico = new ArrayList<>();
+    private List<Map<String,Object>> historial ;
 
     public Estudiante() {
     }
 
-    public Estudiante(UUID id, String nombre, String email, String paisOrigen, List<String> calificacionIds, String institucionActual, Map<String, Object> historial) {
+    public Estudiante(UUID id, String nombre) {
+        this.id = id;
+        this.nombre = nombre;
+    }
+
+    public void agregarEstudio(Institucion inst, String periodo, String nivel) {
+        this.historialAcademico.add(new EstudioEn(inst, periodo, nivel));
+    }
+
+    public Estudiante(UUID id, String nombre, String email, String paisOrigen, List<String> calificacionIds, String institucionActual, List<EstudioEn> historialAcademico, List<Map<String, Object>> historial) {
         this.id = id;
         this.nombre = nombre;
         this.email = email;
         this.paisOrigen = paisOrigen;
         this.calificacionIds = calificacionIds;
         this.institucionActual = institucionActual;
+        this.historialAcademico = historialAcademico;
         this.historial = historial;
-    }
-
-    public Map<String, Object> getHistorial() {
-        return historial;
-    }
-
-    public void setHistorial(Map<String, Object> historial) {
-        this.historial = historial;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public UUID getId() {
@@ -68,6 +59,14 @@ public class Estudiante {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPaisOrigen() {
@@ -92,6 +91,22 @@ public class Estudiante {
 
     public void setInstitucionActual(String institucionActual) {
         this.institucionActual = institucionActual;
+    }
+
+    public List<EstudioEn> getHistorialAcademico() {
+        return historialAcademico;
+    }
+
+    public void setHistorialAcademico(List<EstudioEn> historialAcademico) {
+        this.historialAcademico = historialAcademico;
+    }
+
+    public List<Map<String, Object>> getHistorial() {
+        return historial;
+    }
+
+    public void setHistorial(List<Map<String, Object>> historial) {
+        this.historial = historial;
     }
 }
 

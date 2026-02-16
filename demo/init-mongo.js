@@ -1,6 +1,6 @@
 db.createCollection('calificaciones');
 db.createCollection('estudiantes');
-db.createCollection('instituciones');
+db.createCollection('institucion');
 db.createUser({
   user: 'app_user',
   pwd: 'app_password',

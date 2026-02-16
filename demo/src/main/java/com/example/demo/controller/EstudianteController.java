@@ -2,15 +2,12 @@ package com.example.demo.controller;
 import com.example.demo.model.Estudiante;
 import com.example.demo.model.RequestRegistrarEstudiante;
 import com.example.demo.repository.mongo.CalificacionMONGORepository;
-import com.example.demo.repository.mongo.EstudianteMONGORepository;
 import com.example.demo.repository.neo4j.EstudianteNeo4jRepository;
 import com.example.demo.service.EstudianteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
-import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
@@ -18,13 +15,15 @@ import java.util.Map;
 public class EstudianteController {
 
     @Autowired
-    private EstudianteMONGORepository estudianteMONGORepository;
+    private EstudianteNeo4jRepository estudianteNeo4jRepository;
     @Autowired
     private CalificacionMONGORepository calificacionMONGORepository;
     @Autowired
-    private EstudianteNeo4jRepository estudianteNeo4jRepository;
-    @Autowired
     private EstudianteService estudianteService;
+
+
+    @Autowired
+    private EstudianteNeo4jRepository estudianteMongoRepo;
 
     @PostMapping("/registrar")
     public ResponseEntity<Estudiante> registrar(
@@ -36,21 +35,23 @@ public class EstudianteController {
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevo);
     }
 
-    @PostMapping("/Historial")
-    public ResponseEntity<String> guardarHistorial(
-            @RequestBody String estudianteId,
-             @RequestBody String institucionId){
+//    @PostMapping("/sincronizar-historial/{id}")
+//    public ResponseEntity<String> guardarHistorial(@PathVariable String id) {
+//        UUID uuid = UUID.fromString(id);
+//        return estudianteMongoRepo.findById(String.valueOf(uuid))
+//                .map(estudiante -> {
+//                    historialService.sincronizarHistorialAMongo(estudiante);
+//                    return ResponseEntity.ok("Sincronización de historial a Neo4j exitosa.");
+//                })
+//                .orElse(ResponseEntity.notFound().build());
+//    }
 
-        estudianteService.asociarInstitucionPrevia(estudianteId,institucionId);
-
-        return ResponseEntity.ok("Vínculo histórico creado en Neo4j entre el estudiante y la institución.");
-    }
-
-    @GetMapping("/historial/{id}")
-    public ResponseEntity<List<Map<String, Object>>> verHistorial(@PathVariable String id) {
-        List<Map<String, Object>> historial = estudianteService.consultarHistorial(id);
-        return ResponseEntity.ok(historial);
-    }
+//    @GetMapping("/historial/{id}")
+//    public ResponseEntity<List<Map<String, Object>>> verHistorial(@PathVariable String id) {
+//        List<Map<String, Object>> historial = historialService.getEstudianteNeo4jRepo()
+//                .obtenerHistorialAcademico(UUID.fromString(id));
+//        return ResponseEntity.ok(historial);
+//    }
 
 
 }

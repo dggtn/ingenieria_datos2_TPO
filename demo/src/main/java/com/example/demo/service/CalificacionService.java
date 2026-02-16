@@ -4,15 +4,19 @@ package com.example.demo.service;
 import com.example.demo.model.Calificacion;
 import com.example.demo.model.RequestRegistrarCalificacion;
 import com.example.demo.repository.mongo.CalificacionMONGORepository;
+import com.example.demo.repository.neo4j.EstudianteNeo4jRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 public class CalificacionService {
     @Autowired
     private CalificacionMONGORepository calificacionRepository;
+    @Autowired
+    private EstudianteNeo4jRepository neo4jRepository;
 
     public Calificacion registrarCalificacionOriginal(RequestRegistrarCalificacion requestRegistrarCalificacion) {
         Calificacion c = new Calificacion();
@@ -25,6 +29,11 @@ public class CalificacionService {
 
         String resultadoSA = calcularConversionSudafrica(requestRegistrarCalificacion);
         c.getConversiones().put("sudafrica", resultadoSA);
+
+        UUID idEstudiante = UUID.fromString(c.getEstudianteId());
+        UUID idInstitucion = UUID.fromString(requestRegistrarCalificacion.getInstitucion());
+
+        neo4jRepository.registrarDondeEstudio(idEstudiante, idInstitucion, "2023");
 
         return calificacionRepository.save(c);
     }

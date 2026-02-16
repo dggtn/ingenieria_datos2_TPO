@@ -2,6 +2,7 @@ package com.example.demo.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.List;
 import java.util.Map;
 
 public class RequestRegistrarEstudiante {
@@ -13,8 +14,7 @@ public class RequestRegistrarEstudiante {
     private String institucionActual;
     @JsonProperty("email")
     private String email;
-    @JsonProperty("metadatos")
-    private Map<String,Object> metadatos;
+    private List<Map<String,Object>> historial;
 
     public String getNombre() {
         return nombre;
@@ -48,11 +48,11 @@ public class RequestRegistrarEstudiante {
         this.email = email;
     }
 
-    public Map<String, Object> getMetadatos() {
-        return metadatos;
+    public List<Map<String, Object>> getHistorial() {
+        return historial;
     }
 
-    public void setMetadatos(Map<String, Object> metadatos) {
-        this.metadatos = metadatos;
-    }
+//    public void setHistorial(Map<String, Object> historial) {
+//        this.historial = historial;
+//    }
 }

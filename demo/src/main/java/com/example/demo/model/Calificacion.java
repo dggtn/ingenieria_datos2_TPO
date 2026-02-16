@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Document(collection = "calificaciones")
-@Node("Calificaciones")
 public class Calificacion {
     @Id
     private String id;
