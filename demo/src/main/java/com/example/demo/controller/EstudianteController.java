@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 import com.example.demo.model.Estudiante;
+import com.example.demo.model.RequestRegistrarEstudiante;
 import com.example.demo.repository.mongo.CalificacionMONGORepository;
 import com.example.demo.repository.mongo.EstudianteMONGORepository;
 import com.example.demo.repository.neo4j.EstudianteNeo4jRepository;
@@ -27,11 +28,10 @@ public class EstudianteController {
 
     @PostMapping("/registrar")
     public ResponseEntity<Estudiante> registrar(
-            @RequestBody String institucionId,
-            @RequestBody(required = false) Map<String, Object> metadatos) {
+            @RequestBody RequestRegistrarEstudiante requestRegistrarEstudiante) {
 
         Estudiante nuevo = estudianteService.registrarEstudiante(
-                institucionId, metadatos);
+                requestRegistrarEstudiante);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevo);
     }
@@ -39,9 +39,9 @@ public class EstudianteController {
     @PostMapping("/Historial")
     public ResponseEntity<String> guardarHistorial(
             @RequestBody String estudianteId,
-            String institucionId){
+             @RequestBody String institucionId){
 
-        estudianteService.asociarInstitucionPrevia(estudianteId, institucionId);
+        estudianteService.asociarInstitucionPrevia(estudianteId,institucionId);
 
         return ResponseEntity.ok("Vínculo histórico creado en Neo4j entre el estudiante y la institución.");
     }

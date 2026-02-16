@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Institucion;
+import com.example.demo.model.RequestRegistrarInstitucion;
 import com.example.demo.service.InstitucionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,11 +19,10 @@ public class InstitucionController {
 
     @PostMapping("/registrar")
     public ResponseEntity<Institucion> registrar(
-            @RequestBody String institucionId,
-            @RequestBody(required = false) Map<String, Object> metadatos ) {
+            @RequestBody RequestRegistrarInstitucion requestRegistrarInstitucion) {
 
         Institucion nueva = institucionService.registrarInstitucion(
-                institucionId, metadatos);
+                requestRegistrarInstitucion);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
     }

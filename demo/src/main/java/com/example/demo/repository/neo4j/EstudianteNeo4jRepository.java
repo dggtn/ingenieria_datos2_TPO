@@ -11,12 +11,11 @@ import java.util.UUID;
 public interface EstudianteNeo4jRepository extends Neo4jRepository<Estudiante, UUID>{
     @Query("MATCH (e:Estudiante {id: $estudianteId})-[r:ESTUDIO_EN]->(i:Institucion) " +
             "RETURN i.id AS institucionId, i.nombre AS nombre_institucion")
+    void registrarHistorial(String estudianteId, String institucionId);
+
+
+
+    @Query("MATCH (e:Estudiante {id: $estudianteId}) "  )
     List<Map<String, Object>> obtenerHistorialAcademico(String estudianteId);
 
-
-    @Query("MERGE (e:Estudiante {id: $estudianteId}) " +
-            "MERGE (i:Institucion {id: $institucionId}) " +
-            "MERGE (e)-[r:ESTUDIO_EN]->(i) " +
-            "SET  r.nombre = $nombre , i.nombre = $nombre " )
-    void registrarHistorial(String estudianteId, String institucionId);
 }

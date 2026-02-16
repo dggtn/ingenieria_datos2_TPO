@@ -11,7 +11,6 @@ public class Institucion {
     private String id;
     private String nombre;
     private String pais;
-    private Map<String, Object> metadatos;
     public Institucion(String id, String nombre, String pais) {
         this.id = id;
         this.nombre = nombre;
@@ -45,11 +44,5 @@ public class Institucion {
         this.pais = pais;
     }
 
-    public Map<String, Object> getMetadatos() {
-        return metadatos;
-    }
 
-    public void setMetadatos(Map<String, Object> metadatos) {
-        this.metadatos = metadatos;
-    }
 }
