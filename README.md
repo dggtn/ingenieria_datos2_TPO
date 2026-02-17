@@ -15,7 +15,8 @@
 
 <div class="container">
     <h1>UX/UI</h1>
-    <img width="1158" height="843" alt="{73982787-AA62-49BE-B42F-3CE1B83E4DD6}" src="https://github.com/user-attachments/assets/a4404a8f-637f-43bf-8662-11591bfa408d" />
+<img width="610" height="859" alt="{6A14858D-47AE-4C10-BF1C-85F728955AD3}" src="https://github.com/user-attachments/assets/8f6d0900-e7f9-43ae-a8e9-a1598c641ed6" />
+
 
 <h1>EduGrade Global - Sistema de Equivalencias</h1>
 <p>Plataforma de gestión académica integral diseñada para el registro de calificaciones internacionales y cálculo de equivalencias para el sistema de <strong>Sudáfrica</strong>.</p>
