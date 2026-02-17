@@ -5,8 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
+<h1>Diagrama de Arquitectura</h1>
+    <img width="713" height="453" alt="{9FA1ADBC-D515-4034-95C8-5A1924F28CC1}" src="https://github.com/user-attachments/assets/b05f7d56-28f5-40aa-bc22-bef0b1469ac3" />
+<h1>Diagrama Entidad-Relación (Lógico / NoSQL)</h1>
+<img width="292" height="686" alt="{AE42650F-CBA4-47A7-B250-6A938C33F4F8}" src="https://github.com/user-attachments/assets/c00c1329-8205-4796-a221-34f0b4a93ab3" />
+<h1>Diagrama de Flujo de Datos (Conversión/Ranking)</h1>
+    <h3>cómo extraemos los datos de Neo4j para alimentar la analítica en Cassandra.</h3>
+    <img width="959" height="518" alt="{3804DF02-886E-4693-BD86-0D02BAD6B5E3}" src="https://github.com/user-attachments/assets/243fd07f-7568-466e-af7e-331a6e2b7ab1" />
 
 <div class="container">
+    <h1>UX/UI</h1>
     <img width="1158" height="843" alt="{73982787-AA62-49BE-B42F-3CE1B83E4DD6}" src="https://github.com/user-attachments/assets/a4404a8f-637f-43bf-8662-11591bfa408d" />
 
 <h1>EduGrade Global - Sistema de Equivalencias</h1>
