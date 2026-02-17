@@ -9,7 +9,7 @@ import java.util.*;
 
 
 @Node("Estudiante")
-public class Estudiante {
+public class    Estudiante {
     @PrimaryKey
     @Id
     @GeneratedValue

@@ -74,6 +74,27 @@ function App() {
     } finally {
       setLoading(false);
     }
+
+      const handleReporteInstituto = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        'http://localhost:8080/api/reportes/top-institutos'
+  
+      );
+      console.log(response.data)
+      setResultado({
+        equivalencia_sudafrica: response.data.conversiones.sudafrica,
+        historial_estudiante: response.data.historial_estudiante
+      });
+
+    } catch (error) {
+      console.error(error);
+      alert("Error al generar historial. Verificá que el Backend esté corriendo y los datos sean correctos.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

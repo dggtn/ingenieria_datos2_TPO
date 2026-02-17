@@ -33,7 +33,7 @@ public interface EstudianteNeo4jRepository extends Neo4jRepository<Estudiante, U
     void registrarDondeDictaMateria(UUID idInstitucion,UUID idMateria,String periodo,String nivel);
 
     @Query ( "MATCH (e:Estudiante)-[curso:CURSO]->(m:Materia)\n" +
-            "RETURN e.paisOrigen AS nombre, \n" +
+            "RETURN e.paisOrigen AS pais, \n" +
             "       avg(curso.promedio) AS promedio,\n" +
             "       'PAIS' AS tipo")
     List<ReportePromedio> calcularpromedioPorPais();

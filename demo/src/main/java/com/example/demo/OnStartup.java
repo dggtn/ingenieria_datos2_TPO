@@ -52,12 +52,12 @@ public class OnStartup implements ApplicationListener<ApplicationReadyEvent> {
         Materia informatica = insertarMateria("INFORMATICA");
 
         // ESTUDIANTES
-        Estudiante daniela = insertartEstudiante("Daniela");
-        Estudiante alejandro = insertartEstudiante("Alejandro");
-        Estudiante martin = insertartEstudiante("Martin");
-        Estudiante tomas = insertartEstudiante("Tomas");
-        Estudiante gabriela = insertartEstudiante("Gabriela");
-        Estudiante juana = insertartEstudiante("Juana");
+        Estudiante daniela = insertartEstudiante("Daniela","Argentina");
+        Estudiante alejandro = insertartEstudiante("Alejandro","Argentina");
+        Estudiante martin = insertartEstudiante("Martin","Argentina");
+        Estudiante tomas = insertartEstudiante("Tomas","Argentina");
+        Estudiante gabriela = insertartEstudiante("Gabriela","Argentina");
+        Estudiante juana = insertartEstudiante("Juana","Argentina");
 
 
         // ESTUDIANTE CURSO EN
@@ -120,9 +120,10 @@ public class OnStartup implements ApplicationListener<ApplicationReadyEvent> {
         return institucion;
     }
 
-    private Estudiante insertartEstudiante(String nombre) {
+    private Estudiante insertartEstudiante(String nombre,String pais) {
         Estudiante estudiante = new Estudiante();
         estudiante.setNombre(nombre);
+        estudiante.setPaisOrigen(pais);
         estudiantesRepo.save(estudiante);
         return estudiante;
     }
