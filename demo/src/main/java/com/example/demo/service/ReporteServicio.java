@@ -30,19 +30,19 @@ public class ReporteServicio {
 
     public void actualizarRankingsDesdeNeo4j() {
 
-        List<Map<String, Object>> resultados = neo4jRepo.obtenerEstadisticasGlobales();
-
-        reporteRepo.deleteAll();
-
-        for (Map<String, Object> fila : resultados) {
-            String nombreEst = (String) fila.get("estudiante");
-            String nombreInst = (String) fila.get("institucion");
-            String pais = (String) fila.get("pais");
-            Double promedio = (Double) fila.get("promedio");
-
-            reporteRepo.save(new Reporte("ESTUDIANTE",promedio, nombreEst ));
-            reporteRepo.save(new Reporte("INSTITUTO", promedio,nombreInst));
-            reporteRepo.save(new Reporte("PAIS", promedio,pais));
-        }
+//        List<Map<String, Object>> resultados = neo4jRepo.obtenerEstadisticasGlobales();
+//
+//        reporteRepo.deleteAll();
+//
+//        for (Map<String, Object> fila : resultados) {
+//            String nombreEst = (String) fila.get("estudiante");
+//            String nombreInst = (String) fila.get("institucion");
+//            String pais = (String) fila.get("pais");
+//            Double promedio = (Double) fila.get("promedio");
+//
+//            reporteRepo.save(new Reporte("ESTUDIANTE",promedio, nombreEst ));
+//            reporteRepo.save(new Reporte("INSTITUTO", promedio,nombreInst));
+//            reporteRepo.save(new Reporte("PAIS", promedio,pais));
+//        }
     }
 }

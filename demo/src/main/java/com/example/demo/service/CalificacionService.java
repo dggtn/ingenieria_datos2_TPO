@@ -36,8 +36,9 @@ public class CalificacionService {
         String nivel  = (String) requestRegistrarCalificacion.getMetadatos().get("nivel");
         Double promedio = calcularConversionSudafrica(requestRegistrarCalificacion);
 
-        neo4jRepository.registrarDondeEstudio(idEstudiante, idInstitucion, "2023");
-        neo4jRepository.registrarCursada(idEstudiante,idMateria,promedio,periodo);
+        neo4jRepository.registrarDondeEstudio(idEstudiante, idInstitucion, periodo);
+        neo4jRepository.registrarCursada(idEstudiante,idMateria,promedio,periodo,nivel);
+        neo4jRepository.registrarDondeDictaMateria(idMateria,idInstitucion,periodo,nivel);
         return calificacionRepository.save(c);
     }
 
