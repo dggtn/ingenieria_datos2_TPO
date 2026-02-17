@@ -2,12 +2,16 @@ package com.example.demo.service;
 
 
 import com.example.demo.model.*;
+import com.example.demo.repository.cassandra.ReporteCassandraRepository;
 import com.example.demo.repository.mongo.CalificacionMONGORepository;
 import com.example.demo.repository.neo4j.EstudianteNeo4jRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -16,7 +20,19 @@ public class CalificacionService {
     private CalificacionMONGORepository calificacionRepository;
     @Autowired
     private EstudianteNeo4jRepository neo4jRepository;
+    @Autowired
+    private ReporteCassandraRepository cassandraRepository;
+    public void actualizarRankingsNacionales() {
+        List<ReportePromedio> promediosPais = neo4jRepository.calcularpromedioPorPais();
+        List<ReportePromedio> promediosInst = neo4jRepository.calcularPromedioPorInstitucion();
 
+        List<Reporte> listaParaCassandra = new ArrayList<>();
+
+        promediosPais.forEach(m -> listaParaCassandra.add(new Reporte("PAIS", m.getPromedio(), m.getNombre())));
+        promediosInst.forEach(m -> listaParaCassandra.add(new Reporte("INSTITUTO", m.getPromedio(), m.getNombre())));
+
+        cassandraRepository.saveAll(listaParaCassandra);
+    }
     public Calificacion registrarCalificacionOriginal(RequestRegistrarCalificacion requestRegistrarCalificacion) {
         Calificacion c = new Calificacion();
         c.setEstudianteId(requestRegistrarCalificacion.getEstudiante());
@@ -35,12 +51,15 @@ public class CalificacionService {
         String periodo  = (String) requestRegistrarCalificacion.getMetadatos().get("periodo");
         String nivel  = (String) requestRegistrarCalificacion.getMetadatos().get("nivel");
         Double promedio = calcularConversionSudafrica(requestRegistrarCalificacion);
+        String pais =  requestRegistrarCalificacion.getPaisOrigen();
 
         neo4jRepository.registrarDondeEstudio(idEstudiante, idInstitucion, periodo);
         neo4jRepository.registrarCursada(idEstudiante,idMateria,promedio,periodo,nivel);
         neo4jRepository.registrarDondeDictaMateria(idMateria,idInstitucion,periodo,nivel);
         return calificacionRepository.save(c);
     }
+
+
 
     public Double calcularConversionSudafrica(RequestRegistrarCalificacion request) {
         String paisEnMinuscula = request.getPaisOrigen().toLowerCase();

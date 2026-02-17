@@ -86,25 +86,13 @@ function App() {
      <button onClick={verRanking}
 className="mb-3 mt-4 bg-orange-600 hover:bg-amber-700 text-white font-bold py-2 px-4
  rounded-lg transition-colors duration-200 ml-5">
-          TOP 5 Instituciones
+          Estudiante con mejor calificación 
         </button>
          <button className="mb-3 mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 ml-5" onClick={() => {
           alert(" Pais con mejores calificaciones es:");
         }}>
-          Pais con mejores calificaciones
+          Pais con mejor calificación
         </button>
-          <button className="mb-3 mt-4 bg-purple-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 ml-5" onClick={() => {
-          alert("Institucion con mejores calificaciones es:");
-        }}>
-          Institucion con mejores calificaciones
-        </button>
-          <button className="mb-3 mt-4 bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 ml-5" onClick={() => {
-          alert("Estudiante con mejores calificaciones es:");
-        }}>
-          Estudiante con mejores calificaciones
-        </button>
-
-
       <main className="max-w-2xl mx-auto space-y-8">
         <section className="bg-white p-8 rounded-2xl shadow-xl border border-slate-100">
           <form onSubmit={handleRegistrar} className="space-y-6">

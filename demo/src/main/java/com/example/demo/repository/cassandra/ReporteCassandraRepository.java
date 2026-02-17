@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface ReporteCassandraRepository extends CassandraRepository<Reporte, String> {
-        @Query("SELECT * FROM reporte WHERE tipo_ranking = ?0 LIMIT 1")
-        Optional<Reporte> obtenerMejorPorTipo(String tipoReporte);
-    }
+    @Query("SELECT * FROM reporte WHERE tipo = ?0 LIMIT ?1")
+    List<Reporte> obtenerTopPorTipo(String tipo, int limite);
+}
 

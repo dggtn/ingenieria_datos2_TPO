@@ -36,36 +36,69 @@ public class OnStartup implements ApplicationListener<ApplicationReadyEvent> {
         estudiantesRepo.deleteAll();
 
         // INSTITUCIONES
-        Institucion uade = insertarInstitucion("UADE");
-        Institucion unlam = insertarInstitucion("UNLAM");
+        Institucion uade = insertarInstitucion("Colegio Nuevo Milenio");
+        Institucion unlam = insertarInstitucion("Colegio 3 de febrero");
 
         // MATERIAS
         Materia matematica = insertarMateria("MATEMATICA");
         Materia literatura = insertarMateria("LITERATURA");
         Materia biologia = insertarMateria("BIOLOGIA");
+        Materia arte = insertarMateria("ARTE");
+        Materia futbol = insertarMateria("FUTBOL");
         Materia gimnasia = insertarMateria("GIMNASIA");
+        Materia fisica = insertarMateria("FISICA");
+        Materia quimica = insertarMateria("QUIMICA");
+        Materia carpinteria = insertarMateria("CARPINTERIA");
+        Materia informatica = insertarMateria("INFORMATICA");
 
         // ESTUDIANTES
         Estudiante daniela = insertartEstudiante("Daniela");
         Estudiante alejandro = insertartEstudiante("Alejandro");
+        Estudiante martin = insertartEstudiante("Martin");
+        Estudiante tomas = insertartEstudiante("Tomas");
+        Estudiante gabriela = insertartEstudiante("Gabriela");
+        Estudiante juana = insertartEstudiante("Juana");
+
 
         // ESTUDIANTE CURSO EN
         estudianteCursoEn(daniela, uade, "2023-2026");
         estudianteCursoEn(alejandro, unlam, "2007-2015");
+        estudianteCursoEn(martin, uade, "2023-2026");
+        estudianteCursoEn(tomas, unlam, "2007-2015");
+        estudianteCursoEn(gabriela, uade, "2023-2026");
+        estudianteCursoEn(juana, unlam, "2007-2015");
 
         // ESTUDIANTE CURSO MATERIA
         estudianteCurso(daniela, matematica, 9.0);
         estudianteCurso(daniela, literatura, 8.5);
         estudianteCurso(daniela, biologia, 10.0);
         estudianteCurso(daniela, gimnasia, 5.0);
+        estudianteCurso(daniela, arte, 9.0);
+        estudianteCurso(daniela, futbol, 8.5);
+        estudianteCurso(daniela, fisica, 10.0);
+        estudianteCurso(daniela, quimica, 5.0);
+        estudianteCurso(daniela, carpinteria, 9.0);
+        estudianteCurso(daniela, informatica, 8.5);
+
+
 
         estudianteCurso(alejandro, matematica, 7.0);
         estudianteCurso(alejandro, literatura, 4.0);
         estudianteCurso(alejandro, biologia, 6.0);
         estudianteCurso(alejandro, gimnasia, 10.0);
+        estudianteCurso(alejandro, arte, 9.0);
+        estudianteCurso(alejandro, futbol, 8.5);
+        estudianteCurso(alejandro, fisica, 10.0);
+        estudianteCurso(alejandro, quimica, 5.0);
+        estudianteCurso(alejandro, carpinteria, 9.0);
+        estudianteCurso(alejandro, informatica, 8.5);
 
         estudiantesRepo.save(daniela);
         estudiantesRepo.save(alejandro);
+        estudiantesRepo.save(martin);
+        estudiantesRepo.save(tomas);
+        estudiantesRepo.save(gabriela);
+        estudiantesRepo.save(juana);
     }
 
     private void estudianteCurso(Estudiante estudiante, Materia materia, double promedio) {

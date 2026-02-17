@@ -2,6 +2,7 @@ package com.example.demo.model;
 
 import org.springframework.data.cassandra.core.cql.Ordering;
 import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
+import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
 import org.springframework.data.cassandra.core.mapping.Table;
 
@@ -10,10 +11,10 @@ public class Reporte {
     @PrimaryKeyColumn(name = "tipo", type = PrimaryKeyType.PARTITIONED)
     private String tipo; // "ESTUDIANTE", "PAIS", "INSTITUTO"
 
-    @PrimaryKeyColumn(name = "promedio", type = PrimaryKeyType.CLUSTERED, ordering = Ordering.DESCENDING)
+    @Column
     private Double promedio;
 
-    @PrimaryKeyColumn(name = "nombre", type = PrimaryKeyType.CLUSTERED)
+    @Column
     private String nombre;
 
     public Reporte(String tipo, Double promedio, String nombre) {
