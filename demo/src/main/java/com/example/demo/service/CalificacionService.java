@@ -1,8 +1,7 @@
 package com.example.demo.service;
 
 
-import com.example.demo.model.Calificacion;
-import com.example.demo.model.RequestRegistrarCalificacion;
+import com.example.demo.model.*;
 import com.example.demo.repository.mongo.CalificacionMONGORepository;
 import com.example.demo.repository.neo4j.EstudianteNeo4jRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,20 +26,22 @@ public class CalificacionService {
         c.setAuditor("auditor");
         c.setFechaProcesamiento(LocalDateTime.now());
 
-        String resultadoSA = calcularConversionSudafrica(requestRegistrarCalificacion);
-        c.getConversiones().put("sudafrica", resultadoSA);
+        Double resultadoSA = calcularConversionSudafrica(requestRegistrarCalificacion);
+        c.setConversiones(resultadoSA);
 
         UUID idEstudiante = UUID.fromString(c.getEstudianteId());
         UUID idInstitucion = UUID.fromString(requestRegistrarCalificacion.getInstitucion());
+        UUID idMateria = UUID.fromString(requestRegistrarCalificacion.getMateria());
+        String periodo  = (String) requestRegistrarCalificacion.getMetadatos().get("periodo");
+        String nivel  = (String) requestRegistrarCalificacion.getMetadatos().get("nivel");
+        Double promedio = calcularConversionSudafrica(requestRegistrarCalificacion);
 
         neo4jRepository.registrarDondeEstudio(idEstudiante, idInstitucion, "2023");
-
+        neo4jRepository.registrarCursada(idEstudiante,idMateria,promedio,periodo);
         return calificacionRepository.save(c);
     }
 
-    public String calcularConversionSudafrica(RequestRegistrarCalificacion request) {
-        if (request == null) return "SIN_DATOS";
-
+    public Double calcularConversionSudafrica(RequestRegistrarCalificacion request) {
         String paisEnMinuscula = request.getPaisOrigen().toLowerCase();
         double resultado = 0;
 
@@ -86,7 +87,7 @@ public class CalificacionService {
             Integer total = courseWorkConverted + mock + grade;
             resultado = total / 3;
         }
-        return resultado +"%";
+        return resultado ;
     }
 
 

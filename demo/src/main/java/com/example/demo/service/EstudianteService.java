@@ -16,24 +16,6 @@ public class EstudianteService {
     @Autowired
     private InstitucionNeo4jRepository instRepo;
 
-    public void procesarHistorial(Estudiante estudiante) {
-//        Estudiante e = new Estudiante(estudiante.getId(), estudiante.getNombre());
-//
-//        Map<String, Object> historial = (Map<String, Object>) estudiante.getHistorial().get("historial");
-//
-//        if (historial.containsKey("institucion1") && historial.containsKey("primaria")) {
-//            String nombreInst = (String) historial.get("institucion1");
-//            String periodo = (String) historial.get("primaria");
-//
-//            Institucion inst = instRepo.findByNombre(nombreInst);
-//
-//            if (inst != null) {
-//                estudiante.agregarEstudio(inst, periodo, "primaria");
-//            }
-//        }
-//
-//        neo4jRepo.save(estudiante);
-    }
 
     public Estudiante registrarEstudiante(RequestRegistrarEstudiante requestRegistrarEstudiante) {
         Estudiante e = new Estudiante();
@@ -42,11 +24,11 @@ public class EstudianteService {
         e.setNombre(requestRegistrarEstudiante.getNombre());
         e.setPaisOrigen(requestRegistrarEstudiante.getPaisOrigen());
         e.setEmail(requestRegistrarEstudiante.getEmail());
-        //e.setHistorial(requestRegistrarEstudiante.getHistorial());
         return estudianteNeo4jRepository.save(e);
+
     }
 
-    public List<Map<String, Object>> consultarHistorial(String id) {
-        return estudianteNeo4jRepository.obtenerHistorialAcademico(UUID.fromString(id));
-    }
+
+
+
 }

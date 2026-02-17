@@ -37,8 +37,7 @@ public class CalificacionController {
     public ResponseEntity<Map<String, Object>> verConversion(
             RequestRegistrarCalificacion requestRegistrarCalificacion) {
 
-        String resultado = calificacionService.calcularConversionSudafrica(requestRegistrarCalificacion);
-
+        Double resultado = calificacionService.calcularConversionSudafrica(requestRegistrarCalificacion);
         Map<String, Object> respuesta = new HashMap<>();
         respuesta.put("pais_origen", requestRegistrarCalificacion.getPaisOrigen());
         respuesta.put("equivalencia_sudafrica", resultado);

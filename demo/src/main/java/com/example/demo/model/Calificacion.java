@@ -2,7 +2,6 @@ package com.example.demo.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.neo4j.core.schema.Node;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -15,24 +14,27 @@ public class Calificacion {
     private String estudianteId;
     private String materiaId;
     private String paisOrigen;
-    private String notaOriginal;
+    private Double notaOriginal;
     private String auditor;
     private LocalDateTime fechaProcesamiento;
 
     private Map<String, Object> metadata = new HashMap<>();
 
-    private Map<String, String> conversiones = new HashMap<>();
+    private Double conversiones ;
 
     public Calificacion() {
     }
 
-    public Calificacion(String id, String notaOriginal, String paisOrigen, String auditor, LocalDateTime fechaProcesamiento) {
+    public Calificacion(String id, String estudianteId, String materiaId, String paisOrigen, Double notaOriginal, String auditor, LocalDateTime fechaProcesamiento, Map<String, Object> metadata, Double conversiones) {
         this.id = id;
-        this.notaOriginal = notaOriginal;
+        this.estudianteId = estudianteId;
+        this.materiaId = materiaId;
         this.paisOrigen = paisOrigen;
+        this.notaOriginal = notaOriginal;
         this.auditor = auditor;
         this.fechaProcesamiento = fechaProcesamiento;
-
+        this.metadata = metadata;
+        this.conversiones =conversiones;
     }
 
     public String getId() {
@@ -67,11 +69,11 @@ public class Calificacion {
         this.paisOrigen = paisOrigen;
     }
 
-    public String getNotaOriginal() {
+    public Double getNotaOriginal() {
         return notaOriginal;
     }
 
-    public void setNotaOriginal(String notaOriginal) {
+    public void setNotaOriginal(Double notaOriginal) {
         this.notaOriginal = notaOriginal;
     }
 
@@ -99,11 +101,11 @@ public class Calificacion {
         this.metadata = metadata;
     }
 
-    public Map<String, String> getConversiones() {
+    public Double getConversiones() {
         return conversiones;
     }
 
-    public void setConversiones(Map<String, String> conversiones) {
+    public void setConversiones(Double conversiones) {
         this.conversiones = conversiones;
     }
 }

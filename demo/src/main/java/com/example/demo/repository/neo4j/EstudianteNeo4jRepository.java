@@ -17,6 +17,13 @@ public interface EstudianteNeo4jRepository extends Neo4jRepository<Estudiante, U
             "SET r.periodo = $periodo")
     void registrarDondeEstudio(UUID idEstudiante, UUID idInstitucion, String periodo);
 
+    @Query ("MATCH (e:Estudiante {id: $idEstudiante})\n" +
+            "WITH e\n" +
+            "MATCH (m:Materia {id: $idMateria})\n" +
+            "MERGE (e)-[r:CURSO]->(m)\n" +
+            "SET r.periodo = $periodo,r.nivel = $nivel,r.resultado=$resultado")
+    void registrarCursada(UUID idEstudiante,UUID idMateria,Double resultado,String periodo);
+
     @Query("MATCH (e:Estudiante {id: $estudianteId}), (i:Institucion {id: $institucionId}) ,(m:Materia {id: $materiaId})" +
             "MERGE (e)-[r:ESTUDIO_EN]->(i)-[r:ESTUDIO]->(m) " +
             "SET r.periodo = $periodo, r.nivel = $nivel")
@@ -33,6 +40,3 @@ public interface EstudianteNeo4jRepository extends Neo4jRepository<Estudiante, U
     List<Map<String, Object>> obtenerEstadisticasGlobales();
 }
 
-//e ESTUDIO_EN i
-// e CURSO m CON_NOTA r
-//m DICTA_EN i
