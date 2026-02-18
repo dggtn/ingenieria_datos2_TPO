@@ -1,28 +1,37 @@
 package com.example.demo.model;
 
-import lombok.Setter;
-import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.neo4j.core.schema.Node;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+
+@Document(collection = "instituciones")
 @Node("Institucion")
 public class Institucion {
-    @Id
+    @org.springframework.data.annotation.Id
+    @org.springframework.data.neo4j.core.schema.Id
     private String id;
+
     private String nombre;
     private String pais;
-    private String sistema;
+    private String region;
     private String provincia;
+    private List<MateriaInstitucion> curriculum = new ArrayList<>();
     private Map<String, Object> metadatos;
-    public Institucion(String id, String nombre, String pais, String sistema, String provincia) {
+
+    public Institucion() {
+    }
+
+    public Institucion(String id, String nombre, String pais, String region, String provincia, List<MateriaInstitucion> curriculum, Map<String, Object> metadatos) {
         this.id = id;
         this.nombre = nombre;
         this.pais = pais;
-        this.sistema = sistema;
+        this.region = region;
         this.provincia = provincia;
-    }
-
-    public Institucion() {
+        this.curriculum = curriculum != null ? curriculum : new ArrayList<>();
+        this.metadatos = metadatos;
     }
 
     public String getId() {
@@ -49,12 +58,12 @@ public class Institucion {
         this.pais = pais;
     }
 
-    public String getSistema() {
-        return sistema;
+    public String getRegion() {
+        return region;
     }
 
-    public void setSistema(String sistema) {
-        this.sistema = sistema;
+    public void setRegion(String region) {
+        this.region = region;
     }
 
     public String getProvincia() {
@@ -65,11 +74,58 @@ public class Institucion {
         this.provincia = provincia;
     }
 
+    public List<MateriaInstitucion> getCurriculum() {
+        return curriculum;
+    }
+
+    public void setCurriculum(List<MateriaInstitucion> curriculum) {
+        this.curriculum = curriculum != null ? curriculum : new ArrayList<>();
+    }
+
     public Map<String, Object> getMetadatos() {
         return metadatos;
     }
 
     public void setMetadatos(Map<String, Object> metadatos) {
         this.metadatos = metadatos;
+    }
+
+    public static class MateriaInstitucion {
+        private String id;
+        private String nombre;
+        private Integer anioCarrera;
+
+        public MateriaInstitucion() {
+        }
+
+        public MateriaInstitucion(String id, String nombre, Integer anioCarrera) {
+            this.id = id;
+            this.nombre = nombre;
+            this.anioCarrera = anioCarrera;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getNombre() {
+            return nombre;
+        }
+
+        public void setNombre(String nombre) {
+            this.nombre = nombre;
+        }
+
+        public Integer getAnioCarrera() {
+            return anioCarrera;
+        }
+
+        public void setAnioCarrera(Integer anioCarrera) {
+            this.anioCarrera = anioCarrera;
+        }
     }
 }

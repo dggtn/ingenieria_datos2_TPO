@@ -1,13 +1,20 @@
 package com.example.demo.controller;
+
 import com.example.demo.model.Estudiante;
-import com.example.demo.repository.mongo.CalificacionMONGORepository;
-import com.example.demo.repository.mongo.EstudianteMONGORepository;
-import com.example.demo.repository.neo4j.EstudianteNeo4jRepository;
 import com.example.demo.service.EstudianteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.DeleteMapping;
+
 import java.util.List;
 import java.util.Map;
 
@@ -17,40 +24,52 @@ import java.util.Map;
 public class EstudianteController {
 
     @Autowired
-    private EstudianteMONGORepository estudianteMONGORepository;
-    @Autowired
-    private CalificacionMONGORepository calificacionMONGORepository;
-    @Autowired
-    private EstudianteNeo4jRepository estudianteNeo4jRepository;
-    @Autowired
     private EstudianteService estudianteService;
 
     @PostMapping("/registrar")
-    public ResponseEntity<Estudiante> registrar(
-            @RequestBody String institucionId,
-            @RequestBody(required = false) Map<String, Object> metadatos) {
-
-        Estudiante nuevo = estudianteService.registrarEstudiante(
-                institucionId, metadatos);
-
+    public ResponseEntity<Estudiante> registrar(@RequestBody Estudiante estudiante) {
+        Estudiante nuevo = estudianteService.registrarEstudiante(estudiante);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevo);
     }
 
-    @PostMapping("/Historial")
-    public ResponseEntity<String> guardarHistorial(
-            @RequestBody String estudianteId,
-            String institucionId){
-
-        estudianteService.asociarInstitucionPrevia(estudianteId, institucionId);
-
-        return ResponseEntity.ok("Vínculo histórico creado en Neo4j entre el estudiante y la institución.");
+    @PostMapping("/registrar-multiple")
+    public ResponseEntity<List<Estudiante>> registrarMultiple(@RequestBody List<Estudiante> estudiantes) {
+        List<Estudiante> nuevos = estudianteService.registrarEstudiantes(estudiantes);
+        return ResponseEntity.status(HttpStatus.CREATED).body(nuevos);
     }
 
-    @GetMapping("/historial/{id}")
-    public ResponseEntity<List<Map<String, Object>>> verHistorial(@PathVariable String id) {
-        List<Map<String, Object>> historial = estudianteService.consultarHistorial(id);
-        return ResponseEntity.ok(historial);
+    @PutMapping("/{id}")
+    public ResponseEntity<Estudiante> actualizar(@PathVariable String id, @RequestBody Estudiante estudiante) {
+        Estudiante actualizado = estudianteService.actualizarEstudiante(id, estudiante);
+        return ResponseEntity.ok(actualizado);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> eliminar(@PathVariable String id) {
+        estudianteService.eliminarEstudiante(id);
+        return ResponseEntity.ok("Estudiante eliminado.");
+    }
+
+    @DeleteMapping("/eliminar-multiple")
+    public ResponseEntity<String> eliminarMultiple(@RequestBody List<String> ids) {
+        estudianteService.eliminarEstudiantes(ids);
+        return ResponseEntity.ok("Estudiantes eliminados.");
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Estudiante> obtenerPorId(@PathVariable String id) {
+        return ResponseEntity.ok(estudianteService.obtenerPorId(id));
+    }
+
+    @GetMapping("/{id}/reporte-trayectoria")
+    public ResponseEntity<Map<String, Object>> obtenerReporteTrayectoria(@PathVariable String id) {
+        return ResponseEntity.ok(estudianteService.obtenerReporteTrayectoriaOrdenada(id));
+    }
+
+    @GetMapping("/{id}/promedios-sudafrica")
+    public ResponseEntity<Map<String, Object>> obtenerPromediosSudafrica(@PathVariable String id) {
+        return ResponseEntity.ok(estudianteService.obtenerPromediosSudafricaPorNivel(id));
+    }
 
 }
+
