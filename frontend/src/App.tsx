@@ -31,7 +31,7 @@ export default function App() {
       const response = await axios.get(`http://localhost:8080/api/estudiantes/${estudianteId}/detalle-completo`);
       setDetalleAcademico(response.data);
     } catch (error) {
-      alert("Sin datos en el grafo para este estudiante.");
+      alert("No se encontró actividad académica para el ID: "+ estudianteId);
     } finally {
       setLoading(false);
     }
@@ -66,7 +66,6 @@ export default function App() {
     }
   };
 
-  // 3. Registrar Nota (Mongo + Neo4j)
   const handleRegistrar = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -78,7 +77,6 @@ export default function App() {
         metadatos: gradeDetails,
         institucion: institucionId
       });
-      // Ajuste: response.data.conversiones suele ser un número directo
       setResultado({ equivalencia_sudafrica: response.data.conversiones });
     } catch (error) {
       alert("Error al registrar calificacion.");
@@ -88,7 +86,6 @@ export default function App() {
   };
 
   return (
-    // bg-green-600 w-full min-h-screen asegura fondo total sin espacios blancos
     <main className="font-['Quicksand'] bg-green-600 w-full min-h-screen py-10 px-4 m-0">
       <div className="max-w-4xl mx-auto">
         <header className="text-center mb-10">
