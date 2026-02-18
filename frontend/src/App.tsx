@@ -133,7 +133,7 @@ export default function App() {
               {detalleAcademico.map((item, i) => (
                 <div key={i} className="bg-white px-5 py-3 rounded-full border shadow-sm flex justify-between items-center border-slate-100">
                   <span className="font-bold text-slate-700">{item.materia}</span> 
-                  <span className="bg-green-100 text-green-700 font-black px-4 py-1 rounded-full">{item.calificacion}</span>
+                  <span className="bg-green-100 text-green-700 font-black px-4 py-1 rounded-full">{item.promedio}</span>
                 </div>
               ))}
             </div>
