@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 import com.example.demo.model.Estudiante;
+import com.example.demo.model.ReporteAcademico;
 import com.example.demo.model.RequestRegistrarEstudiante;
 import com.example.demo.repository.mongo.CalificacionMONGORepository;
 import com.example.demo.repository.neo4j.EstudianteNeo4jRepository;
@@ -25,7 +26,6 @@ public class EstudianteController {
     private EstudianteService estudianteService;
 
 
-
     @PostMapping("/registrar")
     public ResponseEntity<Estudiante> registrar(
             @RequestBody RequestRegistrarEstudiante requestRegistrarEstudiante) {
@@ -37,16 +37,9 @@ public class EstudianteController {
     }
 
     @GetMapping("/{id}/detalle-completo")
-    public ResponseEntity<?> getDetalleCompleto(@PathVariable String id) {
-        try {
-            List<Map<String, Object>> detalle = estudianteNeo4jRepository.obtenerDetalleAcademicoPorInstitucion(id);
-            if (detalle.isEmpty()) {
-                return ResponseEntity.status(404).body("No se encontró actividad académica para el ID: " + id);
-            }
-            return ResponseEntity.ok(detalle);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error en el grafo: " + e.getMessage());
-        }
-    }
+    public List<ReporteAcademico> getDetalleCompleto(@PathVariable("id") String id){
 
+        return estudianteNeo4jRepository.obtenerDetalleAcademicoPorInstitucion(id);
+
+    }
 }
