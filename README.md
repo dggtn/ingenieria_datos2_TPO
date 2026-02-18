@@ -15,7 +15,8 @@
 
 <div class="container">
     <h1>UX/UI</h1>
-<img width="610" height="859" alt="{6A14858D-47AE-4C10-BF1C-85F728955AD3}" src="https://github.com/user-attachments/assets/8f6d0900-e7f9-43ae-a8e9-a1598c641ed6" />
+<img width="912" height="753" alt="image" src="https://github.com/user-attachments/assets/8e82ed61-600e-4064-8dae-018ee0e466d2" />
+
 
 
 <h1>EduGrade Global - Sistema de Equivalencias</h1>
