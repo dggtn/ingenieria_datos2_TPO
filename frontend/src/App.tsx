@@ -13,6 +13,7 @@ interface ConversionResponse {
 
 export default function App() {
   const [estudianteId, setEstudianteId] = useState('');
+  const [institucionId, setInstitucionId] = useState('');
   const [materiaId, setMateriaId] = useState(''); 
   const [pais, setPais] = useState('Argentina');
   const [gradeDetails, setGradeDetails] = useState<any>({});
@@ -63,8 +64,9 @@ export default function App() {
         materia: materiaId,     
         pais: pais,
         metadatos: gradeDetails,
+        institucion: institucionId
       });
-      setResultado({ equivalencia_sudafrica: response.data.conversiones.sudafrica });
+      setResultado({ equivalencia_sudafrica: response.data.conversiones });
     } catch (error) {
       alert("Error al registrar.");
     } finally {
@@ -80,7 +82,7 @@ export default function App() {
         estudiante: estudianteId 
       });
       setResultado({
-        equivalencia_sudafrica: response.data.conversiones.sudafrica,
+        equivalencia_sudafrica: response.data.conversiones,
         historial_estudiante: response.data.historial_estudiante
       });
     } catch (error) {
@@ -126,6 +128,18 @@ export default function App() {
             value={estudianteId} 
             onChange={e => setEstudianteId(e.target.value)} 
           />
+             <input 
+            className="w-full border-2 border-slate-100 p-4 rounded-2xl focus:border-green-400 outline-none transition-colors" 
+            placeholder="ID Institución" 
+            value={institucionId} 
+            onChange={e => setInstitucionId(e.target.value)} 
+          />
+          <input 
+            className="w-full border-2 border-slate-100 p-4 rounded-2xl focus:border-green-400 outline-none transition-colors" 
+            placeholder="ID Materia" 
+            value={materiaId} 
+            onChange={e => setMateriaId(e.target.value)} 
+          />
           <select 
             className="w-full border-2 border-slate-100 p-4 rounded-2xl bg-white focus:border-green-400 outline-none appearance-none" 
             value={pais} 
@@ -168,7 +182,7 @@ export default function App() {
     {resultado && (
       <div className="mt-10 bg-slate-900 text-white p-10 rounded-[3rem] text-center shadow-2xl border-4 border-slate-800">
         <p className="text-emerald-400 font-bold uppercase tracking-widest text-sm mb-2">Resultado Sudáfrica</p>
-        <p className="text-7xl font-black mb-6">{resultado.equivalencia_sudafrica}</p>
+        <p className="text-7xl font-black mb-6">{resultado.equivalencia_sudafrica} %</p>
         {resultado.historial_estudiante && (
           <div className="bg-slate-800 p-6 rounded-3xl text-left border border-slate-700 overflow-hidden">
              <pre className="text-xs font-mono text-indigo-300 overflow-auto max-h-40">

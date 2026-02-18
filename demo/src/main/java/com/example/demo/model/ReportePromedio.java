@@ -26,7 +26,11 @@ public class ReportePromedio {
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
-
+    public void setPromedio(Object promedio) {
+        if (promedio instanceof Number) {
+            this.promedio = ((Number) promedio).doubleValue();
+        }
+    }
     public UUID getIdestudiante() {
         return idestudiante;
     }

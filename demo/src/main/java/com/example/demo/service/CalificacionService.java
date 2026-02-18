@@ -22,6 +22,12 @@ public class CalificacionService {
     private EstudianteNeo4jRepository neo4jRepository;
     @Autowired
     private ReporteCassandraRepository cassandraRepository;
+    private Double aDouble(Object valor) {
+        if (valor instanceof Number) {
+            return ((Number) valor).doubleValue();
+        }
+        return 0.0;
+    }
     public void actualizarRankingsNacionales() {
         List<ReportePromedio> promediosPais = neo4jRepository.calcularpromedioPorPais();
         List<ReportePromedio> promediosInst = neo4jRepository.calcularPromedioPorInstitucion();
@@ -71,8 +77,8 @@ public class CalificacionService {
             Integer examen_final = (Integer) request.getMetadatos().get("examen_final");
             resultado = ((primer_parcial + segundo_parcial + examen_final) / 3) * 10;
         } else if (paisEnMinuscula.equals("alemania")) {
-            double klassenArbeit = (Double) request.getMetadatos().get("KlassenArbeit");
-            double mundlichArbeit = (Double) request.getMetadatos().get("MundlichArbeit");
+            double klassenArbeit = aDouble(request.getMetadatos().get("KlassenArbeit"));
+            double mundlichArbeit = aDouble(request.getMetadatos().get("MundlichArbeit"));
             resultado = ((5.0 - ((klassenArbeit + mundlichArbeit) / 2)) * 25);
         } else if (paisEnMinuscula.equals("estados unidos") || paisEnMinuscula.equals("usa")) {
             String semester_original = (String) request.getMetadatos().get("semester");
