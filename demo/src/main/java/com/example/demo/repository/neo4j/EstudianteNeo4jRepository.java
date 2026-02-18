@@ -43,5 +43,11 @@ public interface EstudianteNeo4jRepository extends Neo4jRepository<Estudiante, U
             "       avg(curso.promedio) AS promedio,\n" +
             "       'INSTITUTO' AS tipo")
     List<ReportePromedio> calcularPromedioPorInstitucion();
+
+    @Query("MATCH (e:Estudiante {id: $idEstudiante})-[r:CURSO]->(m:Materia)-[:SE_DICTA_EN]->(i:Institucion) " +
+            "WITH i.nombre AS inst, m.nombre AS mat, r.resultado AS res, r.periodo AS per " +
+            "RETURN inst AS institucion, collect([mat, toString(res), per]) AS materias")
+    List<Map<String, Object>> obtenerDetalleAcademicoPorInstitucion(String idEstudiante);
+
 }
 
