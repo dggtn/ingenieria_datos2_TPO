@@ -4,6 +4,7 @@ package com.example.demo.service;
 import com.example.demo.model.*;
 import com.example.demo.repository.cassandra.ReporteCassandraRepository;
 import com.example.demo.repository.mongo.CalificacionMONGORepository;
+import com.example.demo.repository.mongo.EstudianteMONGORepository;
 import com.example.demo.repository.neo4j.EstudianteNeo4jRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,8 +12,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 @Service
 public class CalificacionService {
@@ -20,6 +19,8 @@ public class CalificacionService {
     private CalificacionMONGORepository calificacionRepository;
     @Autowired
     private EstudianteNeo4jRepository neo4jRepository;
+    @Autowired
+    private EstudianteMONGORepository estudianteMongoRepository;
     @Autowired
     private ReporteCassandraRepository cassandraRepository;
     private Double aDouble(Object valor) {
@@ -51,9 +52,9 @@ public class CalificacionService {
         Double resultadoSA = calcularConversionSudafrica(requestRegistrarCalificacion);
         c.setConversiones(resultadoSA);
 
-        UUID idEstudiante = UUID.fromString(c.getEstudianteId());
-        UUID idInstitucion = UUID.fromString(requestRegistrarCalificacion.getInstitucion());
-        UUID idMateria = UUID.fromString(requestRegistrarCalificacion.getMateria());
+        String idEstudiante = c.getEstudianteId();
+        String idInstitucion = requestRegistrarCalificacion.getInstitucion();
+        String idMateria = requestRegistrarCalificacion.getMateria();
         String periodo  = (String) requestRegistrarCalificacion.getMetadatos().get("periodo");
         String nivel  = (String) requestRegistrarCalificacion.getMetadatos().get("nivel");
         Double promedio = calcularConversionSudafrica(requestRegistrarCalificacion);
@@ -61,7 +62,7 @@ public class CalificacionService {
 
         neo4jRepository.registrarDondeEstudio(idEstudiante, idInstitucion, periodo);
         neo4jRepository.registrarCursada(idEstudiante,idMateria,promedio,periodo,nivel);
-        neo4jRepository.registrarDondeDictaMateria(idMateria,idInstitucion,periodo,nivel);
+        neo4jRepository.registrarDondeDictaMateria(idInstitucion, idMateria, periodo, nivel);
         return calificacionRepository.save(c);
     }
 
@@ -133,6 +134,142 @@ public class CalificacionService {
             nuevoValor = 60;
         }
         return nuevoValor;
+    }
+
+    public Materia agregarCalificacionParcial(String idEstudiante, String idMateria, RequestCalificacionParcial request) {
+        if (request == null || request.getNombre() == null || request.getNombre().isBlank() || request.getNota() == null) {
+            return null;
+        }
+
+        Estudiante estudiante = estudianteMongoRepository.findById(idEstudiante).orElse(null);
+        if (estudiante == null || estudiante.getMaterias() == null) {
+            return null;
+        }
+
+        Materia materia = obtenerMateriaDeEstudiante(estudiante, idMateria);
+        if (materia == null) {
+            return null;
+        }
+        if (materia.getNotasParciales() == null) {
+            materia.setNotasParciales(new ArrayList<>());
+        }
+
+        boolean actualizado = false;
+        for (Materia.Parcial parcial : materia.getNotasParciales()) {
+            if (request.getNombre().equals(parcial.getNombre())) {
+                parcial.setNota(request.getNota());
+                actualizado = true;
+                break;
+            }
+        }
+        if (!actualizado) {
+            materia.getNotasParciales().add(new Materia.Parcial(request.getNombre(), request.getNota()));
+        }
+
+        estudianteMongoRepository.save(estudiante);
+        return materia;
+    }
+
+    public Materia asignarCalificacionFinal(String idEstudiante, String idMateria, RequestCalificacionFinal request) {
+        if (request == null || request.getNotaFinal() == null || request.getFechaFinalizacion() == null) {
+            return null;
+        }
+
+        Estudiante estudiante = estudianteMongoRepository.findById(idEstudiante).orElse(null);
+        if (estudiante == null || estudiante.getMaterias() == null) {
+            return null;
+        }
+
+        Materia materia = obtenerMateriaDeEstudiante(estudiante, idMateria);
+        if (materia == null) {
+            return null;
+        }
+
+        materia.setNotaFinal(request.getNotaFinal());
+        materia.setFechaFinalizacion(request.getFechaFinalizacion());
+
+        for (CursoMateria cursoMateria : estudiante.getMaterias()) {
+            if (cursoMateria.getMateria() != null && idMateria.equals(cursoMateria.getMateria().getId())) {
+                cursoMateria.setNotaFinal(request.getNotaFinal());
+                cursoMateria.setFechaRendida(request.getFechaFinalizacion());
+                cursoMateria.setPromedio(request.getNotaFinal());
+            }
+        }
+
+        estudianteMongoRepository.save(estudiante);
+        neo4jRepository.actualizarNotaFinalYFecha(
+                idEstudiante,
+                idMateria,
+                request.getNotaFinal(),
+                request.getFechaFinalizacion().toString()
+        );
+        return materia;
+    }
+
+    public Materia modificarCalificacionParcial(
+            String idEstudiante,
+            String idMateria,
+            String nombreParcial,
+            RequestCalificacionParcial request
+    ) {
+        if (request == null || request.getNota() == null || nombreParcial == null || nombreParcial.isBlank()) {
+            return null;
+        }
+
+        Estudiante estudiante = estudianteMongoRepository.findById(idEstudiante).orElse(null);
+        if (estudiante == null || estudiante.getMaterias() == null) {
+            return null;
+        }
+
+        Materia materia = obtenerMateriaDeEstudiante(estudiante, idMateria);
+        if (materia == null || materia.getNotasParciales() == null) {
+            return null;
+        }
+
+        for (Materia.Parcial parcial : materia.getNotasParciales()) {
+            if (nombreParcial.equals(parcial.getNombre())) {
+                parcial.setNombre(request.getNombre() != null && !request.getNombre().isBlank()
+                        ? request.getNombre()
+                        : parcial.getNombre());
+                parcial.setNota(request.getNota());
+                estudianteMongoRepository.save(estudiante);
+                return materia;
+            }
+        }
+        return null;
+    }
+
+    public Materia eliminarCalificacionParcial(String idEstudiante, String idMateria, String nombreParcial) {
+        if (nombreParcial == null || nombreParcial.isBlank()) {
+            return null;
+        }
+
+        Estudiante estudiante = estudianteMongoRepository.findById(idEstudiante).orElse(null);
+        if (estudiante == null || estudiante.getMaterias() == null) {
+            return null;
+        }
+
+        Materia materia = obtenerMateriaDeEstudiante(estudiante, idMateria);
+        if (materia == null || materia.getNotasParciales() == null) {
+            return null;
+        }
+
+        boolean eliminado = materia.getNotasParciales().removeIf(p -> nombreParcial.equals(p.getNombre()));
+        if (!eliminado) {
+            return null;
+        }
+
+        estudianteMongoRepository.save(estudiante);
+        return materia;
+    }
+
+    private Materia obtenerMateriaDeEstudiante(Estudiante estudiante, String idMateria) {
+        for (CursoMateria cursoMateria : estudiante.getMaterias()) {
+            if (cursoMateria.getMateria() != null && idMateria.equals(cursoMateria.getMateria().getId())) {
+                return cursoMateria.getMateria();
+            }
+        }
+        return null;
     }
 }
 

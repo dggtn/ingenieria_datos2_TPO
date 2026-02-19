@@ -1,24 +1,23 @@
 package com.example.demo.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
-import org.springframework.data.neo4j.core.schema.GeneratedValue;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
 import java.util.*;
 
-
+@Document("Estudiante")
 @Node("Estudiante")
 public class    Estudiante {
     @PrimaryKey
     @Id
-    @GeneratedValue
-    private UUID id;
+    private String id;
     private String nombre;
     private String email;
     private String paisOrigen;
-    private List<String> calificacionIds = new ArrayList<>();
-    private String institucionActual;
+    @Relationship(type = "INSTITUCION_ACTUAL", direction = Relationship.Direction.OUTGOING)
+    private Institucion institucionActual;
 
     @Relationship(type = "ESTUDIO_EN", direction = Relationship.Direction.OUTGOING)
     private List<EstudioEn> historialAcademico = new ArrayList<>();
@@ -30,31 +29,30 @@ public class    Estudiante {
     public Estudiante() {
     }
 
-    public Estudiante(UUID id, String nombre) {
+    public Estudiante(String id, String nombre) {
         this.id = id;
         this.nombre = nombre;
     }
 
-    public void agregarEstudio(Institucion inst, String periodo, String nivel) {
-        this.historialAcademico.add(new EstudioEn(inst, periodo, nivel));
+    public void agregarEstudio(Institucion inst, List<Materia> historialMaterias) {
+        this.historialAcademico.add(new EstudioEn(inst, historialMaterias));
     }
 
-    public Estudiante(UUID id, String nombre, String email, String paisOrigen, List<String> calificacionIds, String institucionActual, List<EstudioEn> historialAcademico, List<Map<String, Object>> historial) {
+    public Estudiante(String id, String nombre, String email, String paisOrigen, Institucion institucionActual, List<EstudioEn> historialAcademico, List<Map<String, Object>> historial) {
         this.id = id;
         this.nombre = nombre;
         this.email = email;
         this.paisOrigen = paisOrigen;
-        this.calificacionIds = calificacionIds;
         this.institucionActual = institucionActual;
         this.historialAcademico = historialAcademico;
         this.historial = historial;
     }
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -82,19 +80,11 @@ public class    Estudiante {
         this.paisOrigen = paisOrigen;
     }
 
-    public List<String> getCalificacionIds() {
-        return calificacionIds;
-    }
-
-    public void setCalificacionIds(List<String> calificacionIds) {
-        this.calificacionIds = calificacionIds;
-    }
-
-    public String getInstitucionActual() {
+    public Institucion getInstitucionActual() {
         return institucionActual;
     }
 
-    public void setInstitucionActual(String institucionActual) {
+    public void setInstitucionActual(Institucion institucionActual) {
         this.institucionActual = institucionActual;
     }
 
@@ -116,6 +106,14 @@ public class    Estudiante {
 
     public void curso(CursoMateria relacion) {
         materias.add(relacion);
+    }
+
+    public List<CursoMateria> getMaterias() {
+        return materias;
+    }
+
+    public void setMaterias(List<CursoMateria> materias) {
+        this.materias = materias;
     }
 }
 

@@ -2,12 +2,7 @@ package com.example.demo.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.List;
-import java.util.Map;
-
-public class RequestRegistrarEstudiante {
-    @JsonProperty("idNacional")
-    private String idNacional;
+public class RequestModificarEstudiante {
     @JsonProperty("nombre")
     private String nombre;
     @JsonProperty("paisOrigen")
@@ -16,15 +11,6 @@ public class RequestRegistrarEstudiante {
     private String institucionActual;
     @JsonProperty("email")
     private String email;
-    private List<Map<String,Object>> historial;
-
-    public String getIdNacional() {
-        return idNacional;
-    }
-
-    public void setIdNacional(String idNacional) {
-        this.idNacional = idNacional;
-    }
 
     public String getNombre() {
         return nombre;
@@ -57,12 +43,4 @@ public class RequestRegistrarEstudiante {
     public void setEmail(String email) {
         this.email = email;
     }
-
-    public List<Map<String, Object>> getHistorial() {
-        return historial;
-    }
-
-//    public void setHistorial(Map<String, Object> historial) {
-//        this.historial = historial;
-//    }
 }

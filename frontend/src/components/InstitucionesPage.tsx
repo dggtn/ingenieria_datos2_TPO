@@ -304,7 +304,7 @@ export default function InstitucionesPage({ onBackHome }: Props) {
               <p><strong>Provincia:</strong> {institucionConsultada.provincia}</p>
               <p><strong>Nivel:</strong> {institucionConsultada.nivelEducativo}</p>
               <button type="button" onClick={abrirModalCursos} className="mt-2 w-full bg-indigo-500 hover:bg-indigo-600 text-white py-2 rounded-xl font-bold shadow">
-                Agregar materia
+                Consultar materias
               </button>
             </div>
           )}

@@ -5,6 +5,9 @@ import org.springframework.data.neo4j.core.schema.RelationshipId;
 import org.springframework.data.neo4j.core.schema.RelationshipProperties;
 import org.springframework.data.neo4j.core.schema.TargetNode;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @RelationshipProperties
 public class EstudioEn {
@@ -16,16 +19,37 @@ public class EstudioEn {
     @TargetNode
     private Institucion institucion;
 
-    private String periodo;
-    private String nivel;
+    private List<Materia> historialMaterias = new ArrayList<>();
 
-    public EstudioEn(Institucion institucion, String periodo, String nivel) {
+    public EstudioEn() {
+    }
+
+    public EstudioEn(Institucion institucion, List<Materia> historialMaterias) {
         this.institucion = institucion;
-        this.periodo = periodo;
-        this.nivel = nivel;
+        this.historialMaterias = historialMaterias;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Institucion getInstitucion() {
+        return institucion;
+    }
+
+    public void setInstitucion(Institucion institucion) {
+        this.institucion = institucion;
+    }
+
+    public List<Materia> getHistorialMaterias() {
+        return historialMaterias;
+    }
+
+    public void setHistorialMaterias(List<Materia> historialMaterias) {
+        this.historialMaterias = historialMaterias;
     }
 }

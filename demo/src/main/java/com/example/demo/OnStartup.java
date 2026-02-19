@@ -1,6 +1,8 @@
 package com.example.demo;
 
 import com.example.demo.model.*;
+import com.example.demo.repository.mongo.EstudianteMONGORepository;
+import com.example.demo.repository.mongo.InstitucionMONGORepository;
 import com.example.demo.repository.neo4j.EstudianteNeo4jRepository;
 import com.example.demo.repository.neo4j.InstitucionNeo4jRepository;
 import com.example.demo.repository.neo4j.MateriaNeo4jRepository;
@@ -10,19 +12,21 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Random;
-import java.util.UUID;
+import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class OnStartup implements ApplicationListener<ApplicationReadyEvent> {
-
-    private Random random = new Random();
 
     @Autowired
     private EstudianteNeo4jRepository estudiantesRepo;
 
     @Autowired
     private InstitucionNeo4jRepository institucionRepo;
+    @Autowired
+    private InstitucionMONGORepository institucionMongoRepo;
+    @Autowired
+    private EstudianteMONGORepository estudianteMongoRepo;
 
     @Autowired
     private MateriaNeo4jRepository materiaRepo;
@@ -33,31 +37,56 @@ public class OnStartup implements ApplicationListener<ApplicationReadyEvent> {
 
         materiaRepo.deleteAll();
         institucionRepo.deleteAll();
+        institucionMongoRepo.deleteAll();
         estudiantesRepo.deleteAll();
-
-        // INSTITUCIONES
-        Institucion uade = insertarInstitucion("Colegio Nuevo Milenio");
-        Institucion unlam = insertarInstitucion("Colegio 3 de febrero");
+        estudianteMongoRepo.deleteAll();
 
         // MATERIAS
-        Materia matematica = insertarMateria("MATEMATICA");
-        Materia literatura = insertarMateria("LITERATURA");
-        Materia biologia = insertarMateria("BIOLOGIA");
-        Materia arte = insertarMateria("ARTE");
-        Materia futbol = insertarMateria("FUTBOL");
-        Materia gimnasia = insertarMateria("GIMNASIA");
-        Materia fisica = insertarMateria("FISICA");
-        Materia quimica = insertarMateria("QUIMICA");
-        Materia carpinteria = insertarMateria("CARPINTERIA");
-        Materia informatica = insertarMateria("INFORMATICA");
+        Materia matematica = insertarMateria("M001", "MATEMATICA");
+        Materia literatura = insertarMateria("M002", "LITERATURA");
+        Materia biologia = insertarMateria("M003", "BIOLOGIA");
+        Materia arte = insertarMateria("M004", "ARTE");
+        Materia futbol = insertarMateria("M005", "FUTBOL");
+        Materia gimnasia = insertarMateria("M006", "GIMNASIA");
+        Materia fisica = insertarMateria("M007", "FISICA");
+        Materia quimica = insertarMateria("M008", "QUIMICA");
+        Materia carpinteria = insertarMateria("M009", "CARPINTERIA");
+        Materia informatica = insertarMateria("M010", "INFORMATICA");
+
+        // INSTITUCIONES
+        Institucion uade = insertarInstitucion(
+                "PADRON-007",
+                "Colegio Nuevo Milenio",
+                "Sudafrica",
+                "Gauteng",
+                "Secundaria",
+                Arrays.asList(
+                        materiaCurricular(matematica),
+                        materiaCurricular(literatura),
+                        materiaCurricular(biologia),
+                        materiaCurricular(gimnasia),
+                        materiaCurricular(informatica)));
+        Institucion unlam = insertarInstitucion(
+                "PADRON-008",
+                "Colegio 3 de febrero",
+                "Sudafrica",
+                "Western Cape",
+                "Secundaria",
+                Arrays.asList(
+                        materiaCurricular(matematica),
+                        materiaCurricular(arte),
+                        materiaCurricular(futbol),
+                        materiaCurricular(fisica),
+                        materiaCurricular(quimica),
+                        materiaCurricular(carpinteria)));
 
         // ESTUDIANTES
-        Estudiante daniela = insertartEstudiante("Daniela","Argentina");
-        Estudiante alejandro = insertartEstudiante("Alejandro","Argentina");
-        Estudiante martin = insertartEstudiante("Martin","Argentina");
-        Estudiante tomas = insertartEstudiante("Tomas","Argentina");
-        Estudiante gabriela = insertartEstudiante("Gabriela","Argentina");
-        Estudiante juana = insertartEstudiante("Juana","Argentina");
+        Estudiante daniela = insertartEstudiante("35266014", "Daniela", "Argentina");
+        Estudiante alejandro = insertartEstudiante("34111222", "Alejandro", "Argentina");
+        Estudiante martin = insertartEstudiante("33666777", "Martin", "Argentina");
+        Estudiante tomas = insertartEstudiante("32999888", "Tomas", "Argentina");
+        Estudiante gabriela = insertartEstudiante("31888555", "Gabriela", "Argentina");
+        Estudiante juana = insertartEstudiante("30777444", "Juana", "Argentina");
 
 
         // ESTUDIANTE CURSO EN
@@ -109,27 +138,46 @@ public class OnStartup implements ApplicationListener<ApplicationReadyEvent> {
     }
 
     private void estudianteCursoEn(Estudiante estudiante, Institucion institucion, String periodo) {
-        EstudioEn relacion = new EstudioEn(institucion, periodo, "");
+        EstudioEn relacion = new EstudioEn(institucion, new java.util.ArrayList<>());
         estudiante.getHistorialAcademico().add(relacion);
     }
 
-    private Institucion insertarInstitucion(String nombre) {
+    private Institucion insertarInstitucion(
+            String padron,
+            String nombre,
+            String pais,
+            String provincia,
+            String nivelEducativo,
+            List<Institucion.Curso> curriculum) {
         Institucion institucion = new Institucion();
+        institucion.setId(padron);
         institucion.setNombre(nombre);
+        institucion.setPais(pais);
+        institucion.setProvincia(provincia);
+        institucion.setNivelEducativo(nivelEducativo);
+        institucion.setCurriculum(curriculum);
         institucionRepo.save(institucion);
+        institucionMongoRepo.save(institucion);
         return institucion;
     }
 
-    private Estudiante insertartEstudiante(String nombre,String pais) {
+    private Institucion.Curso materiaCurricular(Materia materia) {
+        return new Institucion.Curso(materia.getId(), materia.getNombre());
+    }
+
+    private Estudiante insertartEstudiante(String idNacional, String nombre, String pais) {
         Estudiante estudiante = new Estudiante();
+        estudiante.setId(idNacional);
         estudiante.setNombre(nombre);
         estudiante.setPaisOrigen(pais);
         estudiantesRepo.save(estudiante);
+        estudianteMongoRepo.save(estudiante);
         return estudiante;
     }
 
-    private Materia insertarMateria(String nombre) {
+    private Materia insertarMateria(String codigo, String nombre) {
         Materia materia = new Materia();
+        materia.setId(codigo);
         materia.setNombre(nombre);
         materiaRepo.save(materia);
         return materia;

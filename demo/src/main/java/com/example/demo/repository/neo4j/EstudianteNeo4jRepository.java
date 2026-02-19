@@ -8,31 +8,46 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 @Repository
-public interface EstudianteNeo4jRepository extends Neo4jRepository<Estudiante, UUID> {
+public interface EstudianteNeo4jRepository extends Neo4jRepository<Estudiante, String> {
+    @Query("MATCH (e:Estudiante {id: $id}) DETACH DELETE e")
+    void eliminarPorId(@Param("id") String id);
 
     @Query("MATCH (e:Estudiante {id: $idEstudiante})\n" +
             "WITH e\n" +
             "MATCH (i:Institucion {id: $idInstitucion})\n" +
             "MERGE (e)-[r:ESTUDIO_EN]->(i)\n" +
             "SET r.periodo = $periodo")
-    void registrarDondeEstudio(UUID idEstudiante, UUID idInstitucion, String periodo);
+    void registrarDondeEstudio(String idEstudiante, String idInstitucion, String periodo);
 
     @Query ("MATCH (e:Estudiante {id: $idEstudiante})\n" +
             "WITH e\n" +
             "MATCH (m:Materia {id: $idMateria})\n" +
             "MERGE (e)-[r:CURSO]->(m)\n" +
-            "SET r.periodo = $periodo,r.nivel = $nivel,r.resultado=$resultado")
-    void registrarCursada(UUID idEstudiante,UUID idMateria,Double resultado,String periodo,String nivel);
+            "SET r.periodo = $periodo,r.nivel = $nivel,r.resultado=$resultado,r.notaFinal=$resultado,r.fechaRendida=CASE WHEN $fechaRendida IS NULL OR $fechaRendida = '' THEN null ELSE date($fechaRendida) END,r.promedio=$resultado")
+    void registrarCursada(String idEstudiante, String idMateria, Double resultado, String periodo, String nivel, String fechaRendida);
+
+    @Query ("MATCH (e:Estudiante {id: $idEstudiante})\n" +
+            "WITH e\n" +
+            "MATCH (m:Materia {id: $idMateria})\n" +
+            "MERGE (e)-[r:CURSO]->(m)\n" +
+            "SET r.notaFinal = $resultado, r.promedio = $resultado")
+    void registrarCursada(String idEstudiante, String idMateria, Double resultado, String periodo, String nivel);
+
+    @Query("MATCH (e:Estudiante {id: $idEstudiante})-[r:CURSO]->(m:Materia {id: $idMateria}) DELETE r")
+    void eliminarMateriaDeEstudiante(String idEstudiante, String idMateria);
+
+    @Query("MATCH (e:Estudiante {id: $idEstudiante})-[r:CURSO]->(m:Materia {id: $idMateria}) " +
+            "SET r.notaFinal = $notaFinal, r.promedio = $notaFinal, " +
+            "r.fechaRendida = CASE WHEN $fechaFinalizacion IS NULL OR $fechaFinalizacion = '' THEN null ELSE date($fechaFinalizacion) END")
+    void actualizarNotaFinalYFecha(String idEstudiante, String idMateria, Double notaFinal, String fechaFinalizacion);
     @Query ( "MATCH (m:Materia {id: $idMateria})\n" +
             "WITH m\n" +
             "MATCH (i:Institucion {id: $idInstitucion})\n" +
             "MERGE (m)-[r:SE_DICTA_EN]->(i)\n" +
             "SET r.nivel = $nivel")
-    void registrarDondeDictaMateria(UUID idInstitucion,UUID idMateria,String periodo,String nivel);
+    void registrarDondeDictaMateria(String idInstitucion, String idMateria, String periodo, String nivel);
 
     @Query ( "MATCH (e:Estudiante)-[curso:CURSO]->(m:Materia)\n" +
             "RETURN e.paisOrigen AS pais, \n" +
