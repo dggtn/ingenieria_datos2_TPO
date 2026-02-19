@@ -22,11 +22,12 @@ public class MateriaController {
     @PostMapping("/registrar")
     public ResponseEntity<Materia> registrar(@RequestBody
                                                   RequestRegistrarMateria requestRegistrarMateria) {
-
-        Materia nueva = materiaService.registrarMateria(
-                requestRegistrarMateria);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
+        try {
+            Materia nueva = materiaService.registrarMateria(requestRegistrarMateria);
+            return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PostMapping("/estudiantes/{idEstudiante}")

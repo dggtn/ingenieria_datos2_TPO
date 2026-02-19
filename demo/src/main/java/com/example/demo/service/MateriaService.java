@@ -2,12 +2,15 @@ package com.example.demo.service;
 
 import com.example.demo.model.CursoMateria;
 import com.example.demo.model.Estudiante;
+import com.example.demo.model.Institucion;
 import com.example.demo.model.Materia;
 import com.example.demo.model.RequestAsignarMateriaEstudiante;
 import com.example.demo.model.RequestModificarMateria;
 import com.example.demo.model.RequestRegistrarMateria;
 import com.example.demo.repository.mongo.EstudianteMONGORepository;
+import com.example.demo.repository.mongo.InstitucionMONGORepository;
 import com.example.demo.repository.neo4j.EstudianteNeo4jRepository;
+import com.example.demo.repository.neo4j.InstitucionNeo4jRepository;
 import com.example.demo.repository.neo4j.MateriaNeo4jRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,12 +28,42 @@ public class MateriaService {
     private EstudianteNeo4jRepository estudianteNeo4jRepository;
     @Autowired
     private EstudianteMONGORepository estudianteMongoRepository;
+    @Autowired
+    private InstitucionNeo4jRepository institucionNeo4jRepository;
+    @Autowired
+    private InstitucionMONGORepository institucionMongoRepository;
 
     public Materia registrarMateria(RequestRegistrarMateria requestRegistrarMateria) {
+        if (requestRegistrarMateria.getInstitucionId() == null || requestRegistrarMateria.getInstitucionId().isBlank()) {
+            throw new IllegalArgumentException("institucionId es obligatorio.");
+        }
+        Optional<Institucion> institucionNeo4jOpt = institucionNeo4jRepository.findById(requestRegistrarMateria.getInstitucionId());
+        Optional<Institucion> institucionMongoOpt = institucionMongoRepository.findById(requestRegistrarMateria.getInstitucionId());
+        if (institucionNeo4jOpt.isEmpty() || institucionMongoOpt.isEmpty()) {
+            throw new IllegalArgumentException("La institucion indicada no existe.");
+        }
+
         Materia m = new Materia();
         m.setId(requestRegistrarMateria.getCodigo());
         m.setNombre(requestRegistrarMateria.getNombre());
-        return materiaRepository.save(m);
+        Materia guardada = materiaRepository.save(m);
+
+        Institucion institucionNeo4j = institucionNeo4jOpt.get();
+        Institucion institucionMongo = institucionMongoOpt.get();
+        if (institucionNeo4j.getCurriculum() == null) {
+            institucionNeo4j.setCurriculum(new ArrayList<>());
+        }
+        if (institucionMongo.getCurriculum() == null) {
+            institucionMongo.setCurriculum(new ArrayList<>());
+        }
+
+        Institucion.Curso curso = new Institucion.Curso(guardada.getId(), guardada.getNombre());
+        upsertCurso(institucionNeo4j.getCurriculum(), curso);
+        upsertCurso(institucionMongo.getCurriculum(), curso);
+
+        institucionNeo4jRepository.save(institucionNeo4j);
+        institucionMongoRepository.save(institucionMongo);
+        return guardada;
     }
 
     public Materia crearMateriaYAsignarAEstudiante(String idEstudiante, RequestAsignarMateriaEstudiante request) {
@@ -132,5 +165,16 @@ public class MateriaService {
             }
         }
         materias.add(nueva);
+    }
+
+    private void upsertCurso(List<Institucion.Curso> cursos, Institucion.Curso nuevo) {
+        for (int i = 0; i < cursos.size(); i++) {
+            Institucion.Curso actual = cursos.get(i);
+            if (actual != null && actual.getId() != null && actual.getId().equals(nuevo.getId())) {
+                cursos.set(i, nuevo);
+                return;
+            }
+        }
+        cursos.add(nuevo);
     }
 }

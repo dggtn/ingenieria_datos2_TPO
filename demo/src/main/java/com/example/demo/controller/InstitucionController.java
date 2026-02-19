@@ -28,12 +28,6 @@ public class InstitucionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
     }
 
-    @PostMapping
-    public ResponseEntity<Institucion> crear(@RequestBody RequestRegistrarInstitucion requestRegistrarInstitucion) {
-        Institucion nueva = institucionService.crearInstitucion(requestRegistrarInstitucion);
-        return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<Institucion> obtenerPorId(@PathVariable("id") String id) {
         Institucion institucion = institucionService.obtenerPorId(id);

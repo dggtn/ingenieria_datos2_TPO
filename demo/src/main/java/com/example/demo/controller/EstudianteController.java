@@ -36,16 +36,6 @@ public class EstudianteController {
         }
     }
 
-    @PostMapping
-    public ResponseEntity<Estudiante> crear(@RequestBody RequestRegistrarEstudiante requestRegistrarEstudiante) {
-        try {
-            Estudiante nuevo = estudianteService.crearEstudiante(requestRegistrarEstudiante);
-            return ResponseEntity.status(HttpStatus.CREATED).body(nuevo);
-        } catch (IllegalArgumentException ex) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<Estudiante> obtenerPorId(@PathVariable("id") String id) {
         Estudiante estudiante = estudianteService.obtenerPorId(id);

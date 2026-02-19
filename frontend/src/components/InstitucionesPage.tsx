@@ -74,7 +74,7 @@ export default function InstitucionesPage({ onBackHome }: Props) {
     setLoading(true);
     setMensaje('');
     try {
-      await axios.post('http://localhost:8080/api/instituciones', {
+      await axios.post('http://localhost:8080/api/instituciones/registrar', {
         padron,
         nombre,
         pais,

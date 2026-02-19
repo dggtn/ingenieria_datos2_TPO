@@ -1,0 +1,342 @@
+{
+  "info": {
+    "name": "TPO API - Endpoints Organizados",
+    "_postman_id": "f2e5e8aa-8f73-4ae6-8a5f-2e6be43e7fd7",
+    "description": "Coleccion de endpoints del proyecto TPO organizados por dominio.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    }
+  ],
+  "item": [
+    {
+      "name": "Estudiantes",
+      "item": [
+        {
+          "name": "Registrar (legacy) - POST /api/estudiantes/registrar",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/estudiantes/registrar",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idNacional\": \"9302155701084\",\n  \"nombre\": \"Alejandro Ramirez\",\n  \"paisOrigen\": \"Argentina\",\n  \"email\": \"alejandro.ramirez@mail.com\",\n  \"institucionActual\": \"PADRON-ZA-UNI-1003\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Crear - POST /api/estudiantes",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/estudiantes",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idNacional\": \"9001015800087\",\n  \"nombre\": \"Lerato Mokoena\",\n  \"paisOrigen\": \"Sudafrica\",\n  \"email\": \"lerato.mokoena@studentmail.za\",\n  \"institucionActual\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Obtener por ID - GET /api/estudiantes/{id}",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/estudiantes/9302155701084"
+          }
+        },
+        {
+          "name": "Modificar - PUT /api/estudiantes/{id}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/estudiantes/9302155701084",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Alejandro Ramirez Gomez\",\n  \"email\": \"alejandro.ramirez.gomez@mail.com\",\n  \"paisOrigen\": \"Argentina\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Eliminar - DELETE /api/estudiantes/{id}",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/estudiantes/9001015800087"
+          }
+        },
+        {
+          "name": "Detalle completo (Neo4j) - GET /api/estudiantes/{id}/detalle-completo",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/estudiantes/9302155701084/detalle-completo"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Instituciones",
+      "item": [
+        {
+          "name": "Registrar (legacy) - POST /api/instituciones/registrar",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/instituciones/registrar",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"padron\": \"PADRON-ZA-SEC-1001\",\n  \"nombre\": \"Johannesburg Science High School\",\n  \"pais\": \"Sudafrica\",\n  \"provincia\": \"Gauteng\",\n  \"nivelEducativo\": \"Secundaria\",\n  \"curriculum\": [\n    { \"id\": \"MAT-ALG-101\", \"nombre\": \"Algebra I\" },\n    { \"id\": \"SCI-PHY-102\", \"nombre\": \"Fisica General\" }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Crear - POST /api/instituciones/registrar",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/instituciones/registrar",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"padron\": \"PADRON-ZA-UNI-1003\",\n  \"nombre\": \"University of Pretoria\",\n  \"pais\": \"Sudafrica\",\n  \"provincia\": \"Gauteng\",\n  \"nivelEducativo\": \"Universidad\",\n  \"curriculum\": [\n    { \"id\": \"UNI-CS-201\", \"nombre\": \"Programacion I\" },\n    { \"id\": \"UNI-DB-202\", \"nombre\": \"Bases de Datos\" }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Obtener por ID - GET /api/instituciones/{id}",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/instituciones/PADRON-ZA-UNI-1003"
+          }
+        },
+        {
+          "name": "Obtener curriculum - GET /api/instituciones/{id}/curriculum",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/instituciones/PADRON-ZA-UNI-1003/curriculum"
+          }
+        },
+        {
+          "name": "Modificar - PUT /api/instituciones/{id}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/instituciones/PADRON-ZA-UNI-1003",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"University of Pretoria - Campus Central\",\n  \"pais\": \"Sudafrica\",\n  \"provincia\": \"Gauteng\",\n  \"nivelEducativo\": \"Universidad\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Eliminar - DELETE /api/instituciones/{id}",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/instituciones/PADRON-ZA-SEC-1001"
+          }
+        },
+        {
+          "name": "Crear curso y asignar - POST /api/instituciones/{idInstitucion}/cursos",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/instituciones/PADRON-ZA-UNI-1003/cursos",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"UNI-IA-301\",\n  \"nombre\": \"Inteligencia Artificial\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Modificar curso - PUT /api/instituciones/{idInstitucion}/cursos/{idCurso}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/instituciones/PADRON-ZA-UNI-1003/cursos/UNI-IA-301",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"IA Aplicada\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Eliminar curso - DELETE /api/instituciones/{idInstitucion}/cursos/{idCurso}",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/instituciones/PADRON-ZA-UNI-1003/cursos/UNI-IA-301"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Materias",
+      "item": [
+        {
+          "name": "Registrar materia y asociar institucion - POST /api/materias/registrar",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/materias/registrar",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigo\": \"UNI-DB-202\",\n  \"nombre\": \"Bases de Datos\",\n  \"institucionId\": \"PADRON-ZA-UNI-1003\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Crear materia y asignar a estudiante - POST /api/materias/estudiantes/{idEstudiante}",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/materias/estudiantes/9302155701084",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigo\": \"UNI-CS-201\",\n  \"nombre\": \"Programacion I\",\n  \"fechaFinalizacion\": null,\n  \"notaFinal\": null,\n  \"notasParciales\": [\n    { \"nombre\": \"Parcial 1\", \"nota\": 7.5 }\n  ],\n  \"fechaRendida\": null\n}"
+            }
+          }
+        },
+        {
+          "name": "Modificar materia - PUT /api/materias/{idMateria}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/materias/UNI-CS-201",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Programacion I - Actualizada\",\n  \"fechaFinalizacion\": \"2026-06-30\",\n  \"notaFinal\": 8.4,\n  \"notasParciales\": [\n    { \"nombre\": \"Parcial 1\", \"nota\": 8.0 },\n    { \"nombre\": \"Parcial 2\", \"nota\": 8.8 }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Eliminar materia de estudiante - DELETE /api/materias/estudiantes/{idEstudiante}/{idMateria}",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/materias/estudiantes/9302155701084/UNI-CS-201"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Calificaciones",
+      "item": [
+        {
+          "name": "Registrar calificacion original - POST /api/calificaciones/registrar",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/calificaciones/registrar",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estudiante\": \"9302155701084\",\n  \"institucion\": \"PADRON-AR-SEC-2101\",\n  \"materia\": \"AR-MAT-310\",\n  \"pais\": \"Argentina\",\n  \"metadatos\": {\n    \"primer_parcial\": 8,\n    \"segundo_parcial\": 7,\n    \"examen_final\": 9,\n    \"periodo\": \"2019\",\n    \"nivel\": \"Secundaria\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Simular conversion - GET /api/calificaciones/simular-conversion",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/calificaciones/simular-conversion?pais=Argentina&estudiante=9302155701084&institucion=PADRON-AR-SEC-2101&materia=AR-MAT-310"
+          }
+        },
+        {
+          "name": "Crear parcial - POST /api/calificaciones/estudiantes/{idEstudiante}/materias/{idMateria}/parciales",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/calificaciones/estudiantes/9302155701084/materias/UNI-CS-201/parciales",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Parcial 2\",\n  \"nota\": 8.2\n}"
+            }
+          }
+        },
+        {
+          "name": "Asignar final - PUT /api/calificaciones/estudiantes/{idEstudiante}/materias/{idMateria}/final",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/calificaciones/estudiantes/9302155701084/materias/UNI-CS-201/final",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notaFinal\": 8.6,\n  \"fechaFinalizacion\": \"2026-07-01\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Modificar parcial - PUT /api/calificaciones/estudiantes/{idEstudiante}/materias/{idMateria}/parciales/{nombreParcial}",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/calificaciones/estudiantes/9302155701084/materias/UNI-CS-201/parciales/Parcial%202",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Parcial 2\",\n  \"nota\": 8.9\n}"
+            }
+          }
+        },
+        {
+          "name": "Eliminar parcial - DELETE /api/calificaciones/estudiantes/{idEstudiante}/materias/{idMateria}/parciales/{nombreParcial}",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/calificaciones/estudiantes/9302155701084/materias/UNI-CS-201/parciales/Parcial%202"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reportes",
+      "item": [
+        {
+          "name": "Top paises - GET /api/reportes/top-paises",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/reportes/top-paises?limit=10"
+          }
+        },
+        {
+          "name": "Top institutos - GET /api/reportes/top-institutos",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/reportes/top-institutos?limit=10"
+          }
+        },
+        {
+          "name": "Sincronizar promedios - POST /api/reportes/promedios",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/reportes/promedios"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -7,13 +7,16 @@ public class RequestRegistrarMateria {
     private String codigo;
     @JsonProperty("nombre")
     private String nombre;
+    @JsonProperty("institucionId")
+    private String institucionId;
 
     public RequestRegistrarMateria() {
     }
 
-    public RequestRegistrarMateria(String codigo, String nombre) {
+    public RequestRegistrarMateria(String codigo, String nombre, String institucionId) {
         this.codigo = codigo;
         this.nombre = nombre;
+        this.institucionId = institucionId;
     }
 
     public String getCodigo() {
@@ -30,5 +33,13 @@ public class RequestRegistrarMateria {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public String getInstitucionId() {
+        return institucionId;
+    }
+
+    public void setInstitucionId(String institucionId) {
+        this.institucionId = institucionId;
     }
 }
