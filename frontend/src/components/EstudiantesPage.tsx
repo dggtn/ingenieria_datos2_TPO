@@ -288,7 +288,7 @@ export default function EstudiantesPage({ onBackHome }: Props) {
     setLoading(true);
     setMensaje('');
     try {
-      await axios.post('http://localhost:8080/api/estudiantes', {
+      await axios.post('http://localhost:8080/api/estudiantes/registrar', {
         idNacional,
         nombre,
         email,

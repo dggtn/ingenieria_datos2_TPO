@@ -30,13 +30,13 @@
           }
         },
         {
-          "name": "Crear - POST /api/estudiantes",
+          "name": "Crear - POST /api/estudiantes/registrar",
           "request": {
             "method": "POST",
             "header": [
               { "key": "Content-Type", "value": "application/json" }
             ],
-            "url": "{{baseUrl}}/api/estudiantes",
+            "url": "{{baseUrl}}/api/estudiantes/registrar",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"idNacional\": \"9001015800087\",\n  \"nombre\": \"Lerato Mokoena\",\n  \"paisOrigen\": \"Sudafrica\",\n  \"email\": \"lerato.mokoena@studentmail.za\",\n  \"institucionActual\": \"\"\n}"
