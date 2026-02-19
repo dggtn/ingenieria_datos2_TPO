@@ -32,7 +32,7 @@
     <li>Docker Desktop (Motor de contenedores)</li>
     <li>Java 17+ (Spring Boot Backend)</li>
     <li>Node.js 18+ (React Frontend)</li>
-    <li>DBeaver (Visualización de datos)</li>
+    <li>DBeaver (Visualizacion de datos)</li>
 </ul>
 
 <h2>Guía de Instalación</h2>
