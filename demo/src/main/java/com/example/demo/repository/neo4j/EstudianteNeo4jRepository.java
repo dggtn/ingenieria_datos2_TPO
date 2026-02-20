@@ -17,36 +17,46 @@ public interface EstudianteNeo4jRepository extends Neo4jRepository<Estudiante, S
             "WITH e\n" +
             "MATCH (i:Institucion {id: $idInstitucion})\n" +
             "MERGE (e)-[r:ESTUDIO_EN]->(i)\n" +
-            "SET r.periodo = $periodo")
+            "SET r.periodo = CASE WHEN $periodo IS NULL OR $periodo = '' THEN r.periodo ELSE $periodo END")
     void registrarDondeEstudio(String idEstudiante, String idInstitucion, String periodo);
 
     @Query ("MATCH (e:Estudiante {id: $idEstudiante})\n" +
             "WITH e\n" +
             "MATCH (m:Materia {id: $idMateria})\n" +
             "MERGE (e)-[r:CURSO]->(m)\n" +
-            "SET r.periodo = $periodo,r.nivel = $nivel,r.resultado=$resultado")
-    void registrarCursada(String idEstudiante,String idMateria,Double resultado,String periodo,String nivel);
+            "SET r.periodo = CASE WHEN $periodo IS NULL OR $periodo = '' THEN r.periodo ELSE $periodo END,\n" +
+            "    r.nivel = CASE WHEN $nivel IS NULL OR $nivel = '' THEN r.nivel ELSE $nivel END,\n" +
+            "    r.resultado=$resultado,\n" +
+            "    r.notaOriginal = $notaOriginal")
+    void registrarCursada(String idEstudiante,String idMateria,Double resultado,String periodo,String nivel,String notaOriginal);
     @Query ( "MATCH (m:Materia {id: $idMateria})\n" +
             "WITH m\n" +
             "MATCH (i:Institucion {id: $idInstitucion})\n" +
             "MERGE (m)-[r:SE_DICTA_EN]->(i)\n" +
-            "SET r.nivel = $nivel")
+            "SET r.nivel = CASE WHEN $nivel IS NULL OR $nivel = '' THEN r.nivel ELSE $nivel END")
     void registrarDondeDictaMateria(String idInstitucion,String idMateria,String periodo,String nivel);
 
     @Query ( "MATCH (e:Estudiante)-[curso:CURSO]->(m:Materia)\n" +
             "RETURN e.paisOrigen AS pais, \n" +
-            "       avg(curso.promedio) AS promedio,\n" +
+            "       avg(curso.resultado) AS promedio,\n" +
             "       'PAIS' AS tipo")
     List<ReportePromedio> calcularpromedioPorPais();
     @Query ( "MATCH (e:Estudiante)-[curso:CURSO]->(m:Materia)\n" +
             "MATCH (e)-[:ESTUDIO_EN]->(i:Institucion)\n" +
             "RETURN i.nombre AS nombre, \n" +
-            "       avg(curso.promedio) AS promedio,\n" +
+            "       avg(curso.resultado) AS promedio,\n" +
             "       'INSTITUTO' AS tipo")
     List<ReportePromedio> calcularPromedioPorInstitucion();
 
     @Query("MATCH (e:Estudiante)-[r:CURSO]->(m:Materia) WHERE e.id=$idEstudiante " +
-            "RETURN m.nombre AS materia, r.promedio AS promedio")
+            "RETURN m.nombre AS materia, coalesce(r.notaOriginal, toString(r.resultado)) AS notaOriginal")
     List<ReporteAcademico> obtenerDetalleAcademicoPorInstitucion(@Param("idEstudiante") String idEstudiante);
+
+    @Query("MATCH (e:Estudiante) RETURN e.id AS id, e.nombre AS nombre ORDER BY e.nombre")
+    List<Map<String, Object>> listarEstudiantes();
+
+    @Query("MATCH (e:Estudiante {id: $idEstudiante})-[:ESTUDIO_EN]->(i:Institucion) " +
+            "RETURN DISTINCT i.id AS id, coalesce(i.nombre, i.id) AS nombre ORDER BY nombre")
+    List<Map<String, Object>> listarInstitucionesPorEstudiante(@Param("idEstudiante") String idEstudiante);
 }
 

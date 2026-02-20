@@ -2,18 +2,18 @@ package com.example.demo.model;
 
 public class ReporteAcademico {
     private String materia;
-    private Double promedio;
+    private String notaOriginal;
 
     public ReporteAcademico() {}
 
-    public ReporteAcademico(String nombre, Double promedio) {
+    public ReporteAcademico(String nombre, String notaOriginal) {
         this.materia = nombre;
-        this.promedio = promedio;
+        this.notaOriginal = notaOriginal;
     }
 
     public String getMateria() { return materia; }
     public void setMateria(String materia) { this.materia = materia; }
-    public Double getPromedio() { return promedio; }
-    public void setPromedio(Double promedio) { this.promedio = promedio; }
+    public String getNotaOriginal() { return notaOriginal; }
+    public void setNotaOriginal(String notaOriginal) { this.notaOriginal = notaOriginal; }
 }
 

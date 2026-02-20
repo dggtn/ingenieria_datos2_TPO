@@ -1,35 +1,50 @@
 package com.example.demo.service;
 
 import com.example.demo.model.Calificacion;
+import com.example.demo.model.CalificacionCassandra;
+import com.example.demo.model.Estudiante;
+import com.example.demo.model.Institucion;
 import com.example.demo.model.LegislacionConversion;
 import com.example.demo.model.Reporte;
 import com.example.demo.model.ReportePromedio;
 import com.example.demo.model.RequestRegistrarCalificacion;
+import com.example.demo.repository.cassandra.CalificacionCassandraRepository;
 import com.example.demo.repository.cassandra.ReporteCassandraRepository;
 import com.example.demo.repository.mongo.CalificacionMONGORepository;
 import com.example.demo.repository.mongo.LegislacionConversionMONGORepository;
 import com.example.demo.repository.neo4j.EstudianteNeo4jRepository;
+import com.example.demo.repository.neo4j.InstitucionNeo4jRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class CalificacionService {
+    private static final DateTimeFormatter PERIOD_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE;
 
     @Autowired
     private CalificacionMONGORepository calificacionRepository;
     @Autowired
     private EstudianteNeo4jRepository neo4jRepository;
     @Autowired
+    private InstitucionNeo4jRepository institucionNeo4jRepository;
+    @Autowired
     private ReporteCassandraRepository cassandraRepository;
     @Autowired
+    private CalificacionCassandraRepository calificacionCassandraRepository;
+    @Autowired
     private LegislacionConversionMONGORepository legislacionRepository;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private Double aDouble(Object valor) {
         if (valor instanceof Number) {
@@ -64,6 +79,8 @@ public class CalificacionService {
         c.setMetadata(requestRegistrarCalificacion.getMetadatos());
         c.setAuditor("auditor");
         c.setFechaProcesamiento(LocalDateTime.now());
+        c.setNotaOriginal(construirNotaOriginalTexto(requestRegistrarCalificacion));
+        c.setNotaOriginalNumerica(resultadoPromedioOriginalNumerico(requestRegistrarCalificacion));
 
         Double resultadoSA = calcularConversionSudafrica(requestRegistrarCalificacion);
         c.setConversiones(resultadoSA);
@@ -71,13 +88,53 @@ public class CalificacionService {
         String idEstudiante = c.getEstudianteId();
         String idInstitucion = requestRegistrarCalificacion.getInstitucion();
         String idMateria = requestRegistrarCalificacion.getMateria();
-        String periodo = (String) requestRegistrarCalificacion.getMetadatos().get("periodo");
-        String nivel = (String) requestRegistrarCalificacion.getMetadatos().get("nivel");
+        String periodo = LocalDate.now().format(PERIOD_FORMAT);
+        String nivel = nullableMeta(requestRegistrarCalificacion.getMetadatos(), "nivel");
+        String notaOriginalTexto = c.getNotaOriginal();
+        Double promedioOriginal = c.getNotaOriginalNumerica();
+        if (promedioOriginal == null) {
+            promedioOriginal = resultadoSA;
+        }
 
         neo4jRepository.registrarDondeEstudio(idEstudiante, idInstitucion, periodo);
-        neo4jRepository.registrarCursada(idEstudiante, idMateria, resultadoSA, periodo, nivel);
+        neo4jRepository.registrarCursada(idEstudiante, idMateria, promedioOriginal, periodo, nivel, notaOriginalTexto);
         neo4jRepository.registrarDondeDictaMateria(idInstitucion, idMateria, periodo, nivel);
-        return calificacionRepository.save(c);
+        Calificacion guardada = calificacionRepository.save(c);
+        registrarAuditoriaCassandra("CREACION", guardada, requestRegistrarCalificacion);
+        return guardada;
+    }
+
+    public Calificacion modificarCalificacion(String calificacionId, RequestRegistrarCalificacion requestRegistrarCalificacion) {
+        Calificacion existente = calificacionRepository.findById(calificacionId)
+                .orElseThrow(() -> new IllegalArgumentException("No existe calificacion con id " + calificacionId));
+
+        existente.setEstudianteId(requestRegistrarCalificacion.getEstudiante());
+        existente.setMateriaId(requestRegistrarCalificacion.getMateria());
+        existente.setPaisOrigen(requestRegistrarCalificacion.getPaisOrigen());
+        existente.setMetadata(requestRegistrarCalificacion.getMetadatos());
+        existente.setFechaProcesamiento(LocalDateTime.now());
+        existente.setNotaOriginal(construirNotaOriginalTexto(requestRegistrarCalificacion));
+        existente.setNotaOriginalNumerica(resultadoPromedioOriginalNumerico(requestRegistrarCalificacion));
+        existente.setConversiones(calcularConversionSudafrica(requestRegistrarCalificacion));
+
+        String idEstudiante = existente.getEstudianteId();
+        String idInstitucion = requestRegistrarCalificacion.getInstitucion();
+        String idMateria = requestRegistrarCalificacion.getMateria();
+        String periodo = LocalDate.now().format(PERIOD_FORMAT);
+        String nivel = nullableMeta(requestRegistrarCalificacion.getMetadatos(), "nivel");
+        String notaOriginalTexto = existente.getNotaOriginal();
+        Double promedioOriginal = existente.getNotaOriginalNumerica();
+        if (promedioOriginal == null) {
+            promedioOriginal = existente.getConversiones();
+        }
+
+        neo4jRepository.registrarDondeEstudio(idEstudiante, idInstitucion, periodo);
+        neo4jRepository.registrarCursada(idEstudiante, idMateria, promedioOriginal, periodo, nivel, notaOriginalTexto);
+        neo4jRepository.registrarDondeDictaMateria(idInstitucion, idMateria, periodo, nivel);
+
+        Calificacion actualizada = calificacionRepository.save(existente);
+        registrarAuditoriaCassandra("MODIFICACION", actualizada, requestRegistrarCalificacion);
+        return actualizada;
     }
 
     public Double calcularConversionSudafrica(RequestRegistrarCalificacion request) {
@@ -187,5 +244,213 @@ public class CalificacionService {
         double klassenArbeit = aDouble(metadatos.get("KlassenArbeit"));
         double mundlichArbeit = aDouble(metadatos.get("MundlichArbeit"));
         return (regla.getAlemaniaBase() - ((klassenArbeit + mundlichArbeit) / 2.0)) * regla.getAlemaniaFactor();
+    }
+
+    private void registrarAuditoriaCassandra(String operacion, Calificacion calificacion, RequestRegistrarCalificacion request) {
+        Estudiante estudiante = neo4jRepository.findById(calificacion.getEstudianteId()).orElse(null);
+        Institucion institucion = institucionNeo4jRepository.findById(request.getInstitucion()).orElse(null);
+
+        CalificacionCassandra fila = new CalificacionCassandra();
+        fila.setEventoId(UUID.randomUUID().toString());
+        fila.setOperacion(operacion);
+        fila.setFechaEvento(LocalDateTime.now());
+
+        fila.setCalificacionId(calificacion.getId());
+
+        fila.setEstudianteId(estudiante != null ? estudiante.getId() : calificacion.getEstudianteId());
+        fila.setEstudianteNombre(estudiante != null ? estudiante.getNombre() : null);
+        fila.setEstudianteEmail(estudiante != null ? estudiante.getEmail() : null);
+        fila.setEstudiantePaisOrigen(estudiante != null ? estudiante.getPaisOrigen() : null);
+        fila.setEstudianteInstitucionActual(estudiante != null ? estudiante.getInstitucionActual() : null);
+        fila.setEstudianteHistorialJson(toJson(estudiante != null ? estudiante.getHistorial() : null));
+        fila.setEstudianteHistorialAcademicoJson(toJson(estudiante != null ? estudiante.getHistorialAcademico() : null));
+        fila.setEstudianteMateriasJson(toJson(estudiante != null ? estudiante.getMaterias() : null));
+
+        fila.setInstitucionId(institucion != null ? institucion.getId() : request.getInstitucion());
+        fila.setInstitucionNombre(institucion != null ? institucion.getNombre() : null);
+        fila.setInstitucionPais(institucion != null ? institucion.getPais() : null);
+        fila.setInstitucionCurriculumJson(toJson(institucion != null ? institucion.getCurriculum() : null));
+
+        fila.setNotaPaisOrigen(calificacion.getPaisOrigen());
+        fila.setNotaMateriaId(calificacion.getMateriaId());
+        fila.setNotaOriginal(calificacion.getNotaOriginal());
+        fila.setNotaOriginalNumerica(calificacion.getNotaOriginalNumerica());
+        fila.setNotaConversionSudafrica(calificacion.getConversiones());
+        fila.setNotaAuditor(calificacion.getAuditor());
+        fila.setNotaFechaProcesamiento(calificacion.getFechaProcesamiento());
+        fila.setNotaMetadataJson(toJson(calificacion.getMetadata()));
+        fila.setNotaSnapshotJson(toJson(calificacion));
+
+        calificacionCassandraRepository.save(fila);
+    }
+
+    private String nullableMeta(Map<String, Object> metadatos, String key) {
+        if (metadatos == null || metadatos.get(key) == null) {
+            return null;
+        }
+        String value = String.valueOf(metadatos.get(key)).trim();
+        return value.isEmpty() ? null : value;
+    }
+
+    private double resultadoPromedioOriginalNumerico(RequestRegistrarCalificacion request) {
+        Map<String, Object> metadatos = request.getMetadatos();
+        if (metadatos == null) {
+            return 0.0;
+        }
+
+        String pais = normalizarPais(request.getPaisOrigen());
+        if ("argentina".equals(pais)) {
+            return (aDouble(metadatos.get("primer_parcial"))
+                    + aDouble(metadatos.get("segundo_parcial"))
+                    + aDouble(metadatos.get("examen_final"))) / 3.0;
+        }
+        if ("usa".equals(pais)) {
+            double promedio = (convertirEscalaUsaRaw(metadatos.get("semester"))
+                    + convertirEscalaUsaRaw(metadatos.get("semester_2"))) / 2.0;
+            return normalizarEscalaUsa(promedio);
+        }
+        if ("uk".equals(pais)) {
+            double promedio = (convertirEscalaUkRaw(metadatos.get("coursework"))
+                    + convertirEscalaUkRaw(metadatos.get("mock_exam"))
+                    + convertirEscalaUkRaw(metadatos.get("final_grade"))) / 3.0;
+            return normalizarEscalaUk(promedio);
+        }
+        if ("alemania".equals(pais)) {
+            double promedio = (aDouble(metadatos.get("KlassenArbeit")) + aDouble(metadatos.get("MundlichArbeit"))) / 2.0;
+            return normalizarEscalaAlemania(promedio);
+        }
+        return 0.0;
+    }
+
+    private String construirNotaOriginalTexto(RequestRegistrarCalificacion request) {
+        Map<String, Object> metadatos = request.getMetadatos();
+        if (metadatos == null) {
+            return "";
+        }
+        String pais = normalizarPais(request.getPaisOrigen());
+        if ("argentina".equals(pais)) {
+            return formatearDecimal((aDouble(metadatos.get("primer_parcial"))
+                    + aDouble(metadatos.get("segundo_parcial"))
+                    + aDouble(metadatos.get("examen_final"))) / 3.0);
+        }
+        if ("usa".equals(pais)) {
+            double promedio = (convertirEscalaUsaRaw(metadatos.get("semester"))
+                    + convertirEscalaUsaRaw(metadatos.get("semester_2"))) / 2.0;
+            return escalaUsaTexto(normalizarEscalaUsa(promedio));
+        }
+        if ("uk".equals(pais)) {
+            double promedio = (convertirEscalaUkRaw(metadatos.get("coursework"))
+                    + convertirEscalaUkRaw(metadatos.get("mock_exam"))
+                    + convertirEscalaUkRaw(metadatos.get("final_grade"))) / 3.0;
+            return escalaUkTexto(normalizarEscalaUk(promedio));
+        }
+        if ("alemania".equals(pais)) {
+            double promedio = (aDouble(metadatos.get("KlassenArbeit")) + aDouble(metadatos.get("MundlichArbeit"))) / 2.0;
+            return formatearDecimal(normalizarEscalaAlemania(promedio));
+        }
+        return "";
+    }
+
+    private double convertirEscalaUsaRaw(Object valor) {
+        if (valor == null) {
+            return 0.0;
+        }
+        return switch (valor.toString().trim().toUpperCase()) {
+            case "A" -> 4.0;
+            case "B" -> 3.0;
+            case "C" -> 2.0;
+            case "D" -> 1.0;
+            default -> 0.0;
+        };
+    }
+
+    private double convertirEscalaUkRaw(Object valor) {
+        if (valor == null) {
+            return 0.0;
+        }
+        return switch (valor.toString().trim().toUpperCase()) {
+            case "A*" -> 7.0;
+            case "A" -> 6.0;
+            case "B" -> 5.0;
+            case "C" -> 4.0;
+            case "D" -> 3.0;
+            case "E" -> 2.0;
+            case "F" -> 1.0;
+            default -> 0.0;
+        };
+    }
+
+    private double normalizarEscalaUsa(double promedio) {
+        double[] escala = {4.0, 3.0, 2.0, 1.0, 0.0};
+        double elegido = escala[0];
+        double mejorDist = Math.abs(promedio - elegido);
+        for (double v : escala) {
+            double d = Math.abs(promedio - v);
+            if (d < mejorDist) {
+                mejorDist = d;
+                elegido = v;
+            }
+        }
+        return elegido;
+    }
+
+    private double normalizarEscalaUk(double promedio) {
+        long redondeado = Math.round(promedio);
+        if (redondeado < 1) {
+            return 1.0;
+        }
+        if (redondeado > 7) {
+            return 7.0;
+        }
+        return (double) redondeado;
+    }
+
+    private double normalizarEscalaAlemania(double promedio) {
+        double acotado = Math.max(1.0, Math.min(6.0, promedio));
+        return Math.round(acotado * 10.0) / 10.0;
+    }
+
+    private String escalaUsaTexto(double valor) {
+        if (valor >= 4.0) {
+            return "A";
+        }
+        if (valor >= 3.0) {
+            return "B";
+        }
+        if (valor >= 2.0) {
+            return "C";
+        }
+        if (valor >= 1.0) {
+            return "D";
+        }
+        return "F";
+    }
+
+    private String escalaUkTexto(double valor) {
+        int v = (int) Math.round(valor);
+        return switch (v) {
+            case 7 -> "A*";
+            case 6 -> "A";
+            case 5 -> "B";
+            case 4 -> "C";
+            case 3 -> "D";
+            case 2 -> "E";
+            default -> "F";
+        };
+    }
+
+    private String formatearDecimal(double valor) {
+        return String.format(java.util.Locale.US, "%.1f", valor);
+    }
+
+    private String toJson(Object value) {
+        if (value == null) {
+            return null;
+        }
+        try {
+            return objectMapper.writeValueAsString(value);
+        } catch (JsonProcessingException e) {
+            return "{\"error\":\"serialization_failed\"}";
+        }
     }
 }

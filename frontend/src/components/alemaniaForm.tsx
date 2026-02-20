@@ -1,4 +1,4 @@
-const alemaniaForm = ({ setGradeDetails }: any) => {
+﻿const alemaniaForm = ({ setGradeDetails }: any) => {
   return (
     <div className="space-y-3">
       <input type="number" step="0.1" min="1" max="6" placeholder="Klassenarbeit 1"
@@ -11,7 +11,7 @@ const alemaniaForm = ({ setGradeDetails }: any) => {
         }
         className="w-full border p-2 rounded-lg"
       />
-      <input type="number" step="0.1" min="1" max="6" placeholder="Mündliche Mitarbeit"
+      <input type="number" step="0.1" min="1" max="6" placeholder="Mundliche Mitarbeit"
         onChange={(e) =>
           setGradeDetails((prev: any) => ({
             ...prev,

@@ -115,5 +115,13 @@ public class    Estudiante {
     public void curso(CursoMateria relacion) {
         materias.add(relacion);
     }
+
+    public List<CursoMateria> getMaterias() {
+        return materias;
+    }
+
+    public void setMaterias(List<CursoMateria> materias) {
+        this.materias = materias;
+    }
 }
 

@@ -14,7 +14,8 @@ public class Calificacion {
     private String estudianteId;
     private String materiaId;
     private String paisOrigen;
-    private Double notaOriginal;
+    private String notaOriginal;
+    private Double notaOriginalNumerica;
     private String auditor;
     private LocalDateTime fechaProcesamiento;
 
@@ -25,12 +26,13 @@ public class Calificacion {
     public Calificacion() {
     }
 
-    public Calificacion(String id, String estudianteId, String materiaId, String paisOrigen, Double notaOriginal, String auditor, LocalDateTime fechaProcesamiento, Map<String, Object> metadata, Double conversiones) {
+    public Calificacion(String id, String estudianteId, String materiaId, String paisOrigen, String notaOriginal, Double notaOriginalNumerica, String auditor, LocalDateTime fechaProcesamiento, Map<String, Object> metadata, Double conversiones) {
         this.id = id;
         this.estudianteId = estudianteId;
         this.materiaId = materiaId;
         this.paisOrigen = paisOrigen;
         this.notaOriginal = notaOriginal;
+        this.notaOriginalNumerica = notaOriginalNumerica;
         this.auditor = auditor;
         this.fechaProcesamiento = fechaProcesamiento;
         this.metadata = metadata;
@@ -69,12 +71,20 @@ public class Calificacion {
         this.paisOrigen = paisOrigen;
     }
 
-    public Double getNotaOriginal() {
+    public String getNotaOriginal() {
         return notaOriginal;
     }
 
-    public void setNotaOriginal(Double notaOriginal) {
+    public void setNotaOriginal(String notaOriginal) {
         this.notaOriginal = notaOriginal;
+    }
+
+    public Double getNotaOriginalNumerica() {
+        return notaOriginalNumerica;
+    }
+
+    public void setNotaOriginalNumerica(Double notaOriginalNumerica) {
+        this.notaOriginalNumerica = notaOriginalNumerica;
     }
 
     public String getAuditor() {

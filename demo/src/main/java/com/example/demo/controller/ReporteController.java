@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 import com.example.demo.model.Reporte;
+import com.example.demo.model.ReporteInstitucionRanking;
 import com.example.demo.repository.cassandra.ReporteCassandraRepository;
 import com.example.demo.service.ReporteServicio;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,12 @@ public class ReporteController {
         return cassandraRepo.obtenerTopPorTipo("INSTITUTO", limit);
 
     }
+
+    @GetMapping("/instituciones-ranking")
+    public List<ReporteInstitucionRanking> getInstitucionesRanking() {
+        return rankingService.obtenerRankingInstitucionesDesdeCalificaciones();
+    }
+
     @PostMapping("/promedios")
     public void guardarPromedios() {
         rankingService.sincronizarDatosAnaliticos();

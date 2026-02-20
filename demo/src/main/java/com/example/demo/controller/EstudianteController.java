@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,5 +44,24 @@ public class EstudianteController {
 
         return estudianteNeo4jRepository.obtenerDetalleAcademicoPorInstitucion(id);
 
+    }
+
+    @GetMapping("/opciones")
+    public List<Map<String, Object>> listarOpcionesEstudiantes() {
+        List<Map<String, Object>> salida = new ArrayList<>();
+        List<Estudiante> estudiantes = estudianteNeo4jRepository.findAll();
+        estudiantes.sort(Comparator.comparing(Estudiante::getNombre, Comparator.nullsLast(String::compareToIgnoreCase)));
+        for (Estudiante estudiante : estudiantes) {
+            Map<String, Object> fila = new HashMap<>();
+            fila.put("id", estudiante.getId());
+            fila.put("nombre", estudiante.getNombre());
+            salida.add(fila);
+        }
+        return salida;
+    }
+
+    @GetMapping("/{id}/instituciones")
+    public List<Map<String, Object>> listarInstitucionesPorEstudiante(@PathVariable("id") String id) {
+        return estudianteNeo4jRepository.listarInstitucionesPorEstudiante(id);
     }
 }

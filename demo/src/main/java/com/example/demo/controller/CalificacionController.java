@@ -32,6 +32,13 @@ public class CalificacionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Calificacion> modificar(@PathVariable("id") String id,
+                                                  @RequestBody RequestRegistrarCalificacion requestRegistrarCalificacion) {
+        Calificacion actualizada = calificacionService.modificarCalificacion(id, requestRegistrarCalificacion);
+        return ResponseEntity.ok(actualizada);
+    }
+
     @PostMapping("/simular-conversion")
     public ResponseEntity<Map<String, Object>> verConversion(@RequestBody RequestRegistrarCalificacion requestRegistrarCalificacion) {
 

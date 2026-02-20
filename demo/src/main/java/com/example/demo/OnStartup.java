@@ -6,10 +6,17 @@ import com.example.demo.model.EstudioEn;
 import com.example.demo.model.Institucion;
 import com.example.demo.model.LegislacionConversion;
 import com.example.demo.model.Materia;
+import com.example.demo.model.RequestRegistrarCalificacion;
+import com.example.demo.model.RequestRegistrarEstudiante;
+import com.example.demo.repository.cassandra.CalificacionCassandraRepository;
+import com.example.demo.repository.mongo.CalificacionMONGORepository;
+import com.example.demo.repository.mongo.EstudianteMONGORepository;
 import com.example.demo.repository.mongo.LegislacionConversionMONGORepository;
 import com.example.demo.repository.neo4j.EstudianteNeo4jRepository;
 import com.example.demo.repository.neo4j.InstitucionNeo4jRepository;
 import com.example.demo.repository.neo4j.MateriaNeo4jRepository;
+import com.example.demo.service.CalificacionService;
+import com.example.demo.service.EstudianteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
@@ -18,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +44,16 @@ public class OnStartup implements ApplicationListener<ApplicationReadyEvent> {
 
     @Autowired
     private LegislacionConversionMONGORepository legislacionRepo;
+    @Autowired
+    private EstudianteMONGORepository estudianteMongoRepo;
+    @Autowired
+    private CalificacionMONGORepository calificacionMongoRepo;
+    @Autowired
+    private CalificacionCassandraRepository calificacionCassandraRepo;
+    @Autowired
+    private EstudianteService estudianteService;
+    @Autowired
+    private CalificacionService calificacionService;
 
     @Override
     @Transactional
@@ -44,6 +62,9 @@ public class OnStartup implements ApplicationListener<ApplicationReadyEvent> {
         materiaRepo.deleteAll();
         institucionRepo.deleteAll();
         estudiantesRepo.deleteAll();
+        estudianteMongoRepo.deleteAll();
+        calificacionMongoRepo.deleteAll();
+        calificacionCassandraRepo.deleteAll();
 
         seedLegislacionConversion();
 
@@ -69,53 +90,37 @@ public class OnStartup implements ApplicationListener<ApplicationReadyEvent> {
                 "Colegio 3 de febrero",
                 matematica, quimica, futbol, gimnasia, carpinteria, informatica);
 
-        // ESTUDIANTES
-        Estudiante daniela = insertartEstudiante("35111222", "Daniela", "Argentina");
-        Estudiante alejandro = insertartEstudiante("34111222", "Alejandro", "Argentina");
-        Estudiante martin = insertartEstudiante("33111222", "Martin", "Argentina");
-        Estudiante tomas = insertartEstudiante("32111222", "Tomas", "Argentina");
-        Estudiante gabriela = insertartEstudiante("31111222", "Gabriela", "Argentina");
-        Estudiante juana = insertartEstudiante("30111222", "Juana", "Argentina");
+        // ESTUDIANTES Y CALIFICACIONES POR API
+        crearEstudianteViaApi("35111222", "Daniela", "Argentina", "PADRON-001", "daniela@mail.com");
+        crearEstudianteViaApi("34111222", "Alejandro", "USA", "PADRON-002", "alejandro@mail.com");
+        crearEstudianteViaApi("33111222", "Martin", "UK", "PADRON-001", "martin@mail.com");
+        crearEstudianteViaApi("32111222", "Tomas", "Alemania", "PADRON-002", "tomas@mail.com");
+        crearEstudianteViaApi("31111222", "Gabriela", "Argentina", "PADRON-001", "gabriela@mail.com");
+        crearEstudianteViaApi("30111222", "Juana", "USA", "PADRON-002", "juana@mail.com");
 
+        // Argentina
+        registrarCalificacionArgentina("35111222", "PADRON-001", "CUR-MAT", 9, 8, 10, "2023-2024", "SECUNDARIA");
+        registrarCalificacionArgentina("35111222", "PADRON-001", "CUR-LIT", 8, 9, 8, "2023-2024", "SECUNDARIA");
+        registrarCalificacionArgentina("31111222", "PADRON-001", "CUR-BIO", 7, 8, 9, "2023-2024", "SECUNDARIA");
+        registrarCalificacionArgentina("31111222", "PADRON-001", "CUR-FIS", 8, 7, 8, "2023-2024", "SECUNDARIA");
 
-        // ESTUDIANTE CURSO EN
-        estudianteCursoEn(daniela, uade, "2023-2026");
-        estudianteCursoEn(alejandro, unlam, "2007-2015");
-        estudianteCursoEn(martin, uade, "2023-2026");
-        estudianteCursoEn(tomas, unlam, "2007-2015");
-        estudianteCursoEn(gabriela, uade, "2023-2026");
-        estudianteCursoEn(juana, unlam, "2007-2015");
+        // USA
+        registrarCalificacionUsa("34111222", "PADRON-002", "CUR-QUI", "B", "A", "2018-2019", "SECUNDARIA");
+        registrarCalificacionUsa("34111222", "PADRON-002", "CUR-INF", "A", "B", "2018-2019", "SECUNDARIA");
+        registrarCalificacionUsa("30111222", "PADRON-002", "CUR-GIM", "C", "B", "2019-2020", "SECUNDARIA");
+        registrarCalificacionUsa("30111222", "PADRON-002", "CUR-FUT", "B", "B", "2019-2020", "SECUNDARIA");
 
-        // ESTUDIANTE CURSO MATERIA
-        estudianteCurso(daniela, matematica, 9.0);
-        estudianteCurso(daniela, literatura, 8.5);
-        estudianteCurso(daniela, biologia, 10.0);
-        estudianteCurso(daniela, gimnasia, 5.0);
-        estudianteCurso(daniela, arte, 9.0);
-        estudianteCurso(daniela, futbol, 8.5);
-        estudianteCurso(daniela, fisica, 10.0);
-        estudianteCurso(daniela, quimica, 5.0);
-        estudianteCurso(daniela, carpinteria, 9.0);
-        estudianteCurso(daniela, informatica, 8.5);
+        // UK
+        registrarCalificacionUk("33111222", "PADRON-001", "CUR-ART", "A", "B", "A*", "2020-2021", "SECUNDARIA");
+        registrarCalificacionUk("33111222", "PADRON-001", "CUR-MAT", "B", "B", "A", "2020-2021", "SECUNDARIA");
+        registrarCalificacionUk("33111222", "PADRON-001", "CUR-LIT", "A", "A", "A", "2021-2022", "SECUNDARIA");
+        registrarCalificacionUk("33111222", "PADRON-001", "CUR-BIO", "C", "B", "B", "2021-2022", "SECUNDARIA");
 
-
-        estudianteCurso(alejandro, matematica, 7.0);
-        estudianteCurso(alejandro, literatura, 4.0);
-        estudianteCurso(alejandro, biologia, 6.0);
-        estudianteCurso(alejandro, gimnasia, 10.0);
-        estudianteCurso(alejandro, arte, 9.0);
-        estudianteCurso(alejandro, futbol, 8.5);
-        estudianteCurso(alejandro, fisica, 10.0);
-        estudianteCurso(alejandro, quimica, 5.0);
-        estudianteCurso(alejandro, carpinteria, 9.0);
-        estudianteCurso(alejandro, informatica, 8.5);
-
-        estudiantesRepo.save(daniela);
-        estudiantesRepo.save(alejandro);
-        estudiantesRepo.save(martin);
-        estudiantesRepo.save(tomas);
-        estudiantesRepo.save(gabriela);
-        estudiantesRepo.save(juana);
+        // Alemania
+        registrarCalificacionAlemania("32111222", "PADRON-002", "CUR-CAR", 2.3, 2.0, "2022-2023", "SECUNDARIA");
+        registrarCalificacionAlemania("32111222", "PADRON-002", "CUR-QUI", 1.7, 2.3, "2022-2023", "SECUNDARIA");
+        registrarCalificacionAlemania("32111222", "PADRON-002", "CUR-INF", 2.0, 1.7, "2023-2024", "SECUNDARIA");
+        registrarCalificacionAlemania("32111222", "PADRON-002", "CUR-GIM", 2.7, 2.3, "2023-2024", "SECUNDARIA");
     }
 
     private void seedLegislacionConversion() {
@@ -226,5 +231,119 @@ public class OnStartup implements ApplicationListener<ApplicationReadyEvent> {
         materia.setNombre(nombre);
         materiaRepo.save(materia);
         return materia;
+    }
+
+    private void crearEstudianteViaApi(String idNacional, String nombre, String pais, String institucionActual, String email) {
+        RequestRegistrarEstudiante request = new RequestRegistrarEstudiante();
+        request.setIdNacional(idNacional);
+        request.setNombre(nombre);
+        request.setPaisOrigen(pais);
+        request.setInstitucionActual(institucionActual);
+        request.setEmail(email);
+        estudianteService.registrarEstudiante(request);
+    }
+
+    private void registrarCalificacionArgentina(
+            String estudianteId,
+            String institucionId,
+            String materiaId,
+            int primerParcial,
+            int segundoParcial,
+            int examenFinal,
+            String periodo,
+            String nivel) {
+        RequestRegistrarCalificacion request = new RequestRegistrarCalificacion();
+        request.setEstudiante(estudianteId);
+        request.setInstitucion(institucionId);
+        request.setMateria(materiaId);
+        request.setPaisOrigen("Argentina");
+
+        Map<String, Object> metadatos = new HashMap<>();
+        metadatos.put("primer_parcial", primerParcial);
+        metadatos.put("segundo_parcial", segundoParcial);
+        metadatos.put("examen_final", examenFinal);
+        metadatos.put("periodo", periodo);
+        metadatos.put("nivel", nivel);
+        metadatos.put("fecha_normativa", "2018-03-10");
+        request.setMetadatos(metadatos);
+
+        calificacionService.registrarCalificacionOriginal(request);
+    }
+
+    private void registrarCalificacionUsa(
+            String estudianteId,
+            String institucionId,
+            String materiaId,
+            String semester1,
+            String semester2,
+            String periodo,
+            String nivel) {
+        RequestRegistrarCalificacion request = new RequestRegistrarCalificacion();
+        request.setEstudiante(estudianteId);
+        request.setInstitucion(institucionId);
+        request.setMateria(materiaId);
+        request.setPaisOrigen("USA");
+
+        Map<String, Object> metadatos = new HashMap<>();
+        metadatos.put("semester", semester1);
+        metadatos.put("semester_2", semester2);
+        metadatos.put("periodo", periodo);
+        metadatos.put("nivel", nivel);
+        metadatos.put("fecha_normativa", "2018-03-10");
+        request.setMetadatos(metadatos);
+
+        calificacionService.registrarCalificacionOriginal(request);
+    }
+
+    private void registrarCalificacionUk(
+            String estudianteId,
+            String institucionId,
+            String materiaId,
+            String coursework,
+            String mockExam,
+            String finalGrade,
+            String periodo,
+            String nivel) {
+        RequestRegistrarCalificacion request = new RequestRegistrarCalificacion();
+        request.setEstudiante(estudianteId);
+        request.setInstitucion(institucionId);
+        request.setMateria(materiaId);
+        request.setPaisOrigen("UK");
+
+        Map<String, Object> metadatos = new HashMap<>();
+        metadatos.put("coursework", coursework);
+        metadatos.put("mock_exam", mockExam);
+        metadatos.put("final_grade", finalGrade);
+        metadatos.put("periodo", periodo);
+        metadatos.put("nivel", nivel);
+        metadatos.put("fecha_normativa", "2018-03-10");
+        request.setMetadatos(metadatos);
+
+        calificacionService.registrarCalificacionOriginal(request);
+    }
+
+    private void registrarCalificacionAlemania(
+            String estudianteId,
+            String institucionId,
+            String materiaId,
+            double klassenArbeit,
+            double mundlichArbeit,
+            String periodo,
+            String nivel) {
+        RequestRegistrarCalificacion request = new RequestRegistrarCalificacion();
+        request.setEstudiante(estudianteId);
+        request.setInstitucion(institucionId);
+        request.setMateria(materiaId);
+        request.setPaisOrigen("Alemania");
+
+        Map<String, Object> metadatos = new HashMap<>();
+        metadatos.put("KlassenArbeit", klassenArbeit);
+        metadatos.put("MundlichArbeit", mundlichArbeit);
+        metadatos.put("periodo", periodo);
+        metadatos.put("nivel", nivel);
+        metadatos.put("fecha_normativa", "2018-03-10");
+        request.setMetadatos(metadatos);
+
+        calificacionService.registrarCalificacionOriginal(request);
     }
 }

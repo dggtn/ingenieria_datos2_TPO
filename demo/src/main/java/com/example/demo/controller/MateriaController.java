@@ -8,6 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/materias")
@@ -25,5 +28,10 @@ public class MateriaController {
                 requestRegistrarMateria);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
+    }
+
+    @GetMapping("/instituciones/{idInstitucion}/opciones")
+    public List<Map<String, Object>> listarMateriasPorInstitucion(@PathVariable("idInstitucion") String idInstitucion) {
+        return materiaRepository.listarMateriasPorInstitucion(idInstitucion);
     }
 }
