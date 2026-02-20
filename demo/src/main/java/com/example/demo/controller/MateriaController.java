@@ -8,6 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,5 +36,19 @@ public class MateriaController {
     @GetMapping("/instituciones/{idInstitucion}/opciones")
     public List<Map<String, Object>> listarMateriasPorInstitucion(@PathVariable("idInstitucion") String idInstitucion) {
         return materiaRepository.listarMateriasPorInstitucion(idInstitucion);
+    }
+
+    @GetMapping("/opciones")
+    public List<Map<String, Object>> listarOpcionesMaterias() {
+        List<Map<String, Object>> salida = new ArrayList<>();
+        List<Materia> materias = materiaRepository.findAll();
+        materias.sort(Comparator.comparing(Materia::getNombre, Comparator.nullsLast(String::compareToIgnoreCase)));
+        for (Materia materia : materias) {
+            Map<String, Object> fila = new HashMap<>();
+            fila.put("id", materia.getId());
+            fila.put("nombre", materia.getNombre());
+            salida.add(fila);
+        }
+        return salida;
     }
 }

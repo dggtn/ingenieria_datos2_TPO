@@ -9,5 +9,6 @@ import java.util.List;
 @Repository
 public interface CalificacionMONGORepository extends MongoRepository<Calificacion,String> {
     List<Calificacion> findByPaisOrigen(String pais);
+    List<Calificacion> findByEstudianteIdOrderByFechaProcesamientoDesc(String estudianteId);
 
 }

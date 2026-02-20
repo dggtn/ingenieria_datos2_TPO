@@ -15,6 +15,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
@@ -41,8 +42,21 @@ public class EstudianteController {
 
     @GetMapping("/{id}/detalle-completo")
     public List<ReporteAcademico> getDetalleCompleto(@PathVariable("id") String id){
+        List<ReporteAcademico> detalle = estudianteNeo4jRepository.obtenerDetalleAcademicoPorInstitucion(id);
+        Map<String, Double> conversionPorMateria = calificacionMONGORepository
+                .findByEstudianteIdOrderByFechaProcesamientoDesc(id)
+                .stream()
+                .filter(c -> c.getMateriaId() != null)
+                .collect(Collectors.toMap(
+                        c -> c.getMateriaId(),
+                        c -> c.getConversiones(),
+                        (existente, nuevo) -> existente
+                ));
 
-        return estudianteNeo4jRepository.obtenerDetalleAcademicoPorInstitucion(id);
+        for (ReporteAcademico fila : detalle) {
+            fila.setNotaConvertidaSudafrica(conversionPorMateria.get(fila.getMateriaId()));
+        }
+        return detalle;
 
     }
 

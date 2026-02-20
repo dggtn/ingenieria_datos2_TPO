@@ -9,6 +9,6 @@ import java.util.List;
 
 @Repository
 public interface CalificacionCassandraRepository extends CassandraRepository<CalificacionCassandra, String> {
-    @Query("SELECT institucionid, institucionnombre, estudianteid, notaconversionsudafrica FROM calificaciones")
+    @Query("SELECT institucionid, institucionnombre, institucionpais, institucionprovincia, institucionniveleducativo, estudianteid, notaconversionsudafrica FROM calificaciones")
     List<CalificacionCassandra> obtenerDatosParaRankingInstituciones();
 }

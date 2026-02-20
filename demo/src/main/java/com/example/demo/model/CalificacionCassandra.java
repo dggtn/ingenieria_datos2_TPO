@@ -44,6 +44,10 @@ public class CalificacionCassandra {
     @Column
     private String institucionPais;
     @Column
+    private String institucionProvincia;
+    @Column
+    private String institucionNivelEducativo;
+    @Column
     private String institucionCurriculumJson;
 
     @Column
@@ -191,6 +195,22 @@ public class CalificacionCassandra {
 
     public void setInstitucionCurriculumJson(String institucionCurriculumJson) {
         this.institucionCurriculumJson = institucionCurriculumJson;
+    }
+
+    public String getInstitucionProvincia() {
+        return institucionProvincia;
+    }
+
+    public void setInstitucionProvincia(String institucionProvincia) {
+        this.institucionProvincia = institucionProvincia;
+    }
+
+    public String getInstitucionNivelEducativo() {
+        return institucionNivelEducativo;
+    }
+
+    public void setInstitucionNivelEducativo(String institucionNivelEducativo) {
+        this.institucionNivelEducativo = institucionNivelEducativo;
     }
 
     public String getNotaPaisOrigen() {

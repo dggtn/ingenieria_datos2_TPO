@@ -79,10 +79,19 @@ public class CalificacionService {
         c.setMetadata(requestRegistrarCalificacion.getMetadatos());
         c.setAuditor("auditor");
         c.setFechaProcesamiento(LocalDateTime.now());
-        c.setNotaOriginal(construirNotaOriginalTexto(requestRegistrarCalificacion));
-        c.setNotaOriginalNumerica(resultadoPromedioOriginalNumerico(requestRegistrarCalificacion));
+        boolean institucionSudafrica = esInstitucionSudafrica(requestRegistrarCalificacion);
+        if (institucionSudafrica) {
+            String scoreIngresado = extraerScoreIngresado(requestRegistrarCalificacion.getMetadatos());
+            c.setNotaOriginal(scoreIngresado);
+            c.setNotaOriginalNumerica(aDouble(scoreIngresado));
+        } else {
+            c.setNotaOriginal(construirNotaOriginalTexto(requestRegistrarCalificacion));
+            c.setNotaOriginalNumerica(resultadoPromedioOriginalNumerico(requestRegistrarCalificacion));
+        }
 
-        Double resultadoSA = calcularConversionSudafrica(requestRegistrarCalificacion);
+        Double resultadoSA = institucionSudafrica
+                ? c.getNotaOriginalNumerica()
+                : calcularConversionSudafrica(requestRegistrarCalificacion);
         c.setConversiones(resultadoSA);
 
         String idEstudiante = c.getEstudianteId();
@@ -113,9 +122,17 @@ public class CalificacionService {
         existente.setPaisOrigen(requestRegistrarCalificacion.getPaisOrigen());
         existente.setMetadata(requestRegistrarCalificacion.getMetadatos());
         existente.setFechaProcesamiento(LocalDateTime.now());
-        existente.setNotaOriginal(construirNotaOriginalTexto(requestRegistrarCalificacion));
-        existente.setNotaOriginalNumerica(resultadoPromedioOriginalNumerico(requestRegistrarCalificacion));
-        existente.setConversiones(calcularConversionSudafrica(requestRegistrarCalificacion));
+        boolean institucionSudafrica = esInstitucionSudafrica(requestRegistrarCalificacion);
+        if (institucionSudafrica) {
+            String scoreIngresado = extraerScoreIngresado(requestRegistrarCalificacion.getMetadatos());
+            existente.setNotaOriginal(scoreIngresado);
+            existente.setNotaOriginalNumerica(aDouble(scoreIngresado));
+            existente.setConversiones(existente.getNotaOriginalNumerica());
+        } else {
+            existente.setNotaOriginal(construirNotaOriginalTexto(requestRegistrarCalificacion));
+            existente.setNotaOriginalNumerica(resultadoPromedioOriginalNumerico(requestRegistrarCalificacion));
+            existente.setConversiones(calcularConversionSudafrica(requestRegistrarCalificacion));
+        }
 
         String idEstudiante = existente.getEstudianteId();
         String idInstitucion = requestRegistrarCalificacion.getInstitucion();
@@ -140,6 +157,9 @@ public class CalificacionService {
     public Double calcularConversionSudafrica(RequestRegistrarCalificacion request) {
         if (request == null || request.getPaisOrigen() == null) {
             return 0.0;
+        }
+        if (esInstitucionSudafrica(request)) {
+            return aDouble(extraerScoreIngresado(request.getMetadatos()));
         }
 
         LegislacionConversion regla = seleccionarRegla(resolverFechaNormativa(request));
@@ -192,6 +212,9 @@ public class CalificacionService {
     }
 
     private String normalizarPais(String paisOrigen) {
+        if (paisOrigen == null) {
+            return "";
+        }
         String p = paisOrigen.toLowerCase().trim();
         if (p.equals("estados unidos")) {
             return "usa";
@@ -199,7 +222,38 @@ public class CalificacionService {
         if (p.equals("inglaterra") || p.equals("reino unido")) {
             return "uk";
         }
+        if (p.equals("sudafrica") || p.equals("sudáfrica") || p.equals("south africa")) {
+            return "sudafrica";
+        }
         return p;
+    }
+
+    private boolean esInstitucionSudafrica(RequestRegistrarCalificacion request) {
+        if (request == null || request.getInstitucion() == null || request.getInstitucion().isBlank()) {
+            return false;
+        }
+        Institucion institucion = institucionNeo4jRepository.findById(request.getInstitucion()).orElse(null);
+        if (institucion == null || institucion.getPais() == null) {
+            return false;
+        }
+        return "sudafrica".equals(normalizarPais(institucion.getPais()));
+    }
+
+    private String extraerScoreIngresado(Map<String, Object> metadatos) {
+        if (metadatos == null) {
+            return "0";
+        }
+        Object score = metadatos.get("score");
+        if (score == null) {
+            score = metadatos.get("nota");
+        }
+        if (score == null) {
+            score = metadatos.get("resultado");
+        }
+        if (score == null) {
+            score = metadatos.get("valor");
+        }
+        return score == null ? "0" : String.valueOf(score).trim();
     }
 
     private double convertirArgentina(Map<String, Object> metadatos, LegislacionConversion regla) {
@@ -269,6 +323,8 @@ public class CalificacionService {
         fila.setInstitucionId(institucion != null ? institucion.getId() : request.getInstitucion());
         fila.setInstitucionNombre(institucion != null ? institucion.getNombre() : null);
         fila.setInstitucionPais(institucion != null ? institucion.getPais() : null);
+        fila.setInstitucionProvincia(institucion != null ? institucion.getProvincia() : null);
+        fila.setInstitucionNivelEducativo(institucion != null ? institucion.getNivelEducativo() : null);
         fila.setInstitucionCurriculumJson(toJson(institucion != null ? institucion.getCurriculum() : null));
 
         fila.setNotaPaisOrigen(calificacion.getPaisOrigen());

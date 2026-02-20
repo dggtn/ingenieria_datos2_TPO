@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 import com.example.demo.model.Reporte;
 import com.example.demo.model.ReporteInstitucionRanking;
+import com.example.demo.model.ReporteNivelEducativoRanking;
+import com.example.demo.model.ReporteProvinciaRanking;
 import com.example.demo.repository.cassandra.ReporteCassandraRepository;
 import com.example.demo.service.ReporteServicio;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,16 @@ public class ReporteController {
     @GetMapping("/instituciones-ranking")
     public List<ReporteInstitucionRanking> getInstitucionesRanking() {
         return rankingService.obtenerRankingInstitucionesDesdeCalificaciones();
+    }
+
+    @GetMapping("/provincias-ranking")
+    public List<ReporteProvinciaRanking> getProvinciasRanking() {
+        return rankingService.obtenerRankingProvinciasSudafricaDesdeCalificaciones();
+    }
+
+    @GetMapping("/niveles-educativos-ranking")
+    public List<ReporteNivelEducativoRanking> getNivelesEducativosRanking() {
+        return rankingService.obtenerRankingNivelEducativoSudafricaDesdeCalificaciones();
     }
 
     @PostMapping("/promedios")

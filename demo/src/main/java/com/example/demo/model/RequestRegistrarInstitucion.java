@@ -10,16 +10,22 @@ public class RequestRegistrarInstitucion {
     private String nombre;
     @JsonProperty("pais")
     private String pais;
+    @JsonProperty("provincia")
+    private String provincia;
+    @JsonProperty("nivelEducativo")
+    private String nivelEducativo;
     @JsonProperty("email")
     private String email;
 
     public RequestRegistrarInstitucion() {
     }
 
-    public RequestRegistrarInstitucion(String padron, String nombre, String pais, String email) {
+    public RequestRegistrarInstitucion(String padron, String nombre, String pais, String provincia, String nivelEducativo, String email) {
         this.padron = padron;
         this.nombre = nombre;
         this.pais = pais;
+        this.provincia = provincia;
+        this.nivelEducativo = nivelEducativo;
         this.email = email;
     }
 
@@ -45,6 +51,22 @@ public class RequestRegistrarInstitucion {
 
     public void setPais(String pais) {
         this.pais = pais;
+    }
+
+    public String getProvincia() {
+        return provincia;
+    }
+
+    public void setProvincia(String provincia) {
+        this.provincia = provincia;
+    }
+
+    public String getNivelEducativo() {
+        return nivelEducativo;
+    }
+
+    public void setNivelEducativo(String nivelEducativo) {
+        this.nivelEducativo = nivelEducativo;
     }
 
     public String getEmail() {
