@@ -126,7 +126,8 @@ export default function App() {
 
           <section className="bg-white/95 backdrop-blur-sm p-8 rounded-[2.5rem] shadow-2xl flex flex-col">
             <h2 className="text-2xl font-black text-blue-700 text-center mb-6">Grafo Académico</h2>
-            <button onClick={consultarDetalle} className="w-full bg-blue-500 hover:bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg mb-6 transition-all active:scale-95">
+            <button onClick={consultarDetalle} 
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg mb-6 transition-all active:scale-95">
               Consultar Neo4j
             </button>
             <div className="space-y-4 overflow-y-auto max-h-[400px] pr-2">
