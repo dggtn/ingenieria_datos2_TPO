@@ -14,6 +14,7 @@ import java.util.Map;
 public interface EstudianteNeo4jRepository extends Neo4jRepository<Estudiante, String> {
 
     @Query("MATCH (e:Estudiante {id: $idEstudiante})\n" +
+            "SET e.institucionActual = $idInstitucion\n" +
             "WITH e\n" +
             "MATCH (i:Institucion {id: $idInstitucion})\n" +
             "MERGE (e)-[r:ESTUDIO_EN]->(i)\n" +
@@ -29,12 +30,6 @@ public interface EstudianteNeo4jRepository extends Neo4jRepository<Estudiante, S
             "    r.resultado=$resultado,\n" +
             "    r.notaOriginal = $notaOriginal")
     void registrarCursada(String idEstudiante,String idMateria,Double resultado,String periodo,String nivel,String notaOriginal);
-    @Query ( "MATCH (m:Materia {id: $idMateria})\n" +
-            "WITH m\n" +
-            "MATCH (i:Institucion {id: $idInstitucion})\n" +
-            "MERGE (m)-[r:SE_DICTA_EN]->(i)\n" +
-            "SET r.nivel = CASE WHEN $nivel IS NULL OR $nivel = '' THEN r.nivel ELSE $nivel END")
-    void registrarDondeDictaMateria(String idInstitucion,String idMateria,String periodo,String nivel);
 
     @Query ( "MATCH (e:Estudiante)-[curso:CURSO]->(m:Materia)\n" +
             "RETURN e.paisOrigen AS pais, \n" +
@@ -49,7 +44,7 @@ public interface EstudianteNeo4jRepository extends Neo4jRepository<Estudiante, S
     List<ReportePromedio> calcularPromedioPorInstitucion();
 
     @Query("MATCH (e:Estudiante {id:$idEstudiante})-[r:CURSO]->(m:Materia) " +
-            "OPTIONAL MATCH (m)-[:SE_DICTA_EN]->(i:Institucion) " +
+            "OPTIONAL MATCH (i:Institucion)-[:OFRECE]->(m) " +
             "WITH m, r, head(collect(i.nombre)) AS institucionNombre " +
             "RETURN m.id AS materiaId, m.nombre AS materia, coalesce(institucionNombre, '-') AS institucion, coalesce(r.notaOriginal, toString(r.resultado)) AS notaOriginal")
     List<ReporteAcademico> obtenerDetalleAcademicoPorInstitucion(@Param("idEstudiante") String idEstudiante);

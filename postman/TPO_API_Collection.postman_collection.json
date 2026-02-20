@@ -1,15 +1,15 @@
 ﻿{
   "info": {
     "_postman_id": "9b3f5fce-3cd1-4e3d-9a15-1f2f8a66c201",
-    "name": "TPO API - Entidades",
+    "name": "TPO API - Entidades (Actualizada)",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "description": "Coleccion para probar endpoints actuales. Organizada por entidad con JSON de ejemplo."
+    "description": "Coleccion actualizada segun endpoints vigentes del backend."
   },
   "variable": [
     { "key": "baseUrl", "value": "http://localhost:8080" },
     { "key": "estudianteId", "value": "35111222" },
     { "key": "institucionId", "value": "PADRON-001" },
-    { "key": "materiaId", "value": "CUR-MAT" },
+    { "key": "materiaId", "value": "PADRON-001::CUR-MAT" },
     { "key": "calificacionId", "value": "REEMPLAZAR_ID_CALIFICACION" }
   ],
   "item": [
@@ -20,14 +20,26 @@
           "name": "Registrar Institucion",
           "request": {
             "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"padron\": \"PADRON-AR-101\",\n  \"nombre\": \"Instituto Nacional de Cordoba\",\n  \"pais\": \"Argentina\",\n  \"provincia\": \"Cordoba\",\n  \"email\": \"contacto@inc.edu.ar\"\n}"
+              "raw": "{\n  \"padron\": \"PADRON-AR-101\",\n  \"nombre\": \"Instituto Nacional de Cordoba\",\n  \"pais\": \"Argentina\",\n  \"provincia\": \"Cordoba\",\n  \"nivelEducativo\": \"Secundaria\",\n  \"email\": \"contacto@inc.edu.ar\"\n}"
             },
             "url": "{{baseUrl}}/api/instituciones/registrar"
+          }
+        },
+        {
+          "name": "Obtener Institucion por ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/instituciones/{{institucionId}}"
+          }
+        },
+        {
+          "name": "Opciones de Instituciones",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/instituciones/opciones"
           }
         }
       ]
@@ -39,9 +51,7 @@
           "name": "Registrar Estudiante",
           "request": {
             "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"idNacional\": \"40111222\",\n  \"nombre\": \"Camila Perez\",\n  \"paisOrigen\": \"Argentina\",\n  \"institucionActual\": \"PADRON-AR-101\",\n  \"email\": \"camila.perez@mail.com\"\n}"
@@ -79,12 +89,10 @@
           "name": "Registrar Materia",
           "request": {
             "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"codigo\": \"CUR-HIS\",\n  \"nombre\": \"Historia Universal\"\n}"
+              "raw": "{\n  \"codigo\": \"PADRON-AR-101::CUR-HIS\",\n  \"nombre\": \"Historia Universal\"\n}"
             },
             "url": "{{baseUrl}}/api/materias/registrar"
           }
@@ -94,6 +102,13 @@
           "request": {
             "method": "GET",
             "url": "{{baseUrl}}/api/materias/instituciones/{{institucionId}}/opciones"
+          }
+        },
+        {
+          "name": "Opciones de Materias",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/materias/opciones"
           }
         }
       ]
@@ -105,12 +120,10 @@
           "name": "Registrar Calificacion (Argentina)",
           "request": {
             "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"estudiante\": \"35111222\",\n  \"institucion\": \"PADRON-001\",\n  \"materia\": \"CUR-MAT\",\n  \"pais\": \"Argentina\",\n  \"metadatos\": {\n    \"primer_parcial\": 8,\n    \"segundo_parcial\": 9,\n    \"examen_final\": 8,\n    \"nivel\": \"SECUNDARIA\",\n    \"periodo\": \"2025-03-01\"\n  }\n}"
+              "raw": "{\n  \"estudiante\": \"35111222\",\n  \"institucion\": \"PADRON-001\",\n  \"materia\": \"PADRON-001::CUR-MAT\",\n  \"pais\": \"Argentina\",\n  \"metadatos\": {\n    \"primer_parcial\": 8,\n    \"segundo_parcial\": 9,\n    \"examen_final\": 8,\n    \"nivel\": \"SECUNDARIA\",\n    \"periodo\": \"2025-03-01\"\n  }\n}"
             },
             "url": "{{baseUrl}}/api/calificaciones/registrar"
           }
@@ -119,12 +132,10 @@
           "name": "Registrar Calificacion (Sudafrica)",
           "request": {
             "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"estudiante\": \"29111222\",\n  \"institucion\": \"PADRON-ZA-001\",\n  \"materia\": \"CUR-INF\",\n  \"pais\": \"Sudafrica\",\n  \"metadatos\": {\n    \"parcial\": 74,\n    \"trabajos_practicos\": 80,\n    \"final\": 78,\n    \"score\": 77.33,\n    \"nivel\": \"SECUNDARIA\",\n    \"periodo\": \"2025-03-02\"\n  }\n}"
+              "raw": "{\n  \"estudiante\": \"29111222\",\n  \"institucion\": \"PADRON-ZA-001\",\n  \"materia\": \"PADRON-ZA-001::CUR-INF\",\n  \"pais\": \"Sudafrica\",\n  \"metadatos\": {\n    \"parcial\": 74,\n    \"trabajos_practicos\": 80,\n    \"final\": 78,\n    \"score\": 77.33,\n    \"nivel\": \"SECUNDARIA\",\n    \"periodo\": \"2025-03-02\"\n  }\n}"
             },
             "url": "{{baseUrl}}/api/calificaciones/registrar"
           }
@@ -133,12 +144,10 @@
           "name": "Modificar Calificacion",
           "request": {
             "method": "PUT",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"estudiante\": \"35111222\",\n  \"institucion\": \"PADRON-001\",\n  \"materia\": \"CUR-MAT\",\n  \"pais\": \"Argentina\",\n  \"metadatos\": {\n    \"primer_parcial\": 9,\n    \"segundo_parcial\": 9,\n    \"examen_final\": 10,\n    \"nivel\": \"SECUNDARIA\",\n    \"periodo\": \"2025-03-15\"\n  }\n}"
+              "raw": "{\n  \"estudiante\": \"35111222\",\n  \"institucion\": \"PADRON-001\",\n  \"materia\": \"PADRON-001::CUR-MAT\",\n  \"pais\": \"Argentina\",\n  \"metadatos\": {\n    \"primer_parcial\": 9,\n    \"segundo_parcial\": 9,\n    \"examen_final\": 10,\n    \"nivel\": \"SECUNDARIA\",\n    \"periodo\": \"2025-03-15\"\n  }\n}"
             },
             "url": "{{baseUrl}}/api/calificaciones/{{calificacionId}}"
           }
@@ -147,12 +156,10 @@
           "name": "Simular Conversion",
           "request": {
             "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"estudiante\": \"34111222\",\n  \"institucion\": \"PADRON-002\",\n  \"materia\": \"CUR-QUI\",\n  \"pais\": \"USA\",\n  \"metadatos\": {\n    \"semester\": \"B\",\n    \"semester_2\": \"A\",\n    \"nivel\": \"SECUNDARIA\",\n    \"periodo\": \"2025-01-10\"\n  }\n}"
+              "raw": "{\n  \"estudiante\": \"34111222\",\n  \"institucion\": \"PADRON-002\",\n  \"materia\": \"PADRON-002::CUR-QUI\",\n  \"pais\": \"USA\",\n  \"metadatos\": {\n    \"semester\": \"B\",\n    \"semester_2\": \"A\",\n    \"nivel\": \"SECUNDARIA\",\n    \"periodo\": \"2025-01-10\"\n  }\n}"
             },
             "url": "{{baseUrl}}/api/calificaciones/simular-conversion"
           }
@@ -181,6 +188,20 @@
           "request": {
             "method": "GET",
             "url": "{{baseUrl}}/api/reportes/instituciones-ranking"
+          }
+        },
+        {
+          "name": "Ranking Provincias SA",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/reportes/provincias-ranking"
+          }
+        },
+        {
+          "name": "Ranking Nivel Educativo SA",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/reportes/niveles-educativos-ranking"
           }
         },
         {

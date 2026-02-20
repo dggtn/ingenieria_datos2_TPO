@@ -68,17 +68,78 @@ public class OnStartup implements ApplicationListener<ApplicationReadyEvent> {
 
         seedLegislacionConversion();
 
-        // MATERIAS
-        Materia matematica = insertarMateria("CUR-MAT", "MATEMATICA");
-        Materia literatura = insertarMateria("CUR-LIT", "LITERATURA");
-        Materia biologia = insertarMateria("CUR-BIO", "BIOLOGIA");
-        Materia arte = insertarMateria("CUR-ART", "ARTE");
-        Materia futbol = insertarMateria("CUR-FUT", "FUTBOL");
-        Materia gimnasia = insertarMateria("CUR-GIM", "GIMNASIA");
-        Materia fisica = insertarMateria("CUR-FIS", "FISICA");
-        Materia quimica = insertarMateria("CUR-QUI", "QUIMICA");
-        Materia carpinteria = insertarMateria("CUR-CAR", "CARPINTERIA");
-        Materia informatica = insertarMateria("CUR-INF", "INFORMATICA");
+        // MATERIAS POR INSTITUCION (NO COMPARTIDAS ENTRE INSTITUCIONES)
+        // PADRON-001
+        Materia p1Matematica = insertarMateria(mid("PADRON-001", "CUR-MAT"), "MATEMATICA");
+        Materia p1Literatura = insertarMateria(mid("PADRON-001", "CUR-LIT"), "LITERATURA");
+        Materia p1Biologia = insertarMateria(mid("PADRON-001", "CUR-BIO"), "BIOLOGIA");
+        Materia p1Arte = insertarMateria(mid("PADRON-001", "CUR-ART"), "ARTE");
+        Materia p1Informatica = insertarMateria(mid("PADRON-001", "CUR-INF"), "INFORMATICA");
+        Materia p1Fisica = insertarMateria(mid("PADRON-001", "CUR-FIS"), "FISICA");
+
+        // PADRON-002
+        Materia p2Matematica = insertarMateria(mid("PADRON-002", "CUR-MAT"), "MATEMATICA");
+        Materia p2Quimica = insertarMateria(mid("PADRON-002", "CUR-QUI"), "QUIMICA");
+        Materia p2Futbol = insertarMateria(mid("PADRON-002", "CUR-FUT"), "FUTBOL");
+        Materia p2Gimnasia = insertarMateria(mid("PADRON-002", "CUR-GIM"), "GIMNASIA");
+        Materia p2Carpinteria = insertarMateria(mid("PADRON-002", "CUR-CAR"), "CARPINTERIA");
+        Materia p2Informatica = insertarMateria(mid("PADRON-002", "CUR-INF"), "INFORMATICA");
+
+        // PADRON-UK-001
+        Materia ukMatematica = insertarMateria(mid("PADRON-UK-001", "CUR-MAT"), "MATEMATICA");
+        Materia ukLiteratura = insertarMateria(mid("PADRON-UK-001", "CUR-LIT"), "LITERATURA");
+        Materia ukBiologia = insertarMateria(mid("PADRON-UK-001", "CUR-BIO"), "BIOLOGIA");
+        Materia ukArte = insertarMateria(mid("PADRON-UK-001", "CUR-ART"), "ARTE");
+        Materia ukInformatica = insertarMateria(mid("PADRON-UK-001", "CUR-INF"), "INFORMATICA");
+        Materia ukFisica = insertarMateria(mid("PADRON-UK-001", "CUR-FIS"), "FISICA");
+
+        // PADRON-DE-001
+        Materia deMatematica = insertarMateria(mid("PADRON-DE-001", "CUR-MAT"), "MATEMATICA");
+        Materia deQuimica = insertarMateria(mid("PADRON-DE-001", "CUR-QUI"), "QUIMICA");
+        Materia deFisica = insertarMateria(mid("PADRON-DE-001", "CUR-FIS"), "FISICA");
+        Materia deInformatica = insertarMateria(mid("PADRON-DE-001", "CUR-INF"), "INFORMATICA");
+        Materia deCarpinteria = insertarMateria(mid("PADRON-DE-001", "CUR-CAR"), "CARPINTERIA");
+        Materia deGimnasia = insertarMateria(mid("PADRON-DE-001", "CUR-GIM"), "GIMNASIA");
+
+        // PADRON-ZA-001
+        Materia za1Matematica = insertarMateria(mid("PADRON-ZA-001", "CUR-MAT"), "MATEMATICA");
+        Materia za1Biologia = insertarMateria(mid("PADRON-ZA-001", "CUR-BIO"), "BIOLOGIA");
+        Materia za1Fisica = insertarMateria(mid("PADRON-ZA-001", "CUR-FIS"), "FISICA");
+        Materia za1Informatica = insertarMateria(mid("PADRON-ZA-001", "CUR-INF"), "INFORMATICA");
+        Materia za1Literatura = insertarMateria(mid("PADRON-ZA-001", "CUR-LIT"), "LITERATURA");
+
+        // PADRON-ZA-002
+        Materia za2Quimica = insertarMateria(mid("PADRON-ZA-002", "CUR-QUI"), "QUIMICA");
+        Materia za2Fisica = insertarMateria(mid("PADRON-ZA-002", "CUR-FIS"), "FISICA");
+        Materia za2Informatica = insertarMateria(mid("PADRON-ZA-002", "CUR-INF"), "INFORMATICA");
+        Materia za2Carpinteria = insertarMateria(mid("PADRON-ZA-002", "CUR-CAR"), "CARPINTERIA");
+        Materia za2Gimnasia = insertarMateria(mid("PADRON-ZA-002", "CUR-GIM"), "GIMNASIA");
+
+        // PADRON-ZA-003
+        Materia za3Matematica = insertarMateria(mid("PADRON-ZA-003", "CUR-MAT"), "MATEMATICA");
+        Materia za3Literatura = insertarMateria(mid("PADRON-ZA-003", "CUR-LIT"), "LITERATURA");
+        Materia za3Arte = insertarMateria(mid("PADRON-ZA-003", "CUR-ART"), "ARTE");
+        Materia za3Biologia = insertarMateria(mid("PADRON-ZA-003", "CUR-BIO"), "BIOLOGIA");
+
+        // PADRON-ZA-004
+        Materia za4Matematica = insertarMateria(mid("PADRON-ZA-004", "CUR-MAT"), "MATEMATICA");
+        Materia za4Quimica = insertarMateria(mid("PADRON-ZA-004", "CUR-QUI"), "QUIMICA");
+        Materia za4Fisica = insertarMateria(mid("PADRON-ZA-004", "CUR-FIS"), "FISICA");
+        Materia za4Informatica = insertarMateria(mid("PADRON-ZA-004", "CUR-INF"), "INFORMATICA");
+        Materia za4Biologia = insertarMateria(mid("PADRON-ZA-004", "CUR-BIO"), "BIOLOGIA");
+
+        // PADRON-ZA-005
+        Materia za5Quimica = insertarMateria(mid("PADRON-ZA-005", "CUR-QUI"), "QUIMICA");
+        Materia za5Fisica = insertarMateria(mid("PADRON-ZA-005", "CUR-FIS"), "FISICA");
+        Materia za5Informatica = insertarMateria(mid("PADRON-ZA-005", "CUR-INF"), "INFORMATICA");
+        Materia za5Matematica = insertarMateria(mid("PADRON-ZA-005", "CUR-MAT"), "MATEMATICA");
+        Materia za5Literatura = insertarMateria(mid("PADRON-ZA-005", "CUR-LIT"), "LITERATURA");
+
+        // PADRON-ZA-006
+        Materia za6Matematica = insertarMateria(mid("PADRON-ZA-006", "CUR-MAT"), "MATEMATICA");
+        Materia za6Literatura = insertarMateria(mid("PADRON-ZA-006", "CUR-LIT"), "LITERATURA");
+        Materia za6Arte = insertarMateria(mid("PADRON-ZA-006", "CUR-ART"), "ARTE");
+        Materia za6Gimnasia = insertarMateria(mid("PADRON-ZA-006", "CUR-GIM"), "GIMNASIA");
 
         // INSTITUCIONES CON CURRICULUM
         Institucion uade = insertarInstitucion(
@@ -87,70 +148,70 @@ public class OnStartup implements ApplicationListener<ApplicationReadyEvent> {
                 "Argentina",
                 "Buenos Aires",
                 "Secundaria",
-                matematica, literatura, biologia, arte, informatica, fisica);
+                p1Matematica, p1Literatura, p1Biologia, p1Arte, p1Informatica, p1Fisica);
         Institucion unlam = insertarInstitucion(
                 "PADRON-002",
                 "Colegio 3 de febrero",
                 "USA",
                 "California",
                 "Secundaria",
-                matematica, quimica, futbol, gimnasia, carpinteria, informatica);
+                p2Matematica, p2Quimica, p2Futbol, p2Gimnasia, p2Carpinteria, p2Informatica);
         Institucion ukLondon = insertarInstitucion(
                 "PADRON-UK-001",
                 "London College of Sciences",
                 "UK",
                 "England",
                 "Secundaria",
-                matematica, literatura, biologia, arte, informatica, fisica);
+                ukMatematica, ukLiteratura, ukBiologia, ukArte, ukInformatica, ukFisica);
         Institucion deBerlin = insertarInstitucion(
                 "PADRON-DE-001",
                 "Berlin Technische Schule",
                 "Alemania",
                 "Berlin",
                 "Secundaria",
-                matematica, quimica, fisica, informatica, carpinteria, gimnasia);
+                deMatematica, deQuimica, deFisica, deInformatica, deCarpinteria, deGimnasia);
         Institucion zaCapeTown = insertarInstitucion(
                 "PADRON-ZA-001",
                 "Cape Town Central School",
                 "Sudafrica",
                 "Western Cape",
                 "Secundaria",
-                matematica, biologia, fisica, informatica, literatura);
+                za1Matematica, za1Biologia, za1Fisica, za1Informatica, za1Literatura);
         Institucion zaJohannesburg = insertarInstitucion(
                 "PADRON-ZA-002",
                 "Johannesburg Technical College",
                 "Sudafrica",
                 "Gauteng",
                 "Universidad",
-                quimica, fisica, informatica, carpinteria, gimnasia);
+                za2Quimica, za2Fisica, za2Informatica, za2Carpinteria, za2Gimnasia);
         Institucion zaPretoriaPrimary = insertarInstitucion(
                 "PADRON-ZA-003",
                 "Pretoria Primary Academy",
                 "Sudafrica",
                 "Gauteng",
                 "Primaria",
-                matematica, literatura, arte, biologia);
+                za3Matematica, za3Literatura, za3Arte, za3Biologia);
         Institucion zaDurbanHigh = insertarInstitucion(
                 "PADRON-ZA-004",
                 "Durban Coast High School",
                 "Sudafrica",
                 "KwaZulu-Natal",
                 "Secundaria",
-                matematica, quimica, fisica, informatica, biologia);
+                za4Matematica, za4Quimica, za4Fisica, za4Informatica, za4Biologia);
         Institucion zaBloemfonteinUni = insertarInstitucion(
                 "PADRON-ZA-005",
                 "Bloemfontein Science University",
                 "Sudafrica",
                 "Free State",
                 "Universidad",
-                quimica, fisica, informatica, matematica, literatura);
+                za5Quimica, za5Fisica, za5Informatica, za5Matematica, za5Literatura);
         Institucion zaPortElizabethPrimary = insertarInstitucion(
                 "PADRON-ZA-006",
                 "Port Elizabeth Learning Center",
                 "Sudafrica",
                 "Eastern Cape",
                 "Primaria",
-                matematica, literatura, arte, gimnasia);
+                za6Matematica, za6Literatura, za6Arte, za6Gimnasia);
 
         // ESTUDIANTES Y CALIFICACIONES POR API
         crearEstudianteViaApi("35111222", "Daniela", "Argentina", "PADRON-001", "daniela@mail.com");
@@ -167,48 +228,48 @@ public class OnStartup implements ApplicationListener<ApplicationReadyEvent> {
         crearEstudianteViaApi("24111222", "Zola Mbatha", "Sudafrica", "PADRON-ZA-006", "zola.mbatha@mail.com");
 
         // Argentina
-        registrarCalificacionArgentina("35111222", "PADRON-001", "CUR-MAT", 9, 8, 10, "2023-2024", "SECUNDARIA");
-        registrarCalificacionArgentina("35111222", "PADRON-001", "CUR-LIT", 8, 9, 8, "2023-2024", "SECUNDARIA");
-        registrarCalificacionArgentina("31111222", "PADRON-001", "CUR-BIO", 7, 8, 9, "2023-2024", "SECUNDARIA");
-        registrarCalificacionArgentina("31111222", "PADRON-001", "CUR-FIS", 8, 7, 8, "2023-2024", "SECUNDARIA");
+        registrarCalificacionArgentina("35111222", "PADRON-001", p1Matematica.getId(), 9, 8, 10, "2023-2024", "SECUNDARIA");
+        registrarCalificacionArgentina("35111222", "PADRON-001", p1Literatura.getId(), 8, 9, 8, "2023-2024", "SECUNDARIA");
+        registrarCalificacionArgentina("31111222", "PADRON-001", p1Biologia.getId(), 7, 8, 9, "2023-2024", "SECUNDARIA");
+        registrarCalificacionArgentina("31111222", "PADRON-001", p1Fisica.getId(), 8, 7, 8, "2023-2024", "SECUNDARIA");
 
         // USA
-        registrarCalificacionUsa("34111222", "PADRON-002", "CUR-QUI", "B", "A", "2018-2019", "SECUNDARIA");
-        registrarCalificacionUsa("34111222", "PADRON-002", "CUR-INF", "A", "B", "2018-2019", "SECUNDARIA");
-        registrarCalificacionUsa("30111222", "PADRON-002", "CUR-GIM", "C", "B", "2019-2020", "SECUNDARIA");
-        registrarCalificacionUsa("30111222", "PADRON-002", "CUR-FUT", "B", "B", "2019-2020", "SECUNDARIA");
+        registrarCalificacionUsa("34111222", "PADRON-002", p2Quimica.getId(), "B", "A", "2018-2019", "SECUNDARIA");
+        registrarCalificacionUsa("34111222", "PADRON-002", p2Informatica.getId(), "A", "B", "2018-2019", "SECUNDARIA");
+        registrarCalificacionUsa("30111222", "PADRON-002", p2Gimnasia.getId(), "C", "B", "2019-2020", "SECUNDARIA");
+        registrarCalificacionUsa("30111222", "PADRON-002", p2Futbol.getId(), "B", "B", "2019-2020", "SECUNDARIA");
 
         // UK
-        registrarCalificacionUk("33111222", "PADRON-UK-001", "CUR-ART", "A", "B", "A*", "2020-2021", "SECUNDARIA");
-        registrarCalificacionUk("33111222", "PADRON-UK-001", "CUR-MAT", "B", "B", "A", "2020-2021", "SECUNDARIA");
-        registrarCalificacionUk("33111222", "PADRON-UK-001", "CUR-LIT", "A", "A", "A", "2021-2022", "SECUNDARIA");
-        registrarCalificacionUk("33111222", "PADRON-UK-001", "CUR-BIO", "C", "B", "B", "2021-2022", "SECUNDARIA");
+        registrarCalificacionUk("33111222", "PADRON-UK-001", ukArte.getId(), "A", "B", "A*", "2020-2021", "SECUNDARIA");
+        registrarCalificacionUk("33111222", "PADRON-UK-001", ukMatematica.getId(), "B", "B", "A", "2020-2021", "SECUNDARIA");
+        registrarCalificacionUk("33111222", "PADRON-UK-001", ukLiteratura.getId(), "A", "A", "A", "2021-2022", "SECUNDARIA");
+        registrarCalificacionUk("33111222", "PADRON-UK-001", ukBiologia.getId(), "C", "B", "B", "2021-2022", "SECUNDARIA");
 
         // Alemania
-        registrarCalificacionAlemania("32111222", "PADRON-DE-001", "CUR-CAR", 2.3, 2.0, "2022-2023", "SECUNDARIA");
-        registrarCalificacionAlemania("32111222", "PADRON-DE-001", "CUR-QUI", 1.7, 2.3, "2022-2023", "SECUNDARIA");
-        registrarCalificacionAlemania("32111222", "PADRON-DE-001", "CUR-INF", 2.0, 1.7, "2023-2024", "SECUNDARIA");
-        registrarCalificacionAlemania("32111222", "PADRON-DE-001", "CUR-GIM", 2.7, 2.3, "2023-2024", "SECUNDARIA");
+        registrarCalificacionAlemania("32111222", "PADRON-DE-001", deCarpinteria.getId(), 2.3, 2.0, "2022-2023", "SECUNDARIA");
+        registrarCalificacionAlemania("32111222", "PADRON-DE-001", deQuimica.getId(), 1.7, 2.3, "2022-2023", "SECUNDARIA");
+        registrarCalificacionAlemania("32111222", "PADRON-DE-001", deInformatica.getId(), 2.0, 1.7, "2023-2024", "SECUNDARIA");
+        registrarCalificacionAlemania("32111222", "PADRON-DE-001", deGimnasia.getId(), 2.7, 2.3, "2023-2024", "SECUNDARIA");
 
         // Sudafrica
-        registrarCalificacionSudafrica("29111222", "PADRON-ZA-001", "CUR-MAT", 72, 78, 81, "2024-2025", "SECUNDARIA");
-        registrarCalificacionSudafrica("29111222", "PADRON-ZA-001", "CUR-INF", 80, 76, 84, "2024-2025", "SECUNDARIA");
-        registrarCalificacionSudafrica("29111222", "PADRON-ZA-001", "CUR-FIS", 75, 73, 79, "2024-2025", "SECUNDARIA");
-        registrarCalificacionSudafrica("28111222", "PADRON-ZA-002", "CUR-QUI", 68, 74, 70, "2024-2025", "SECUNDARIA");
-        registrarCalificacionSudafrica("28111222", "PADRON-ZA-002", "CUR-FIS", 75, 79, 77, "2024-2025", "SECUNDARIA");
-        registrarCalificacionSudafrica("28111222", "PADRON-ZA-002", "CUR-INF", 82, 80, 85, "2024-2025", "SECUNDARIA");
-        registrarCalificacionSudafrica("27111222", "PADRON-ZA-003", "CUR-MAT", 70, 72, 75, "2024-2025", "PRIMARIA");
-        registrarCalificacionSudafrica("27111222", "PADRON-ZA-003", "CUR-LIT", 74, 76, 73, "2024-2025", "PRIMARIA");
-        registrarCalificacionSudafrica("27111222", "PADRON-ZA-003", "CUR-ART", 78, 80, 82, "2024-2025", "PRIMARIA");
-        registrarCalificacionSudafrica("26111222", "PADRON-ZA-004", "CUR-MAT", 66, 71, 69, "2024-2025", "SECUNDARIA");
-        registrarCalificacionSudafrica("26111222", "PADRON-ZA-004", "CUR-BIO", 73, 75, 74, "2024-2025", "SECUNDARIA");
-        registrarCalificacionSudafrica("26111222", "PADRON-ZA-004", "CUR-QUI", 77, 79, 78, "2024-2025", "SECUNDARIA");
-        registrarCalificacionSudafrica("25111222", "PADRON-ZA-005", "CUR-FIS", 81, 84, 83, "2024-2025", "UNIVERSIDAD");
-        registrarCalificacionSudafrica("25111222", "PADRON-ZA-005", "CUR-INF", 86, 88, 87, "2024-2025", "UNIVERSIDAD");
-        registrarCalificacionSudafrica("25111222", "PADRON-ZA-005", "CUR-MAT", 79, 82, 80, "2024-2025", "UNIVERSIDAD");
-        registrarCalificacionSudafrica("24111222", "PADRON-ZA-006", "CUR-MAT", 69, 70, 72, "2024-2025", "PRIMARIA");
-        registrarCalificacionSudafrica("24111222", "PADRON-ZA-006", "CUR-LIT", 72, 74, 73, "2024-2025", "PRIMARIA");
-        registrarCalificacionSudafrica("24111222", "PADRON-ZA-006", "CUR-GIM", 80, 82, 81, "2024-2025", "PRIMARIA");
+        registrarCalificacionSudafrica("29111222", "PADRON-ZA-001", za1Matematica.getId(), 72, 78, 81, "2024-2025", "SECUNDARIA");
+        registrarCalificacionSudafrica("29111222", "PADRON-ZA-001", za1Informatica.getId(), 80, 76, 84, "2024-2025", "SECUNDARIA");
+        registrarCalificacionSudafrica("29111222", "PADRON-ZA-001", za1Fisica.getId(), 75, 73, 79, "2024-2025", "SECUNDARIA");
+        registrarCalificacionSudafrica("28111222", "PADRON-ZA-002", za2Quimica.getId(), 68, 74, 70, "2024-2025", "SECUNDARIA");
+        registrarCalificacionSudafrica("28111222", "PADRON-ZA-002", za2Fisica.getId(), 75, 79, 77, "2024-2025", "SECUNDARIA");
+        registrarCalificacionSudafrica("28111222", "PADRON-ZA-002", za2Informatica.getId(), 82, 80, 85, "2024-2025", "SECUNDARIA");
+        registrarCalificacionSudafrica("27111222", "PADRON-ZA-003", za3Matematica.getId(), 70, 72, 75, "2024-2025", "PRIMARIA");
+        registrarCalificacionSudafrica("27111222", "PADRON-ZA-003", za3Literatura.getId(), 74, 76, 73, "2024-2025", "PRIMARIA");
+        registrarCalificacionSudafrica("27111222", "PADRON-ZA-003", za3Arte.getId(), 78, 80, 82, "2024-2025", "PRIMARIA");
+        registrarCalificacionSudafrica("26111222", "PADRON-ZA-004", za4Matematica.getId(), 66, 71, 69, "2024-2025", "SECUNDARIA");
+        registrarCalificacionSudafrica("26111222", "PADRON-ZA-004", za4Biologia.getId(), 73, 75, 74, "2024-2025", "SECUNDARIA");
+        registrarCalificacionSudafrica("26111222", "PADRON-ZA-004", za4Quimica.getId(), 77, 79, 78, "2024-2025", "SECUNDARIA");
+        registrarCalificacionSudafrica("25111222", "PADRON-ZA-005", za5Fisica.getId(), 81, 84, 83, "2024-2025", "UNIVERSIDAD");
+        registrarCalificacionSudafrica("25111222", "PADRON-ZA-005", za5Informatica.getId(), 86, 88, 87, "2024-2025", "UNIVERSIDAD");
+        registrarCalificacionSudafrica("25111222", "PADRON-ZA-005", za5Matematica.getId(), 79, 82, 80, "2024-2025", "UNIVERSIDAD");
+        registrarCalificacionSudafrica("24111222", "PADRON-ZA-006", za6Matematica.getId(), 69, 70, 72, "2024-2025", "PRIMARIA");
+        registrarCalificacionSudafrica("24111222", "PADRON-ZA-006", za6Literatura.getId(), 72, 74, 73, "2024-2025", "PRIMARIA");
+        registrarCalificacionSudafrica("24111222", "PADRON-ZA-006", za6Gimnasia.getId(), 80, 82, 81, "2024-2025", "PRIMARIA");
     }
 
     private void seedLegislacionConversion() {
@@ -322,6 +383,10 @@ public class OnStartup implements ApplicationListener<ApplicationReadyEvent> {
         materia.setNombre(nombre);
         materiaRepo.save(materia);
         return materia;
+    }
+
+    private String mid(String institucionId, String codigoBase) {
+        return institucionId + "::" + codigoBase;
     }
 
     private void crearEstudianteViaApi(String idNacional, String nombre, String pais, String institucionActual, String email) {

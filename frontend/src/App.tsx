@@ -36,7 +36,6 @@ interface NivelEducativoRanking {
 interface Opcion {
   id: string;
   nombre: string;
-  pais?: string;
 }
 
 export default function App() {
@@ -53,8 +52,6 @@ export default function App() {
   const [rankingProvincias, setRankingProvincias] = useState<ProvinciaRanking[]>([]);
   const [rankingNivelesEducativos, setRankingNivelesEducativos] = useState<NivelEducativoRanking[]>([]);
   const [opcionesEstudiantes, setOpcionesEstudiantes] = useState<Opcion[]>([]);
-  const [opcionesInstituciones, setOpcionesInstituciones] = useState<Opcion[]>([]);
-  const [opcionesMaterias, setOpcionesMaterias] = useState<Opcion[]>([]);
   const [detalleAcademico, setDetalleAcademico] = useState<any[]>([]);
   const [page, setPage] = useState<Page>('home');
 
@@ -72,14 +69,10 @@ export default function App() {
   useEffect(() => {
     const cargarOpciones = async () => {
       try {
-        const [estudiantesRes, institucionesRes, materiasRes] = await Promise.all([
-          axios.get('http://localhost:8080/api/estudiantes/opciones'),
-          axios.get('http://localhost:8080/api/instituciones/opciones'),
-          axios.get('http://localhost:8080/api/materias/opciones')
+        const [estudiantesRes] = await Promise.all([
+          axios.get('http://localhost:8080/api/estudiantes/opciones')
         ]);
         setOpcionesEstudiantes(estudiantesRes.data || []);
-        setOpcionesInstituciones(institucionesRes.data || []);
-        setOpcionesMaterias(materiasRes.data || []);
       } catch (error) {
         alert('No se pudieron cargar las opciones para registrar calificacion.');
       }
@@ -150,45 +143,28 @@ export default function App() {
     }
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:8080/api/calificaciones/registrar', {
+      const payload = {
         estudiante: estudianteId,
+        estudianteId: estudianteId,
+        institucion: institucionId,
+        institucionId: institucionId,
         materia: materiaId,
+        materiaId: materiaId,
         pais: pais,
         metadatos: {
           ...gradeDetails,
           fecha_normativa: fechaNormativa
-        },
-        institucion: institucionId
+        }
+      };
+      const response = await axios.post('http://localhost:8080/api/calificaciones/registrar', {
+        ...payload
       });
       setResultado({ equivalencia_sudafrica: response.data.conversiones });
-      setEstudianteId('');
-      setInstitucionId('');
-      setMateriaId('');
-      setPais('');
-      setGradeDetails({});
-      setFechaNormativa(new Date().toISOString().slice(0, 10));
     } catch (error) {
       alert('Error al registrar calificacion.');
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleInstitucionChange = async (id: string) => {
-    setInstitucionId(id);
-    if (!id) {
-      setPais('');
-      setGradeDetails({});
-      return;
-    }
-    try {
-      const response = await axios.get(`http://localhost:8080/api/instituciones/${id}`);
-      setPais(response.data?.pais || '');
-    } catch (error) {
-      const seleccionada = opcionesInstituciones.find((op) => op.id === id);
-      setPais(seleccionada?.pais || '');
-    }
-    setGradeDetails({});
   };
 
   return (
@@ -215,30 +191,16 @@ export default function App() {
               <section className="bg-white/95 backdrop-blur-sm p-8 rounded-[2.5rem] shadow-2xl">
                 <h2 className="text-2xl font-bold mb-6 text-green-800 text-center">Registro de Nota</h2>
                 <form onSubmit={handleRegistrar} className="space-y-4">
-                  <select className="w-full border-2 border-slate-100 p-4 rounded-2xl bg-white" value={estudianteId} onChange={e => setEstudianteId(e.target.value)}>
-                    <option value="">Seleccionar Estudiante</option>
-                    {opcionesEstudiantes.map((op) => (
-                      <option key={op.id} value={op.id}>{op.nombre}</option>
-                    ))}
+                  <input className="w-full border-2 border-slate-100 p-4 rounded-2xl" placeholder="ID Alumno" value={estudianteId} onChange={e => setEstudianteId(e.target.value)} />
+                  <input className="w-full border-2 border-slate-100 p-4 rounded-2xl" placeholder="ID Institución" value={institucionId} onChange={e => setInstitucionId(e.target.value)} />
+                  <input className="w-full border-2 border-slate-100 p-4 rounded-2xl" placeholder="ID Materia" value={materiaId} onChange={e => setMateriaId(e.target.value)} />
+                  <select className="w-full border-2 border-slate-100 p-4 rounded-2xl bg-white" value={pais} onChange={e => setPais(e.target.value)}>
+                    <option value="Argentina">Argentina</option>
+                    <option value="Alemania">Alemania</option>
+                    <option value="USA">USA</option>
+                    <option value="Inglaterra">Inglaterra</option>
+                    <option value="Sudafrica">Sudafrica</option>
                   </select>
-                  <select className="w-full border-2 border-slate-100 p-4 rounded-2xl bg-white" value={institucionId} onChange={e => handleInstitucionChange(e.target.value)}>
-                    <option value="">Seleccionar Institución</option>
-                    {opcionesInstituciones.map((op) => (
-                      <option key={op.id} value={op.id}>{op.nombre}</option>
-                    ))}
-                  </select>
-                  <select className="w-full border-2 border-slate-100 p-4 rounded-2xl bg-white" value={materiaId} onChange={e => setMateriaId(e.target.value)}>
-                    <option value="">Seleccionar Materia</option>
-                    {opcionesMaterias.map((op) => (
-                      <option key={op.id} value={op.id}>{op.nombre}</option>
-                    ))}
-                  </select>
-                  <input
-                    className="w-full border-2 border-slate-100 p-4 rounded-2xl bg-slate-50 text-slate-700"
-                    value={pais || ''}
-                    placeholder="País (autocompletado por institución)"
-                    readOnly
-                  />
                   <input
                     type="date"
                     className="w-full border-2 border-slate-100 p-4 rounded-2xl bg-white"

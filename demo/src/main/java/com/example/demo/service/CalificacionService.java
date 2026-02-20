@@ -107,7 +107,6 @@ public class CalificacionService {
 
         neo4jRepository.registrarDondeEstudio(idEstudiante, idInstitucion, periodo);
         neo4jRepository.registrarCursada(idEstudiante, idMateria, promedioOriginal, periodo, nivel, notaOriginalTexto);
-        neo4jRepository.registrarDondeDictaMateria(idInstitucion, idMateria, periodo, nivel);
         Calificacion guardada = calificacionRepository.save(c);
         registrarAuditoriaCassandra("CREACION", guardada, requestRegistrarCalificacion);
         return guardada;
@@ -147,7 +146,6 @@ public class CalificacionService {
 
         neo4jRepository.registrarDondeEstudio(idEstudiante, idInstitucion, periodo);
         neo4jRepository.registrarCursada(idEstudiante, idMateria, promedioOriginal, periodo, nivel, notaOriginalTexto);
-        neo4jRepository.registrarDondeDictaMateria(idInstitucion, idMateria, periodo, nivel);
 
         Calificacion actualizada = calificacionRepository.save(existente);
         registrarAuditoriaCassandra("MODIFICACION", actualizada, requestRegistrarCalificacion);
