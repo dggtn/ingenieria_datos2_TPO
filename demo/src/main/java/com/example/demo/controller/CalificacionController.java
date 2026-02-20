@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/calificaciones")
@@ -24,18 +25,15 @@ public class CalificacionController {
     private CalificacionService calificacionService;
 
     @PostMapping("/registrar")
-    public ResponseEntity<Calificacion> registrar(@RequestBody
-                                                  RequestRegistrarCalificacion requestRegistrarCalificacion) {
+    public ResponseEntity<Calificacion> registrar(@RequestBody RequestRegistrarCalificacion requestRegistrarCalificacion) {
 
-        Calificacion nueva = calificacionService.registrarCalificacionOriginal(
-                requestRegistrarCalificacion);
+        Calificacion nueva = calificacionService.registrarCalificacionOriginal(requestRegistrarCalificacion);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
     }
 
-    @GetMapping("/simular-conversion")
-    public ResponseEntity<Map<String, Object>> verConversion(
-            RequestRegistrarCalificacion requestRegistrarCalificacion) {
+    @PostMapping("/simular-conversion")
+    public ResponseEntity<Map<String, Object>> verConversion(@RequestBody RequestRegistrarCalificacion requestRegistrarCalificacion) {
 
         Double resultado = calificacionService.calcularConversionSudafrica(requestRegistrarCalificacion);
         Map<String, Object> respuesta = new HashMap<>();
@@ -44,7 +42,4 @@ public class CalificacionController {
 
         return ResponseEntity.ok(respuesta);
     }
-
-
 }
-

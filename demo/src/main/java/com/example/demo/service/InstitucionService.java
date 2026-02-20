@@ -5,8 +5,6 @@ import com.example.demo.repository.neo4j.InstitucionNeo4jRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
-
 @Service
 public class InstitucionService {
     @Autowired
@@ -14,8 +12,11 @@ public class InstitucionService {
 
 
     public Institucion registrarInstitucion(RequestRegistrarInstitucion requestRegistrarInstitucion) {
+            if (requestRegistrarInstitucion.getPadron() == null || requestRegistrarInstitucion.getPadron().isBlank()) {
+                throw new IllegalArgumentException("padron es obligatorio");
+            }
             Institucion i = new Institucion();
-            i.setId(UUID.randomUUID());
+            i.setId(requestRegistrarInstitucion.getPadron().trim());
             i.setPais(requestRegistrarInstitucion.getPais());
             i.setNombre(requestRegistrarInstitucion.getNombre());
             Institucion guardada = institucionRepository.save(i);

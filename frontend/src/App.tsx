@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import axios from 'axios';
 import ArgentinaForm from './components/argentinaForm';
 import GermanyForm from './components/alemaniaForm';
 import USAForm from './components/usaForm';
-import EnglandForm from './components/englandForm'; 
+import EnglandForm from './components/englandForm';
 import './App.css';
 
 interface ConversionResponse {
@@ -13,9 +13,10 @@ interface ConversionResponse {
 export default function App() {
   const [estudianteId, setEstudianteId] = useState('');
   const [institucionId, setInstitucionId] = useState('');
-  const [materiaId, setMateriaId] = useState(''); 
+  const [materiaId, setMateriaId] = useState('');
   const [pais, setPais] = useState('Argentina');
   const [gradeDetails, setGradeDetails] = useState<any>({});
+  const [fechaNormativa, setFechaNormativa] = useState<string>(new Date().toISOString().slice(0, 10));
   const [resultado, setResultado] = useState<ConversionResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [nombreMejorPais, setNombreMejorPais] = useState<string | null>(null);
@@ -23,13 +24,13 @@ export default function App() {
   const [detalleAcademico, setDetalleAcademico] = useState<any[]>([]);
 
   const consultarDetalle = async () => {
-    if (!estudianteId) return alert("Ingresá un ID de Alumno");
+    if (!estudianteId) return alert('Ingresá un ID de Alumno');
     setLoading(true);
     try {
       const response = await axios.get(`http://localhost:8080/api/estudiantes/${estudianteId}/detalle-completo`);
       setDetalleAcademico(response.data);
     } catch (error) {
-      alert("No se encontró actividad académica para el ID: " + estudianteId);
+      alert('No se encontró actividad académica para el ID: ' + estudianteId);
     } finally {
       setLoading(false);
     }
@@ -38,12 +39,12 @@ export default function App() {
   const fetchRankingMejorPais = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('http://localhost:8080/api/reportes/top-paises'); 
+      const response = await axios.get('http://localhost:8080/api/reportes/top-paises');
       if (response.data && response.data.length > 0) {
         setNombreMejorPais(response.data[0].nombre);
       }
     } catch (error) {
-      alert("Error al conectar con Cassandra.");
+      alert('Error al conectar con Cassandra.');
     } finally {
       setLoading(false);
     }
@@ -52,12 +53,12 @@ export default function App() {
   const fetchRankingMejorInstituto = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('http://localhost:8080/api/reportes/top-institutos'); 
+      const response = await axios.get('http://localhost:8080/api/reportes/top-institutos');
       if (response.data && response.data.length > 0) {
         setNombreMejorInstituto(response.data[0].nombre);
       }
     } catch (error) {
-      alert("Error al conectar con Cassandra.");
+      alert('Error al conectar con Cassandra.');
     } finally {
       setLoading(false);
     }
@@ -69,14 +70,17 @@ export default function App() {
     try {
       const response = await axios.post('http://localhost:8080/api/calificaciones/registrar', {
         estudiante: estudianteId,
-        materia: materiaId,     
+        materia: materiaId,
         pais: pais,
-        metadatos: gradeDetails,
+        metadatos: {
+          ...gradeDetails,
+          fecha_normativa: fechaNormativa
+        },
         institucion: institucionId
       });
       setResultado({ equivalencia_sudafrica: response.data.conversiones });
     } catch (error) {
-      alert("Error al registrar calificacion.");
+      alert('Error al registrar calificacion.');
     } finally {
       setLoading(false);
     }
@@ -112,11 +116,17 @@ export default function App() {
                 <option value="USA">USA</option>
                 <option value="Inglaterra">Inglaterra</option>
               </select>
+              <input
+                type="date"
+                className="w-full border-2 border-slate-100 p-4 rounded-2xl bg-white"
+                value={fechaNormativa}
+                onChange={e => setFechaNormativa(e.target.value)}
+              />
               <div className="bg-green-50/50 p-4 rounded-2xl border border-dashed border-green-200">
-                {pais === "Argentina" && <ArgentinaForm setGradeDetails={setGradeDetails} />}
-                {pais === "Alemania" && <GermanyForm setGradeDetails={setGradeDetails} />}
-                {pais === "USA" && <USAForm setGradeDetails={setGradeDetails} />}
-                {pais === "Inglaterra" && <EnglandForm setGradeDetails={setGradeDetails} />}
+                {pais === 'Argentina' && <ArgentinaForm setGradeDetails={setGradeDetails} />}
+                {pais === 'Alemania' && <GermanyForm setGradeDetails={setGradeDetails} />}
+                {pais === 'USA' && <USAForm setGradeDetails={setGradeDetails} />}
+                {pais === 'Inglaterra' && <EnglandForm setGradeDetails={setGradeDetails} />}
               </div>
               <button type="submit" className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-2xl shadow-lg">
                 Registrar y Convertir
@@ -125,15 +135,15 @@ export default function App() {
           </section>
 
           <section className="bg-white/95 backdrop-blur-sm p-8 rounded-[2.5rem] shadow-2xl flex flex-col">
-            <h2 className="text-2xl font-black text-blue-700 text-center mb-6">Grafo Académico</h2>
-            <button onClick={consultarDetalle} 
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg mb-6 transition-all active:scale-95">
+            <h2 className="text-2xl font-black text-blue-700 text-center mb-6">Grafo Academico</h2>
+            <button onClick={consultarDetalle}
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg mb-6 transition-all active:scale-95">
               Consultar Neo4j
             </button>
             <div className="space-y-4 overflow-y-auto max-h-[400px] pr-2">
               {detalleAcademico.map((item, i) => (
                 <div key={i} className="bg-white px-5 py-3 rounded-full border shadow-sm flex justify-between items-center border-slate-100">
-                  <span className="font-bold text-slate-700">{item.materia}</span> 
+                  <span className="font-bold text-slate-700">{item.materia}</span>
                   <span className="bg-green-100 text-green-700 font-black px-4 py-1 rounded-full">{item.promedio}</span>
                 </div>
               ))}
@@ -152,3 +162,4 @@ export default function App() {
     </main>
   );
 }
+

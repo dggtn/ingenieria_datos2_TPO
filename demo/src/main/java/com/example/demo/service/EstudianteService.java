@@ -5,9 +5,6 @@ import com.example.demo.repository.neo4j.EstudianteNeo4jRepository;
 import com.example.demo.repository.neo4j.InstitucionNeo4jRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 @Service
 public class EstudianteService {
@@ -18,8 +15,11 @@ public class EstudianteService {
 
 
     public Estudiante registrarEstudiante(RequestRegistrarEstudiante requestRegistrarEstudiante) {
+        if (requestRegistrarEstudiante.getIdNacional() == null || requestRegistrarEstudiante.getIdNacional().isBlank()) {
+            throw new IllegalArgumentException("idNacional es obligatorio");
+        }
         Estudiante e = new Estudiante();
-        e.setId(UUID.randomUUID());
+        e.setId(requestRegistrarEstudiante.getIdNacional().trim());
         e.setInstitucionActual(requestRegistrarEstudiante.getInstitucionActual());
         e.setNombre(requestRegistrarEstudiante.getNombre());
         e.setPaisOrigen(requestRegistrarEstudiante.getPaisOrigen());

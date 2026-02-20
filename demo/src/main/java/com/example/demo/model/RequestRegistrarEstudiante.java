@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 public class RequestRegistrarEstudiante {
+    @JsonProperty("idNacional")
+    private String idNacional;
     @JsonProperty("nombre")
     private String nombre;
     @JsonProperty("paisOrigen")
@@ -15,6 +17,14 @@ public class RequestRegistrarEstudiante {
     @JsonProperty("email")
     private String email;
     private List<Map<String,Object>> historial;
+
+    public String getIdNacional() {
+        return idNacional;
+    }
+
+    public void setIdNacional(String idNacional) {
+        this.idNacional = idNacional;
+    }
 
     public String getNombre() {
         return nombre;

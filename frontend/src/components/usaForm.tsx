@@ -5,18 +5,16 @@ const usaForm = ({ setGradeDetails }: any) => {
         onChange={(e) =>
           setGradeDetails((prev: any) => ({
             ...prev,
-              semester: String(e.target.value)
-            
+            semester: String(e.target.value)
           }))
         }
         className="w-full border p-2 rounded-lg"
       />
-      <input type="number" placeholder="Cumulative GPA"
-        step="0.1"
+      <input type="string" placeholder="Semester 2 Final Exam"
         onChange={(e) =>
           setGradeDetails((prev: any) => ({
             ...prev,
-            gpa: Number(e.target.value)
+            semester_2: String(e.target.value)
           }))
         }
         className="w-full border p-2 rounded-lg"

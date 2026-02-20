@@ -1,7 +1,6 @@
 package com.example.demo.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
-import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
@@ -12,8 +11,7 @@ import java.util.*;
 public class    Estudiante {
     @PrimaryKey
     @Id
-    @GeneratedValue
-    private UUID id;
+    private String id;
     private String nombre;
     private String email;
     private String paisOrigen;
@@ -30,7 +28,7 @@ public class    Estudiante {
     public Estudiante() {
     }
 
-    public Estudiante(UUID id, String nombre) {
+    public Estudiante(String id, String nombre) {
         this.id = id;
         this.nombre = nombre;
     }
@@ -39,7 +37,7 @@ public class    Estudiante {
         this.historialAcademico.add(new EstudioEn(inst, periodo, nivel));
     }
 
-    public Estudiante(UUID id, String nombre, String email, String paisOrigen, List<String> calificacionIds, String institucionActual, List<EstudioEn> historialAcademico, List<Map<String, Object>> historial) {
+    public Estudiante(String id, String nombre, String email, String paisOrigen, List<String> calificacionIds, String institucionActual, List<EstudioEn> historialAcademico, List<Map<String, Object>> historial) {
         this.id = id;
         this.nombre = nombre;
         this.email = email;
@@ -50,11 +48,11 @@ public class    Estudiante {
         this.historial = historial;
     }
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 
