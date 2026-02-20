@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Service
 public class MateriaService {
@@ -20,9 +19,12 @@ public class MateriaService {
     private MateriaNeo4jRepository materiaRepository;
 
     public Materia registrarMateria(RequestRegistrarMateria requestRegistrarMateria) {
+        if (requestRegistrarMateria.getCodigo() == null || requestRegistrarMateria.getCodigo().isBlank()) {
+            throw new IllegalArgumentException("codigo es obligatorio");
+        }
         Materia m = new Materia();
+        m.setId(requestRegistrarMateria.getCodigo().trim());
         m.setNombre(requestRegistrarMateria.getNombre());
-        m.getId();
 
         return materiaRepository.save(m);
     }

@@ -1,16 +1,14 @@
 package com.example.demo.model;
 
-import java.util.UUID;
-
 public class ReportePromedio {
-    private UUID  idestudiante;
+    private String idestudiante;
     private Double promedio;
-    private UUID idmateria;
-    private UUID idinstitucion;
+    private String idmateria;
+    private String idinstitucion;
     private String pais;
     private String nombre ;
 
-    public ReportePromedio(UUID idestudiante, Double promedio, UUID idmateria, UUID idinstitucion, String pais, String nombre) {
+    public ReportePromedio(String idestudiante, Double promedio, String idmateria, String idinstitucion, String pais, String nombre) {
         this.idestudiante = idestudiante;
         this.promedio = promedio;
         this.idmateria = idmateria;
@@ -31,11 +29,11 @@ public class ReportePromedio {
             this.promedio = ((Number) promedio).doubleValue();
         }
     }
-    public UUID getIdestudiante() {
+    public String getIdestudiante() {
         return idestudiante;
     }
 
-    public void setIdestudiante(UUID idestudiante) {
+    public void setIdestudiante(String idestudiante) {
         this.idestudiante = idestudiante;
     }
 
@@ -47,19 +45,19 @@ public class ReportePromedio {
         this.promedio = promedio;
     }
 
-    public UUID getIdmateria() {
+    public String getIdmateria() {
         return idmateria;
     }
 
-    public void setIdmateria(UUID idmateria) {
+    public void setIdmateria(String idmateria) {
         this.idmateria = idmateria;
     }
 
-    public UUID getIdinstitucion() {
+    public String getIdinstitucion() {
         return idinstitucion;
     }
 
-    public void setIdinstitucion(UUID idinstitucion) {
+    public void setIdinstitucion(String idinstitucion) {
         this.idinstitucion = idinstitucion;
     }
 

@@ -1,33 +1,49 @@
 package com.example.demo.service;
 
-
-import com.example.demo.model.*;
+import com.example.demo.model.Calificacion;
+import com.example.demo.model.LegislacionConversion;
+import com.example.demo.model.Reporte;
+import com.example.demo.model.ReportePromedio;
+import com.example.demo.model.RequestRegistrarCalificacion;
 import com.example.demo.repository.cassandra.ReporteCassandraRepository;
 import com.example.demo.repository.mongo.CalificacionMONGORepository;
+import com.example.demo.repository.mongo.LegislacionConversionMONGORepository;
 import com.example.demo.repository.neo4j.EstudianteNeo4jRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 public class CalificacionService {
+
     @Autowired
     private CalificacionMONGORepository calificacionRepository;
     @Autowired
     private EstudianteNeo4jRepository neo4jRepository;
     @Autowired
     private ReporteCassandraRepository cassandraRepository;
+    @Autowired
+    private LegislacionConversionMONGORepository legislacionRepository;
+
     private Double aDouble(Object valor) {
         if (valor instanceof Number) {
             return ((Number) valor).doubleValue();
         }
+        if (valor instanceof String s) {
+            try {
+                return Double.parseDouble(s);
+            } catch (NumberFormatException ignored) {
+            }
+        }
         return 0.0;
     }
+
     public void actualizarRankingsNacionales() {
         List<ReportePromedio> promediosPais = neo4jRepository.calcularpromedioPorPais();
         List<ReportePromedio> promediosInst = neo4jRepository.calcularPromedioPorInstitucion();
@@ -39,6 +55,7 @@ public class CalificacionService {
 
         cassandraRepository.saveAll(listaParaCassandra);
     }
+
     public Calificacion registrarCalificacionOriginal(RequestRegistrarCalificacion requestRegistrarCalificacion) {
         Calificacion c = new Calificacion();
         c.setEstudianteId(requestRegistrarCalificacion.getEstudiante());
@@ -51,93 +68,124 @@ public class CalificacionService {
         Double resultadoSA = calcularConversionSudafrica(requestRegistrarCalificacion);
         c.setConversiones(resultadoSA);
 
-        UUID idEstudiante = UUID.fromString(c.getEstudianteId());
-        UUID idInstitucion = UUID.fromString(requestRegistrarCalificacion.getInstitucion());
-        UUID idMateria = UUID.fromString(requestRegistrarCalificacion.getMateria());
-        String periodo  = (String) requestRegistrarCalificacion.getMetadatos().get("periodo");
-        String nivel  = (String) requestRegistrarCalificacion.getMetadatos().get("nivel");
-        Double promedio = calcularConversionSudafrica(requestRegistrarCalificacion);
-        String pais =  requestRegistrarCalificacion.getPaisOrigen();
+        String idEstudiante = c.getEstudianteId();
+        String idInstitucion = requestRegistrarCalificacion.getInstitucion();
+        String idMateria = requestRegistrarCalificacion.getMateria();
+        String periodo = (String) requestRegistrarCalificacion.getMetadatos().get("periodo");
+        String nivel = (String) requestRegistrarCalificacion.getMetadatos().get("nivel");
 
         neo4jRepository.registrarDondeEstudio(idEstudiante, idInstitucion, periodo);
-        neo4jRepository.registrarCursada(idEstudiante,idMateria,promedio,periodo,nivel);
-        neo4jRepository.registrarDondeDictaMateria(idMateria,idInstitucion,periodo,nivel);
+        neo4jRepository.registrarCursada(idEstudiante, idMateria, resultadoSA, periodo, nivel);
+        neo4jRepository.registrarDondeDictaMateria(idInstitucion, idMateria, periodo, nivel);
         return calificacionRepository.save(c);
     }
 
-
-
     public Double calcularConversionSudafrica(RequestRegistrarCalificacion request) {
-        String paisEnMinuscula = request.getPaisOrigen().toLowerCase();
-        double resultado = 0;
-
-        if (paisEnMinuscula.equals("argentina")) {
-            Integer primer_parcial = (Integer) request.getMetadatos().get("primer_parcial");
-            Integer segundo_parcial = (Integer) request.getMetadatos().get("segundo_parcial");
-            Integer examen_final = (Integer) request.getMetadatos().get("examen_final");
-            resultado = ((primer_parcial + segundo_parcial + examen_final) / 3) * 10;
-        } else if (paisEnMinuscula.equals("alemania")) {
-            double klassenArbeit = aDouble(request.getMetadatos().get("KlassenArbeit"));
-            double mundlichArbeit = aDouble(request.getMetadatos().get("MundlichArbeit"));
-            resultado = ((5.0 - ((klassenArbeit + mundlichArbeit) / 2)) * 25);
-        } else if (paisEnMinuscula.equals("estados unidos") || paisEnMinuscula.equals("usa")) {
-            String semester_original = (String) request.getMetadatos().get("semester");
-            Integer semester = 0;
-            if (semester_original.equals("A")) {
-                semester = 100;
-            } else if (semester_original.equals("B")) {
-                semester = 80;
-            } else if (semester_original.equals("C")) {
-                semester = 70;
-            } else if (semester_original.equals("D")) {
-                semester = 60;
-            } else if (semester_original.equals("E")) {
-                semester = 50;
-            } else if (semester_original.equals("F")) {
-                semester = 0;
-            }
-            double gpa = (Integer) request.getMetadatos().get("gpa");
-            double gpaConvertido = (gpa * 100) / 4;
-            resultado = (gpaConvertido + semester) / 2;
-
-        } else if (paisEnMinuscula.equals("inglaterra") || paisEnMinuscula.equals("uk")) {
-            String courseWork = (String) request.getMetadatos().get("coursework");
-            String mockExam = (String) request.getMetadatos().get("mock_exam");
-            String final_grade = (String) request.getMetadatos().get("final_grade");
-
-            int courseWorkConverted = convertir(courseWork);
-            int mock = convertir(mockExam);
-            int grade = convertir(final_grade);
-
-
-            Integer total = courseWorkConverted + mock + grade;
-            resultado = total / 3;
+        if (request == null || request.getPaisOrigen() == null) {
+            return 0.0;
         }
-        return resultado ;
+
+        LegislacionConversion regla = seleccionarRegla(resolverFechaNormativa(request));
+        String pais = normalizarPais(request.getPaisOrigen());
+
+        return switch (pais) {
+            case "argentina" -> convertirArgentina(request.getMetadatos(), regla);
+            case "usa" -> convertirUsa(request.getMetadatos(), regla);
+            case "uk" -> convertirUk(request.getMetadatos(), regla);
+            case "alemania" -> convertirAlemania(request.getMetadatos(), regla);
+            default -> 0.0;
+        };
     }
 
+    private LegislacionConversion seleccionarRegla(LocalDate fecha) {
+        List<LegislacionConversion> reglas = legislacionRepository.findAll();
+        if (reglas.isEmpty()) {
+            throw new IllegalStateException("No existe legislacion de conversion en MongoDB");
+        }
 
-    private int convertir(String valor) {
-        int nuevoValor = 0;
-        if (valor.equals("A")) {
-            nuevoValor = 100;
-        } else if (valor.equals("B")) {
-            nuevoValor = 90;
-        } else if (valor.equals("C")) {
-            nuevoValor = 80;
+        return reglas.stream()
+                .filter(v -> !fecha.isBefore(v.getVigenciaDesde())
+                        && (v.getVigenciaHasta() == null || !fecha.isAfter(v.getVigenciaHasta())))
+                .max(Comparator.comparingInt(LegislacionConversion::getVersion))
+                .orElseGet(() -> reglas.stream()
+                        .max(Comparator.comparingInt(LegislacionConversion::getVersion))
+                        .orElseThrow(() -> new IllegalStateException("No hay legislacion disponible")));
+    }
+
+    private LocalDate resolverFechaNormativa(RequestRegistrarCalificacion request) {
+        Map<String, Object> metadatos = request.getMetadatos();
+        if (metadatos == null) {
+            return LocalDate.now();
         }
-        else if (valor.equals("D")) {
-            nuevoValor = 70;
+
+        Object fechaNormativa = metadatos.get("fecha_normativa");
+        if (fechaNormativa instanceof String s && !s.isBlank()) {
+            try {
+                return LocalDate.parse(s);
+            } catch (Exception ignored) {
+            }
         }
-        else if (valor.equals("E")) {
-            nuevoValor = 60;
+
+        Object anio = metadatos.get("anio_normativa");
+        if (anio instanceof Number n) {
+            return LocalDate.of(n.intValue(), 1, 1);
         }
-        return nuevoValor;
+
+        return LocalDate.now();
+    }
+
+    private String normalizarPais(String paisOrigen) {
+        String p = paisOrigen.toLowerCase().trim();
+        if (p.equals("estados unidos")) {
+            return "usa";
+        }
+        if (p.equals("inglaterra") || p.equals("reino unido")) {
+            return "uk";
+        }
+        return p;
+    }
+
+    private double convertirArgentina(Map<String, Object> metadatos, LegislacionConversion regla) {
+        double primer = convertirNotaArgentina((int) Math.round(aDouble(metadatos.get("primer_parcial"))), regla);
+        double segundo = convertirNotaArgentina((int) Math.round(aDouble(metadatos.get("segundo_parcial"))), regla);
+        double examen = convertirNotaArgentina((int) Math.round(aDouble(metadatos.get("examen_final"))), regla);
+        return (primer + segundo + examen) / 3.0;
+    }
+
+    private double convertirNotaArgentina(int nota, LegislacionConversion regla) {
+        if (nota < 4) {
+            return 30.0;
+        }
+        return regla.getArgentinaNotas().getOrDefault(nota, 30.0);
+    }
+
+    private double convertirUk(Map<String, Object> metadatos, LegislacionConversion regla) {
+        double coursework = convertirNotaUk((String) metadatos.get("coursework"), regla);
+        double mock = convertirNotaUk((String) metadatos.get("mock_exam"), regla);
+        double finalGrade = convertirNotaUk((String) metadatos.get("final_grade"), regla);
+        return (coursework + mock + finalGrade) / 3.0;
+    }
+
+    private double convertirNotaUk(String nota, LegislacionConversion regla) {
+        if (nota == null) {
+            return 40.0;
+        }
+        return regla.getUkNotas().getOrDefault(nota.trim().toUpperCase(), 40.0);
+    }
+
+    private double convertirUsa(Map<String, Object> metadatos, LegislacionConversion regla) {
+        String semester1 = metadatos.get("semester") == null ? "F" : metadatos.get("semester").toString().trim().toUpperCase();
+        String semester2 = metadatos.get("semester_2") == null ? "F" : metadatos.get("semester_2").toString().trim().toUpperCase();
+
+        double semester1Eq = regla.getUsaSemester().getOrDefault(semester1, 30.0);
+        double semester2Eq = regla.getUsaSemester().getOrDefault(semester2, 30.0);
+
+        return (semester1Eq + semester2Eq) / 2.0;
+    }
+
+    private double convertirAlemania(Map<String, Object> metadatos, LegislacionConversion regla) {
+        double klassenArbeit = aDouble(metadatos.get("KlassenArbeit"));
+        double mundlichArbeit = aDouble(metadatos.get("MundlichArbeit"));
+        return (regla.getAlemaniaBase() - ((klassenArbeit + mundlichArbeit) / 2.0)) * regla.getAlemaniaFactor();
     }
 }
-
-
-
-
-
-

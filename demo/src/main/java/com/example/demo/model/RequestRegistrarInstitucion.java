@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 public class RequestRegistrarInstitucion {
+    @JsonProperty("padron")
+    private String padron;
     @JsonProperty("nombre")
     private String nombre;
     @JsonProperty("pais")
@@ -11,10 +13,22 @@ public class RequestRegistrarInstitucion {
     @JsonProperty("email")
     private String email;
 
-    public RequestRegistrarInstitucion(String nombre, String pais, String email) {
+    public RequestRegistrarInstitucion() {
+    }
+
+    public RequestRegistrarInstitucion(String padron, String nombre, String pais, String email) {
+        this.padron = padron;
         this.nombre = nombre;
         this.pais = pais;
         this.email = email;
+    }
+
+    public String getPadron() {
+        return padron;
+    }
+
+    public void setPadron(String padron) {
+        this.padron = padron;
     }
 
     public String getNombre() {
