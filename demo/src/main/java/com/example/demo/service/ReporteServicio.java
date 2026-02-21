@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.model.CalificacionCassandra;
 import com.example.demo.model.Reporte;
 import com.example.demo.model.ReporteInstitucionRanking;
 import com.example.demo.model.ReporteNivelEducativoRanking;
@@ -49,10 +50,10 @@ public class ReporteServicio {
 
         // Genera ranking de instituciones sudafricanas por promedio de conversion.
         public List<ReporteInstitucionRanking> obtenerRankingInstitucionesDesdeCalificaciones() {
-            List<com.example.demo.model.CalificacionCassandra> filas = calificacionCassandraRepository.obtenerDatosParaRankingInstituciones();
+            List<CalificacionCassandra> filas = calificacionCassandraRepository.obtenerDatosParaRankingInstituciones();
             Map<String, AcumuladorInstitucion> acumuladores = new HashMap<>();
 
-            for (com.example.demo.model.CalificacionCassandra fila : filas) {
+            for (CalificacionCassandra fila : filas) {
                 if (fila.getInstitucionId() == null
                         || fila.getNotaConversionSudafrica() == null
                         || !esSudafrica(fila.getInstitucionPais())) {
@@ -88,10 +89,10 @@ public class ReporteServicio {
 
         // Genera ranking de provincias sudafricanas por promedio de conversion.
         public List<ReporteProvinciaRanking> obtenerRankingProvinciasSudafricaDesdeCalificaciones() {
-            List<com.example.demo.model.CalificacionCassandra> filas = calificacionCassandraRepository.obtenerDatosParaRankingInstituciones();
+            List<CalificacionCassandra> filas = calificacionCassandraRepository.obtenerDatosParaRankingInstituciones();
             Map<String, AcumuladorProvincia> acumuladores = new HashMap<>();
 
-            for (com.example.demo.model.CalificacionCassandra fila : filas) {
+            for (CalificacionCassandra fila : filas) {
                 if (fila.getNotaConversionSudafrica() == null || !esSudafrica(fila.getInstitucionPais())) {
                     continue;
                 }
@@ -120,10 +121,10 @@ public class ReporteServicio {
 
         // Genera ranking de niveles educativos sudafricanos por promedio de conversion.
         public List<ReporteNivelEducativoRanking> obtenerRankingNivelEducativoSudafricaDesdeCalificaciones() {
-            List<com.example.demo.model.CalificacionCassandra> filas = calificacionCassandraRepository.obtenerDatosParaRankingInstituciones();
+            List<CalificacionCassandra> filas = calificacionCassandraRepository.obtenerDatosParaRankingInstituciones();
             Map<String, AcumuladorNivelEducativo> acumuladores = new HashMap<>();
 
-            for (com.example.demo.model.CalificacionCassandra fila : filas) {
+            for (CalificacionCassandra fila : filas) {
                 if (fila.getNotaConversionSudafrica() == null || !esSudafrica(fila.getInstitucionPais())) {
                     continue;
                 }
