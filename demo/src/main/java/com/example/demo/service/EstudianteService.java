@@ -17,7 +17,7 @@ public class EstudianteService {
     @Autowired
     private EstudianteMONGORepository estudianteMONGORepository;
 
-
+    // Registra un estudiante en Neo4j y replica el documento en MongoDB.
     public Estudiante registrarEstudiante(RequestRegistrarEstudiante requestRegistrarEstudiante) {
         if (requestRegistrarEstudiante.getIdNacional() == null || requestRegistrarEstudiante.getIdNacional().isBlank()) {
             throw new IllegalArgumentException("idNacional es obligatorio");

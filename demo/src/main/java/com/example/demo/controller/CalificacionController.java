@@ -24,6 +24,7 @@ public class CalificacionController {
     @Autowired
     private CalificacionService calificacionService;
 
+    // Registra una calificacion y actualiza los datos asociados en las bases.
     @PostMapping("/registrar")
     public ResponseEntity<Calificacion> registrar(@RequestBody RequestRegistrarCalificacion requestRegistrarCalificacion) {
 
@@ -32,6 +33,7 @@ public class CalificacionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
     }
 
+    // Modifica una calificacion existente por ID.
     @PutMapping("/{id}")
     public ResponseEntity<Calificacion> modificar(@PathVariable("id") String id,
                                                   @RequestBody RequestRegistrarCalificacion requestRegistrarCalificacion) {
@@ -39,6 +41,7 @@ public class CalificacionController {
         return ResponseEntity.ok(actualizada);
     }
 
+    // Simula la conversion de una nota a escala Sudafrica sin persistir cambios.
     @PostMapping("/simular-conversion")
     public ResponseEntity<Map<String, Object>> verConversion(@RequestBody RequestRegistrarCalificacion requestRegistrarCalificacion) {
 

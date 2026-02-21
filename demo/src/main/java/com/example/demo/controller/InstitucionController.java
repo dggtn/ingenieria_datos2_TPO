@@ -18,6 +18,7 @@ public class InstitucionController {
     @Autowired
     private InstitucionService institucionService;
 
+    // Crea una institucion nueva.
     @PostMapping("/registrar")
     public ResponseEntity<Institucion> registrar(
             @RequestBody RequestRegistrarInstitucion requestRegistrarInstitucion) {
@@ -28,6 +29,7 @@ public class InstitucionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
     }
 
+    // Obtiene una institucion por ID.
     @GetMapping("/{id}")
     public ResponseEntity<Institucion> obtenerPorId(@PathVariable("id") String id) {
         return institucionService.obtenerPorId(id)
@@ -35,6 +37,7 @@ public class InstitucionController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    // Devuelve instituciones resumidas para selects del frontend.
     @GetMapping("/opciones")
     public List<InstitucionOpcion> listarOpcionesInstituciones() {
         return institucionService.listarOpcionesInstituciones();

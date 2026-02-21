@@ -11,7 +11,7 @@ interface ConversionResponse {
   equivalencia_sudafrica: number;
 }
 
-type Page = 'home' | 'reportes';
+type Page = 'home' | 'reportes' | 'equivalencias';
 
 interface InstitucionRanking {
   institucionId: string;
@@ -38,6 +38,28 @@ interface Opcion {
   nombre: string;
 }
 
+interface MateriaOpcion {
+  id: string;
+  nombre: string;
+}
+
+interface EquivalenciaMateriaDestino {
+  idMateriaEquivalente?: string;
+  nombreMateriaEquivalente?: string;
+  idInstitucionDestino?: string;
+  nombreInstitucionDestino?: string;
+  activa?: boolean;
+}
+
+interface FilaValidacionEquivalencia {
+  materiaObjetivoId: string;
+  materiaObjetivoNombre: string;
+  aprobadaPorEquivalencia: boolean;
+  materiaOrigen?: string;
+  institucionOrigen?: string;
+  notaConvertidaSudafrica?: number;
+}
+
 export default function App() {
   const [estudianteId, setEstudianteId] = useState('');
   const [consultaEstudianteId, setConsultaEstudianteId] = useState('');
@@ -53,12 +75,23 @@ export default function App() {
   const [rankingNivelesEducativos, setRankingNivelesEducativos] = useState<NivelEducativoRanking[]>([]);
   const [opcionesEstudiantes, setOpcionesEstudiantes] = useState<Opcion[]>([]);
   const [detalleAcademico, setDetalleAcademico] = useState<any[]>([]);
+  const [equivEstudianteId, setEquivEstudianteId] = useState('');
+  const [equivUniversidadObjetivoId, setEquivUniversidadObjetivoId] = useState('');
+  const [equivRows, setEquivRows] = useState<FilaValidacionEquivalencia[]>([]);
+  const [equivLoading, setEquivLoading] = useState(false);
   const [page, setPage] = useState<Page>('home');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const syncPageFromHash = () => {
       const hash = window.location.hash;
-      setPage(hash === '#/reportes' ? 'reportes' : 'home');
+      if (hash === '#/reportes') {
+        setPage('reportes');
+      } else if (hash === '#/equivalencias') {
+        setPage('equivalencias');
+      } else {
+        setPage('home');
+      }
     };
 
     syncPageFromHash();
@@ -137,10 +170,33 @@ export default function App() {
 
   const handleRegistrar = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!estudianteId || !institucionId || !materiaId) {
-      alert('Seleccioná estudiante, institución y materia.');
+    const nextErrors: Record<string, string> = {};
+    if (!estudianteId.trim()) nextErrors.estudianteId = 'Ingresá el ID de estudiante';
+    if (!institucionId.trim()) nextErrors.institucionId = 'Ingresá el ID de institución';
+    if (!materiaId.trim()) nextErrors.materiaId = 'Ingresá el ID de materia';
+    if (!pais.trim()) nextErrors.pais = 'Seleccioná un país';
+    if (!fechaNormativa) nextErrors.fechaNormativa = 'Seleccioná fecha normativa';
+
+    const requiredByPais: Record<string, string[]> = {
+      Argentina: ['primer_parcial', 'segundo_parcial', 'examen_final'],
+      USA: ['semester', 'semester_2'],
+      Inglaterra: ['coursework', 'mock_exam', 'final_grade'],
+      Alemania: ['KlassenArbeit', 'MundlichArbeit'],
+      Sudafrica: ['parcial', 'trabajos_practicos', 'final']
+    };
+    const required = requiredByPais[pais] || [];
+    for (const key of required) {
+      const value = gradeDetails?.[key];
+      if (value === undefined || value === null || value === '') {
+        nextErrors[key] = `Completá ${key}`;
+      }
+    }
+
+    if (Object.keys(nextErrors).length > 0) {
+      setFieldErrors(nextErrors);
       return;
     }
+    setFieldErrors({});
     setLoading(true);
     try {
       const payload = {
@@ -167,16 +223,138 @@ export default function App() {
     }
   };
 
+  const validarEquivalencias = async () => {
+    if (!equivEstudianteId.trim()) return alert('Ingresá el ID del estudiante');
+    if (!equivUniversidadObjetivoId.trim()) return alert('Ingresá el ID de la universidad objetivo');
+
+    setEquivLoading(true);
+    try {
+      const [detalleRes, materiasObjetivoRes] = await Promise.all([
+        axios.get(`http://localhost:8080/api/estudiantes/${equivEstudianteId.trim()}/detalle-completo`),
+        axios.get(`http://localhost:8080/api/materias/instituciones/${equivUniversidadObjetivoId.trim()}/opciones`)
+      ]);
+
+      const detalleEstudiante: any[] = detalleRes.data || [];
+      const materiasObjetivo: MateriaOpcion[] = (materiasObjetivoRes.data || [])
+        .slice()
+        .sort((a: MateriaOpcion, b: MateriaOpcion) => (a.nombre || '').localeCompare(b.nombre || ''));
+
+      if (materiasObjetivo.length === 0) {
+        setEquivRows([]);
+        alert('La universidad objetivo no tiene materias cargadas.');
+        return;
+      }
+
+      const equivalenciasResults = await Promise.allSettled(
+        detalleEstudiante
+          .filter((d) => !!d.materiaId)
+          .map(async (d) => {
+            try {
+              const materiaIdEncoded = encodeURIComponent(String(d.materiaId));
+              const resp = await axios.get(`http://localhost:8080/api/materias/${materiaIdEncoded}/equivalencias`);
+              return {
+                materiaOrigenId: d.materiaId as string,
+                materiaOrigenNombre: d.materia as string,
+                institucionOrigen: d.institucion as string,
+                notaConvertidaSudafrica: d.notaConvertidaSudafrica as number | undefined,
+                equivalencias: (resp.data || []) as EquivalenciaMateriaDestino[]
+              };
+            } catch (e) {
+              throw { materiaId: d.materiaId, causa: e };
+            }
+          })
+      );
+
+      const equivalenciasPorMateriaOrigen = equivalenciasResults
+        .filter((r): r is PromiseFulfilledResult<{
+          materiaOrigenId: string;
+          materiaOrigenNombre: string;
+          institucionOrigen: string;
+          notaConvertidaSudafrica?: number;
+          equivalencias: EquivalenciaMateriaDestino[];
+        }> => r.status === 'fulfilled')
+        .map((r) => r.value);
+
+      const erroresEquivalencias = equivalenciasResults.filter((r) => r.status === 'rejected').length;
+      const materiasConError = equivalenciasResults
+        .filter((r): r is PromiseRejectedResult => r.status === 'rejected')
+        .map((r) => (r.reason as any)?.materiaId)
+        .filter((id): id is string => !!id);
+
+      const rows: FilaValidacionEquivalencia[] = materiasObjetivo.map((mObjetivo) => {
+        let match: FilaValidacionEquivalencia | null = null;
+
+        for (const origen of equivalenciasPorMateriaOrigen) {
+          const existeEq = origen.equivalencias.some(
+            (eq) =>
+              eq.idInstitucionDestino === equivUniversidadObjetivoId.trim() &&
+              eq.idMateriaEquivalente === mObjetivo.id &&
+              eq.activa !== false
+          );
+
+          if (existeEq) {
+            const candidato: FilaValidacionEquivalencia = {
+              materiaObjetivoId: mObjetivo.id,
+              materiaObjetivoNombre: mObjetivo.nombre,
+              aprobadaPorEquivalencia: true,
+              materiaOrigen: origen.materiaOrigenNombre,
+              institucionOrigen: origen.institucionOrigen,
+              notaConvertidaSudafrica: origen.notaConvertidaSudafrica
+            };
+
+            if (!match || (candidato.notaConvertidaSudafrica ?? -1) > (match.notaConvertidaSudafrica ?? -1)) {
+              match = candidato;
+            }
+          }
+        }
+
+        if (match) return match;
+
+        return {
+          materiaObjetivoId: mObjetivo.id,
+          materiaObjetivoNombre: mObjetivo.nombre,
+          aprobadaPorEquivalencia: false
+        };
+      });
+
+      setEquivRows(rows);
+      if (erroresEquivalencias > 0) {
+        alert(
+          `Se validó parcialmente. ${erroresEquivalencias} materia(s) no pudieron consultar equivalencias.` +
+          (materiasConError.length > 0 ? ` IDs: ${materiasConError.join(', ')}` : '')
+        );
+      }
+    } catch (error) {
+      setEquivRows([]);
+      const errorMsg =
+        (axios.isAxiosError(error) && (error.response?.data as any)?.message) ||
+        (axios.isAxiosError(error) && typeof error.response?.data === 'string' ? error.response?.data : null) ||
+        'No se pudo validar equivalencias. Verificá IDs y datos cargados.';
+      alert(errorMsg);
+    } finally {
+      setEquivLoading(false);
+    }
+  };
+
+  const clearFieldError = (key: string) => {
+    setFieldErrors((prev) => {
+      if (!prev[key]) return prev;
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
+  };
+
   return (
     <main className="font-['Quicksand'] bg-green-600 w-full min-h-screen py-10 px-4 m-0">
       <div className="max-w-7xl mx-auto">
         <nav className="mb-8 bg-white/95 rounded-full px-6 py-4 shadow-xl flex items-center justify-between">
           <span className="font-black text-green-700">EduGrade Global</span>
-          {page === 'home' ? (
-            <a href="#/reportes" className="text-blue-700 font-bold hover:underline">Ir a Reportes</a>
-          ) : (
-            <a href="#/" className="text-blue-700 font-bold hover:underline">Volver a Home</a>
-          )}
+          <div className="flex items-center gap-6">
+            <a href="#/" className={`font-bold hover:underline ${page === 'home' ? 'text-green-700' : 'text-blue-700'}`}>Home</a>
+            <a href="#/reportes" className={`font-bold hover:underline ${page === 'reportes' ? 'text-green-700' : 'text-blue-700'}`}>Reportes</a>
+            <a href="#/equivalencias" className={`font-bold hover:underline ${page === 'equivalencias' ? 'text-green-700' : 'text-blue-700'}`}>Equivalencias</a>
+          </div>
         </nav>
 
         {page === 'home' ? (
@@ -191,28 +369,52 @@ export default function App() {
               <section className="bg-white/95 backdrop-blur-sm p-8 rounded-[2.5rem] shadow-2xl">
                 <h2 className="text-2xl font-bold mb-6 text-green-800 text-center">Registro de Nota</h2>
                 <form onSubmit={handleRegistrar} className="space-y-4">
-                  <input className="w-full border-2 border-slate-100 p-4 rounded-2xl" placeholder="ID Alumno" value={estudianteId} onChange={e => setEstudianteId(e.target.value)} />
-                  <input className="w-full border-2 border-slate-100 p-4 rounded-2xl" placeholder="ID Institución" value={institucionId} onChange={e => setInstitucionId(e.target.value)} />
-                  <input className="w-full border-2 border-slate-100 p-4 rounded-2xl" placeholder="ID Materia" value={materiaId} onChange={e => setMateriaId(e.target.value)} />
-                  <select className="w-full border-2 border-slate-100 p-4 rounded-2xl bg-white" value={pais} onChange={e => setPais(e.target.value)}>
+                  <input
+                    className={`w-full border-2 p-4 rounded-2xl ${fieldErrors.estudianteId ? 'border-red-500 bg-red-50' : 'border-slate-100'}`}
+                    placeholder="ID Alumno"
+                    value={estudianteId}
+                    onChange={e => { setEstudianteId(e.target.value); clearFieldError('estudianteId'); }}
+                  />
+                  {fieldErrors.estudianteId && <p className="text-sm text-red-600">{fieldErrors.estudianteId}</p>}
+                  <input
+                    className={`w-full border-2 p-4 rounded-2xl ${fieldErrors.institucionId ? 'border-red-500 bg-red-50' : 'border-slate-100'}`}
+                    placeholder="ID Institución"
+                    value={institucionId}
+                    onChange={e => { setInstitucionId(e.target.value); clearFieldError('institucionId'); }}
+                  />
+                  {fieldErrors.institucionId && <p className="text-sm text-red-600">{fieldErrors.institucionId}</p>}
+                  <input
+                    className={`w-full border-2 p-4 rounded-2xl ${fieldErrors.materiaId ? 'border-red-500 bg-red-50' : 'border-slate-100'}`}
+                    placeholder="ID Materia"
+                    value={materiaId}
+                    onChange={e => { setMateriaId(e.target.value); clearFieldError('materiaId'); }}
+                  />
+                  {fieldErrors.materiaId && <p className="text-sm text-red-600">{fieldErrors.materiaId}</p>}
+                  <select
+                    className={`w-full border-2 p-4 rounded-2xl bg-white ${fieldErrors.pais ? 'border-red-500 bg-red-50' : 'border-slate-100'}`}
+                    value={pais}
+                    onChange={e => { setPais(e.target.value); setGradeDetails({}); clearFieldError('pais'); }}
+                  >
                     <option value="Argentina">Argentina</option>
                     <option value="Alemania">Alemania</option>
                     <option value="USA">USA</option>
                     <option value="Inglaterra">Inglaterra</option>
                     <option value="Sudafrica">Sudafrica</option>
                   </select>
+                  {fieldErrors.pais && <p className="text-sm text-red-600">{fieldErrors.pais}</p>}
                   <input
                     type="date"
-                    className="w-full border-2 border-slate-100 p-4 rounded-2xl bg-white"
+                    className={`w-full border-2 p-4 rounded-2xl bg-white ${fieldErrors.fechaNormativa ? 'border-red-500 bg-red-50' : 'border-slate-100'}`}
                     value={fechaNormativa}
-                    onChange={e => setFechaNormativa(e.target.value)}
+                    onChange={e => { setFechaNormativa(e.target.value); clearFieldError('fechaNormativa'); }}
                   />
+                  {fieldErrors.fechaNormativa && <p className="text-sm text-red-600">{fieldErrors.fechaNormativa}</p>}
                   <div className="bg-green-50/50 p-4 rounded-2xl border border-dashed border-green-200">
-                    {pais === 'Argentina' && <ArgentinaForm setGradeDetails={setGradeDetails} />}
-                    {pais === 'Alemania' && <GermanyForm setGradeDetails={setGradeDetails} />}
-                    {pais === 'USA' && <USAForm setGradeDetails={setGradeDetails} />}
-                    {pais === 'Inglaterra' && <EnglandForm setGradeDetails={setGradeDetails} />}
-                    {pais === 'Sudafrica' && <SouthAfricaForm setGradeDetails={setGradeDetails} />}
+                    {pais === 'Argentina' && <ArgentinaForm setGradeDetails={setGradeDetails} fieldErrors={fieldErrors} clearFieldError={clearFieldError} />}
+                    {pais === 'Alemania' && <GermanyForm setGradeDetails={setGradeDetails} fieldErrors={fieldErrors} clearFieldError={clearFieldError} />}
+                    {pais === 'USA' && <USAForm setGradeDetails={setGradeDetails} fieldErrors={fieldErrors} clearFieldError={clearFieldError} />}
+                    {pais === 'Inglaterra' && <EnglandForm setGradeDetails={setGradeDetails} fieldErrors={fieldErrors} clearFieldError={clearFieldError} />}
+                    {pais === 'Sudafrica' && <SouthAfricaForm setGradeDetails={setGradeDetails} fieldErrors={fieldErrors} clearFieldError={clearFieldError} />}
                   </div>
                   <button type="submit" className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-2xl shadow-lg">
                     Registrar y Convertir
@@ -274,8 +476,9 @@ export default function App() {
                 <p className="text-slate-400 text-xl font-medium">puntos sobre 100</p>
               </div>
             )}
+
           </>
-        ) : (
+        ) : page === 'reportes' ? (
           <section className="bg-white/95 backdrop-blur-sm p-8 rounded-[2.5rem] shadow-2xl">
             <h2 className="text-3xl font-black text-slate-800 text-center mb-8">Reportes</h2>
             <div className="flex flex-wrap justify-center gap-4">
@@ -366,9 +569,65 @@ export default function App() {
                 </table>
               </div>
             )}
-            <div className="text-center mt-8">
-              <a href="#/" className="text-blue-700 font-bold hover:underline">Volver a Home</a>
+          </section>
+        ) : (
+          <section className="bg-white/95 backdrop-blur-sm p-8 rounded-[2.5rem] shadow-2xl">
+            <h2 className="text-3xl font-black text-slate-800 text-center mb-8">Validación de Equivalencias</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <input
+                className="w-full border-2 border-slate-100 p-4 rounded-2xl"
+                placeholder="ID Estudiante"
+                value={equivEstudianteId}
+                onChange={(e) => setEquivEstudianteId(e.target.value)}
+              />
+              <input
+                className="w-full border-2 border-slate-100 p-4 rounded-2xl"
+                placeholder="ID Universidad Objetivo"
+                value={equivUniversidadObjetivoId}
+                onChange={(e) => setEquivUniversidadObjetivoId(e.target.value)}
+              />
+              <button
+                onClick={validarEquivalencias}
+                className="w-full bg-violet-600 hover:bg-violet-700 text-white py-4 rounded-2xl font-bold shadow-lg transition-all active:scale-95"
+              >
+                {equivLoading ? 'Validando...' : 'Validar Transferencia'}
+              </button>
             </div>
+
+            {equivRows.length > 0 && (
+              <div className="mt-6">
+                <table className="w-full border-collapse bg-white rounded-2xl overflow-hidden shadow">
+                  <thead>
+                    <tr className="bg-slate-100 text-slate-700 text-left">
+                      <th className="px-3 py-2">Materia Objetivo</th>
+                      <th className="px-3 py-2">Estado</th>
+                      <th className="px-3 py-2">Materia Origen</th>
+                      <th className="px-3 py-2">Institución Origen</th>
+                      <th className="px-3 py-2">Nota SA</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {equivRows.map((row) => (
+                      <tr key={row.materiaObjetivoId} className="border-t border-slate-100">
+                        <td className="px-3 py-2 font-semibold text-slate-700">{row.materiaObjetivoNombre}</td>
+                        <td className="px-3 py-2">
+                          {row.aprobadaPorEquivalencia ? (
+                            <span className="bg-emerald-100 text-emerald-700 font-bold px-3 py-1 rounded-full">Aprobada por equivalencia</span>
+                          ) : (
+                            <span className="bg-slate-100 text-slate-600 font-bold px-3 py-1 rounded-full">No equivalente</span>
+                          )}
+                        </td>
+                        <td className="px-3 py-2 text-slate-700">{row.materiaOrigen ?? '-'}</td>
+                        <td className="px-3 py-2 text-slate-700">{row.institucionOrigen ?? '-'}</td>
+                        <td className="px-3 py-2 text-slate-700">
+                          {row.notaConvertidaSudafrica != null ? row.notaConvertidaSudafrica.toFixed(2) : '-'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </section>
         )}
       </div>

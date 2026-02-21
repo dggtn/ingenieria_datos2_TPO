@@ -1,5 +1,7 @@
 package com.example.demo.controller;
 import com.example.demo.model.Materia;
+import com.example.demo.model.MateriaOpcion;
+import com.example.demo.model.RequestRegistrarEquivalenciaMateria;
 import com.example.demo.model.RequestRegistrarMateria;
 import com.example.demo.repository.neo4j.MateriaNeo4jRepository;
 import com.example.demo.service.MateriaService;
@@ -23,6 +25,7 @@ public class MateriaController {
     @Autowired
     private MateriaService materiaService;
 
+    // Crea una materia base en Neo4j.
     @PostMapping("/registrar")
     public ResponseEntity<Materia> registrar(@RequestBody
                                                   RequestRegistrarMateria requestRegistrarMateria) {
@@ -33,11 +36,28 @@ public class MateriaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
     }
 
+    // Registra una equivalencia entre dos materias universitarias.
+    @PostMapping("/equivalencias")
+    public ResponseEntity<Map<String, String>> registrarEquivalencia(@RequestBody RequestRegistrarEquivalenciaMateria request) {
+        materiaService.registrarEquivalencia(request);
+        Map<String, String> out = new HashMap<>();
+        out.put("mensaje", "Equivalencia registrada correctamente");
+        return ResponseEntity.status(HttpStatus.CREATED).body(out);
+    }
+
+    // Lista equivalencias de una materia origen.
+    @GetMapping("/{idMateria}/equivalencias")
+    public ResponseEntity<List<Map<String, Object>>> listarEquivalencias(@PathVariable("idMateria") String idMateria) {
+        return ResponseEntity.ok(materiaService.listarEquivalencias(idMateria));
+    }
+
+    // Lista materias ofrecidas por una institucion.
     @GetMapping("/instituciones/{idInstitucion}/opciones")
-    public List<Map<String, Object>> listarMateriasPorInstitucion(@PathVariable("idInstitucion") String idInstitucion) {
+    public List<MateriaOpcion> listarMateriasPorInstitucion(@PathVariable("idInstitucion") String idInstitucion) {
         return materiaRepository.listarMateriasPorInstitucion(idInstitucion);
     }
 
+    // Lista todas las materias para selects del frontend.
     @GetMapping("/opciones")
     public List<Map<String, Object>> listarOpcionesMaterias() {
         List<Map<String, Object>> salida = new ArrayList<>();

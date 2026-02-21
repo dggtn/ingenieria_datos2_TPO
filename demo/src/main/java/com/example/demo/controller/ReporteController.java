@@ -19,32 +19,38 @@ public class ReporteController {
     @Autowired
     private ReporteServicio rankingService;
 
+    // Devuelve ranking de paises desde tabla analitica.
     @GetMapping("/top-paises")
     public List<Reporte> getTopPaises(@RequestParam(defaultValue = "10") int limit) {
         return cassandraRepo.obtenerTopPorTipo("PAIS", limit);
     }
 
+    // Devuelve ranking de institutos desde tabla analitica.
     @GetMapping("/top-institutos")
     public List<Reporte> getTopInstitutos(@RequestParam(defaultValue = "10") int limit) {
         return cassandraRepo.obtenerTopPorTipo("INSTITUTO", limit);
 
     }
 
+    // Construye ranking de instituciones con notas convertidas a Sudafrica.
     @GetMapping("/instituciones-ranking")
     public List<ReporteInstitucionRanking> getInstitucionesRanking() {
         return rankingService.obtenerRankingInstitucionesDesdeCalificaciones();
     }
 
+    // Construye ranking de provincias de Sudafrica.
     @GetMapping("/provincias-ranking")
     public List<ReporteProvinciaRanking> getProvinciasRanking() {
         return rankingService.obtenerRankingProvinciasSudafricaDesdeCalificaciones();
     }
 
+    // Construye ranking de niveles educativos de Sudafrica.
     @GetMapping("/niveles-educativos-ranking")
     public List<ReporteNivelEducativoRanking> getNivelesEducativosRanking() {
         return rankingService.obtenerRankingNivelEducativoSudafricaDesdeCalificaciones();
     }
 
+    // Sincroniza los promedios de Neo4j en Cassandra para analitica.
     @PostMapping("/promedios")
     public void guardarPromedios() {
         rankingService.sincronizarDatosAnaliticos();

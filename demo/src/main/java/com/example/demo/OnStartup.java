@@ -6,6 +6,7 @@ import com.example.demo.model.EstudioEn;
 import com.example.demo.model.Institucion;
 import com.example.demo.model.LegislacionConversion;
 import com.example.demo.model.Materia;
+import com.example.demo.model.RequestRegistrarEquivalenciaMateria;
 import com.example.demo.model.RequestRegistrarCalificacion;
 import com.example.demo.model.RequestRegistrarEstudiante;
 import com.example.demo.repository.cassandra.CalificacionCassandraRepository;
@@ -17,6 +18,7 @@ import com.example.demo.repository.neo4j.InstitucionNeo4jRepository;
 import com.example.demo.repository.neo4j.MateriaNeo4jRepository;
 import com.example.demo.service.CalificacionService;
 import com.example.demo.service.EstudianteService;
+import com.example.demo.service.MateriaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
@@ -54,6 +56,8 @@ public class OnStartup implements ApplicationListener<ApplicationReadyEvent> {
     private EstudianteService estudianteService;
     @Autowired
     private CalificacionService calificacionService;
+    @Autowired
+    private MateriaService materiaService;
 
     @Override
     @Transactional
@@ -213,6 +217,39 @@ public class OnStartup implements ApplicationListener<ApplicationReadyEvent> {
                 "Primaria",
                 za6Matematica, za6Literatura, za6Arte, za6Gimnasia);
 
+        // UNIVERSIDADES PARA PRUEBA DE TRANSFERENCIA INTERNACIONAL (USA -> SUDAFRICA)
+        Materia usUniCalculus = insertarMateria(mid("PADRON-US-UNI-01", "UNI-CALC-101"), "Calculus I");
+        Materia usUniPhysics = insertarMateria(mid("PADRON-US-UNI-01", "UNI-PHY-101"), "Physics I");
+        Materia usUniProgramming = insertarMateria(mid("PADRON-US-UNI-01", "UNI-CS-101"), "Programming Fundamentals");
+        Materia usUniEconomics = insertarMateria(mid("PADRON-US-UNI-01", "UNI-ECO-101"), "Economics I");
+        Materia usUniHistory = insertarMateria(mid("PADRON-US-UNI-01", "UNI-HIS-101"), "World History");
+
+        Materia zaUniMathematics = insertarMateria(mid("PADRON-ZA-UNI-07", "UNI-MATH-101"), "Mathematics I");
+        Materia zaUniMechanics = insertarMateria(mid("PADRON-ZA-UNI-07", "UNI-MECH-101"), "Engineering Mechanics");
+        Materia zaUniSoftware = insertarMateria(mid("PADRON-ZA-UNI-07", "UNI-SWE-101"), "Software Development I");
+        Materia zaUniBusiness = insertarMateria(mid("PADRON-ZA-UNI-07", "UNI-BUS-101"), "Business Foundations");
+        Materia zaUniAnthropology = insertarMateria(mid("PADRON-ZA-UNI-07", "UNI-ANTH-101"), "Social Anthropology");
+
+        Institucion usTransferUniversity = insertarInstitucion(
+                "PADRON-US-UNI-01",
+                "Pacific State University",
+                "USA",
+                "California",
+                "Universidad",
+                usUniCalculus, usUniPhysics, usUniProgramming, usUniEconomics, usUniHistory);
+        Institucion zaTransferUniversity = insertarInstitucion(
+                "PADRON-ZA-UNI-07",
+                "Cape Peninsula University of Technology",
+                "Sudafrica",
+                "Western Cape",
+                "Universidad",
+                zaUniMathematics, zaUniMechanics, zaUniSoftware, zaUniBusiness, zaUniAnthropology);
+
+        // EQUIVALENCIAS PARCIALES (SOLO ALGUNAS MATERIAS)
+        registrarEquivalenciaUniversitaria("PADRON-US-UNI-01", usUniCalculus.getId(), "PADRON-ZA-UNI-07", zaUniMathematics.getId());
+        registrarEquivalenciaUniversitaria("PADRON-US-UNI-01", usUniPhysics.getId(), "PADRON-ZA-UNI-07", zaUniMechanics.getId());
+        registrarEquivalenciaUniversitaria("PADRON-US-UNI-01", usUniProgramming.getId(), "PADRON-ZA-UNI-07", zaUniSoftware.getId());
+
         // ESTUDIANTES Y CALIFICACIONES POR API
         crearEstudianteViaApi("35111222", "Daniela", "Argentina", "PADRON-001", "daniela@mail.com");
         crearEstudianteViaApi("34111222", "Alejandro", "USA", "PADRON-002", "alejandro@mail.com");
@@ -226,6 +263,11 @@ public class OnStartup implements ApplicationListener<ApplicationReadyEvent> {
         crearEstudianteViaApi("26111222", "Anele Khumalo", "Sudafrica", "PADRON-ZA-004", "anele.khumalo@mail.com");
         crearEstudianteViaApi("25111222", "Nandi Maseko", "Sudafrica", "PADRON-ZA-005", "nandi.maseko@mail.com");
         crearEstudianteViaApi("24111222", "Zola Mbatha", "Sudafrica", "PADRON-ZA-006", "zola.mbatha@mail.com");
+
+        // ESTUDIANTES USA PARA PRUEBA DE TRANSFERENCIA CON AVANCE PARCIAL
+        crearEstudianteViaApi("37111222", "Emily Carter", "USA", "PADRON-US-UNI-01", "emily.carter@mail.com");
+        crearEstudianteViaApi("38111222", "Noah Williams", "USA", "PADRON-US-UNI-01", "noah.williams@mail.com");
+        crearEstudianteViaApi("39111222", "Sophia Johnson", "USA", "PADRON-US-UNI-01", "sophia.johnson@mail.com");
 
         // Argentina
         registrarCalificacionArgentina("35111222", "PADRON-001", p1Matematica.getId(), 9, 8, 10, "2023-2024", "SECUNDARIA");
@@ -270,6 +312,21 @@ public class OnStartup implements ApplicationListener<ApplicationReadyEvent> {
         registrarCalificacionSudafrica("24111222", "PADRON-ZA-006", za6Matematica.getId(), 69, 70, 72, "2024-2025", "PRIMARIA");
         registrarCalificacionSudafrica("24111222", "PADRON-ZA-006", za6Literatura.getId(), 72, 74, 73, "2024-2025", "PRIMARIA");
         registrarCalificacionSudafrica("24111222", "PADRON-ZA-006", za6Gimnasia.getId(), 80, 82, 81, "2024-2025", "PRIMARIA");
+
+        // USA UNIVERSIDAD - AVANCE PARCIAL (NO COMPLETAN TODO EL CURRICULUM)
+        // Emily: 2 equivalentes + 1 no equivalente, faltan materias por cerrar.
+        registrarCalificacionUsa("37111222", "PADRON-US-UNI-01", usUniCalculus.getId(), "A", "B", "2024-FALL", "UNIVERSIDAD");
+        registrarCalificacionUsa("37111222", "PADRON-US-UNI-01", usUniProgramming.getId(), "A", "A", "2024-FALL", "UNIVERSIDAD");
+        registrarCalificacionUsa("37111222", "PADRON-US-UNI-01", usUniHistory.getId(), "B", "B", "2024-FALL", "UNIVERSIDAD");
+
+        // Noah: 1 equivalente + 1 no equivalente.
+        registrarCalificacionUsa("38111222", "PADRON-US-UNI-01", usUniPhysics.getId(), "B", "A", "2024-FALL", "UNIVERSIDAD");
+        registrarCalificacionUsa("38111222", "PADRON-US-UNI-01", usUniEconomics.getId(), "A", "B", "2024-FALL", "UNIVERSIDAD");
+
+        // Sophia: 2 equivalentes + 1 no equivalente.
+        registrarCalificacionUsa("39111222", "PADRON-US-UNI-01", usUniCalculus.getId(), "B", "B", "2024-FALL", "UNIVERSIDAD");
+        registrarCalificacionUsa("39111222", "PADRON-US-UNI-01", usUniPhysics.getId(), "A", "A", "2024-FALL", "UNIVERSIDAD");
+        registrarCalificacionUsa("39111222", "PADRON-US-UNI-01", usUniEconomics.getId(), "C", "B", "2024-FALL", "UNIVERSIDAD");
     }
 
     private void seedLegislacionConversion() {
@@ -387,6 +444,19 @@ public class OnStartup implements ApplicationListener<ApplicationReadyEvent> {
 
     private String mid(String institucionId, String codigoBase) {
         return institucionId + "::" + codigoBase;
+    }
+
+    private void registrarEquivalenciaUniversitaria(
+            String institucionOrigenId,
+            String materiaOrigenId,
+            String institucionDestinoId,
+            String materiaDestinoId) {
+        RequestRegistrarEquivalenciaMateria request = new RequestRegistrarEquivalenciaMateria();
+        request.setInstitucionOrigenId(institucionOrigenId);
+        request.setMateriaOrigenId(materiaOrigenId);
+        request.setInstitucionDestinoId(institucionDestinoId);
+        request.setMateriaDestinoId(materiaDestinoId);
+        materiaService.registrarEquivalencia(request);
     }
 
     private void crearEstudianteViaApi(String idNacional, String nombre, String pais, String institucionActual, String email) {

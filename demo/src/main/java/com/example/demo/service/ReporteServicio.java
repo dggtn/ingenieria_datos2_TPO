@@ -30,6 +30,7 @@ public class ReporteServicio {
         @Autowired
         private CalificacionCassandraRepository calificacionCassandraRepository;
 
+        // Calcula promedios desde Neo4j y los persiste en Cassandra para reportes.
         public void sincronizarDatosAnaliticos() {
             List<ReportePromedio>promediosPais = neo4jRepo.calcularpromedioPorPais();
             List<ReportePromedio>promediosInst = neo4jRepo.calcularPromedioPorInstitucion();
@@ -46,6 +47,7 @@ public class ReporteServicio {
             cassandraRepo.saveAll(batch);
         }
 
+        // Genera ranking de instituciones sudafricanas por promedio de conversion.
         public List<ReporteInstitucionRanking> obtenerRankingInstitucionesDesdeCalificaciones() {
             List<com.example.demo.model.CalificacionCassandra> filas = calificacionCassandraRepository.obtenerDatosParaRankingInstituciones();
             Map<String, AcumuladorInstitucion> acumuladores = new HashMap<>();
@@ -84,6 +86,7 @@ public class ReporteServicio {
                     .collect(Collectors.toList());
         }
 
+        // Genera ranking de provincias sudafricanas por promedio de conversion.
         public List<ReporteProvinciaRanking> obtenerRankingProvinciasSudafricaDesdeCalificaciones() {
             List<com.example.demo.model.CalificacionCassandra> filas = calificacionCassandraRepository.obtenerDatosParaRankingInstituciones();
             Map<String, AcumuladorProvincia> acumuladores = new HashMap<>();
@@ -115,6 +118,7 @@ public class ReporteServicio {
                     .collect(Collectors.toList());
         }
 
+        // Genera ranking de niveles educativos sudafricanos por promedio de conversion.
         public List<ReporteNivelEducativoRanking> obtenerRankingNivelEducativoSudafricaDesdeCalificaciones() {
             List<com.example.demo.model.CalificacionCassandra> filas = calificacionCassandraRepository.obtenerDatosParaRankingInstituciones();
             Map<String, AcumuladorNivelEducativo> acumuladores = new HashMap<>();
@@ -147,6 +151,7 @@ public class ReporteServicio {
                     .collect(Collectors.toList());
         }
 
+        // Normaliza y valida si un pais corresponde a Sudafrica.
         private boolean esSudafrica(String pais) {
             if (pais == null) {
                 return false;
@@ -157,6 +162,7 @@ public class ReporteServicio {
                     || "south africa".equals(normalizado);
         }
 
+        // Acumula totales por institucion para calcular promedio y alumnos unicos.
         private static class AcumuladorInstitucion {
             private final String institucionId;
             private final String institucionNombre;
@@ -165,6 +171,7 @@ public class ReporteServicio {
             private long cantidadNotas;
             private final Set<String> estudiantesUnicos = new HashSet<>();
 
+            // Inicializa el acumulador por institucion.
             private AcumuladorInstitucion(String institucionId, String institucionNombre, String institucionProvincia) {
                 this.institucionId = institucionId;
                 this.institucionNombre = institucionNombre;
@@ -172,23 +179,27 @@ public class ReporteServicio {
             }
         }
 
+        // Acumula totales por provincia para calcular promedio y alumnos unicos.
         private static class AcumuladorProvincia {
             private final String provincia;
             private double suma;
             private long cantidadNotas;
             private final Set<String> estudiantesUnicos = new HashSet<>();
 
+            // Inicializa el acumulador por provincia.
             private AcumuladorProvincia(String provincia) {
                 this.provincia = provincia;
             }
         }
 
+        // Acumula totales por nivel educativo para calcular promedio y alumnos unicos.
         private static class AcumuladorNivelEducativo {
             private final String nivelEducativo;
             private double suma;
             private long cantidadNotas;
             private final Set<String> estudiantesUnicos = new HashSet<>();
 
+            // Inicializa el acumulador por nivel educativo.
             private AcumuladorNivelEducativo(String nivelEducativo) {
                 this.nivelEducativo = nivelEducativo;
             }

@@ -30,6 +30,7 @@ public class EstudianteController {
     private EstudianteService estudianteService;
 
 
+    // Crea un estudiante en Neo4j y MongoDB.
     @PostMapping("/registrar")
     public ResponseEntity<Estudiante> registrar(
             @RequestBody RequestRegistrarEstudiante requestRegistrarEstudiante) {
@@ -40,6 +41,7 @@ public class EstudianteController {
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevo);
     }
 
+    // Devuelve el detalle academico del estudiante, incluyendo conversion a Sudafrica.
     @GetMapping("/{id}/detalle-completo")
     public List<ReporteAcademico> getDetalleCompleto(@PathVariable("id") String id){
         List<ReporteAcademico> detalle = estudianteNeo4jRepository.obtenerDetalleAcademicoPorInstitucion(id);
@@ -60,6 +62,7 @@ public class EstudianteController {
 
     }
 
+    // Lista estudiantes para usar como opciones en el frontend.
     @GetMapping("/opciones")
     public List<Map<String, Object>> listarOpcionesEstudiantes() {
         List<Map<String, Object>> salida = new ArrayList<>();
@@ -74,6 +77,7 @@ public class EstudianteController {
         return salida;
     }
 
+    // Lista instituciones relacionadas al estudiante.
     @GetMapping("/{id}/instituciones")
     public List<Map<String, Object>> listarInstitucionesPorEstudiante(@PathVariable("id") String id) {
         return estudianteNeo4jRepository.listarInstitucionesPorEstudiante(id);

@@ -46,6 +46,7 @@ public class CalificacionService {
     private LegislacionConversionMONGORepository legislacionRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    // Convierte cualquier valor numerico/string a Double de forma segura.
     private Double aDouble(Object valor) {
         if (valor instanceof Number) {
             return ((Number) valor).doubleValue();
@@ -59,6 +60,7 @@ public class CalificacionService {
         return 0.0;
     }
 
+    // Recalcula rankings en Neo4j y sincroniza resultados en Cassandra.
     public void actualizarRankingsNacionales() {
         List<ReportePromedio> promediosPais = neo4jRepository.calcularpromedioPorPais();
         List<ReportePromedio> promediosInst = neo4jRepository.calcularPromedioPorInstitucion();
@@ -71,6 +73,7 @@ public class CalificacionService {
         cassandraRepository.saveAll(listaParaCassandra);
     }
 
+    // Registra una calificacion nueva y actualiza Neo4j, Mongo y auditoria Cassandra.
     public Calificacion registrarCalificacionOriginal(RequestRegistrarCalificacion requestRegistrarCalificacion) {
         Calificacion c = new Calificacion();
         c.setEstudianteId(requestRegistrarCalificacion.getEstudiante());
@@ -112,6 +115,7 @@ public class CalificacionService {
         return guardada;
     }
 
+    // Modifica una calificacion existente y refresca relaciones/bitacora asociadas.
     public Calificacion modificarCalificacion(String calificacionId, RequestRegistrarCalificacion requestRegistrarCalificacion) {
         Calificacion existente = calificacionRepository.findById(calificacionId)
                 .orElseThrow(() -> new IllegalArgumentException("No existe calificacion con id " + calificacionId));
@@ -152,6 +156,7 @@ public class CalificacionService {
         return actualizada;
     }
 
+    // Convierte la nota de origen a la escala Sudafrica segun legislacion vigente.
     public Double calcularConversionSudafrica(RequestRegistrarCalificacion request) {
         if (request == null || request.getPaisOrigen() == null) {
             return 0.0;
@@ -172,6 +177,7 @@ public class CalificacionService {
         };
     }
 
+    // Selecciona la regla de conversion valida para una fecha dada.
     private LegislacionConversion seleccionarRegla(LocalDate fecha) {
         List<LegislacionConversion> reglas = legislacionRepository.findAll();
         if (reglas.isEmpty()) {
@@ -187,6 +193,7 @@ public class CalificacionService {
                         .orElseThrow(() -> new IllegalStateException("No hay legislacion disponible")));
     }
 
+    // Resuelve la fecha normativa desde metadatos o usa fecha actual.
     private LocalDate resolverFechaNormativa(RequestRegistrarCalificacion request) {
         Map<String, Object> metadatos = request.getMetadatos();
         if (metadatos == null) {
@@ -209,6 +216,7 @@ public class CalificacionService {
         return LocalDate.now();
     }
 
+    // Normaliza variantes de texto de pais a claves internas estables.
     private String normalizarPais(String paisOrigen) {
         if (paisOrigen == null) {
             return "";
@@ -226,6 +234,7 @@ public class CalificacionService {
         return p;
     }
 
+    // Verifica si la institucion de la solicitud pertenece a Sudafrica.
     private boolean esInstitucionSudafrica(RequestRegistrarCalificacion request) {
         if (request == null || request.getInstitucion() == null || request.getInstitucion().isBlank()) {
             return false;
@@ -237,6 +246,7 @@ public class CalificacionService {
         return "sudafrica".equals(normalizarPais(institucion.getPais()));
     }
 
+    // Extrae la nota ingresada para Sudafrica desde distintos nombres de campo.
     private String extraerScoreIngresado(Map<String, Object> metadatos) {
         if (metadatos == null) {
             return "0";
@@ -254,6 +264,7 @@ public class CalificacionService {
         return score == null ? "0" : String.valueOf(score).trim();
     }
 
+    // Convierte promedio de Argentina a escala Sudafrica.
     private double convertirArgentina(Map<String, Object> metadatos, LegislacionConversion regla) {
         double primer = convertirNotaArgentina((int) Math.round(aDouble(metadatos.get("primer_parcial"))), regla);
         double segundo = convertirNotaArgentina((int) Math.round(aDouble(metadatos.get("segundo_parcial"))), regla);
@@ -261,6 +272,7 @@ public class CalificacionService {
         return (primer + segundo + examen) / 3.0;
     }
 
+    // Convierte una nota puntual argentina usando la tabla de legislacion.
     private double convertirNotaArgentina(int nota, LegislacionConversion regla) {
         if (nota < 4) {
             return 30.0;
@@ -268,6 +280,7 @@ public class CalificacionService {
         return regla.getArgentinaNotas().getOrDefault(nota, 30.0);
     }
 
+    // Convierte promedio UK (coursework/mock/final) a escala Sudafrica.
     private double convertirUk(Map<String, Object> metadatos, LegislacionConversion regla) {
         double coursework = convertirNotaUk((String) metadatos.get("coursework"), regla);
         double mock = convertirNotaUk((String) metadatos.get("mock_exam"), regla);
@@ -275,6 +288,7 @@ public class CalificacionService {
         return (coursework + mock + finalGrade) / 3.0;
     }
 
+    // Convierte una calificacion literal UK a su equivalente Sudafrica.
     private double convertirNotaUk(String nota, LegislacionConversion regla) {
         if (nota == null) {
             return 40.0;
@@ -282,6 +296,7 @@ public class CalificacionService {
         return regla.getUkNotas().getOrDefault(nota.trim().toUpperCase(), 40.0);
     }
 
+    // Convierte promedio USA (semester 1 y 2) a escala Sudafrica.
     private double convertirUsa(Map<String, Object> metadatos, LegislacionConversion regla) {
         String semester1 = metadatos.get("semester") == null ? "F" : metadatos.get("semester").toString().trim().toUpperCase();
         String semester2 = metadatos.get("semester_2") == null ? "F" : metadatos.get("semester_2").toString().trim().toUpperCase();
@@ -292,12 +307,14 @@ public class CalificacionService {
         return (semester1Eq + semester2Eq) / 2.0;
     }
 
+    // Convierte promedio Alemania a escala Sudafrica con formula normativa.
     private double convertirAlemania(Map<String, Object> metadatos, LegislacionConversion regla) {
         double klassenArbeit = aDouble(metadatos.get("KlassenArbeit"));
         double mundlichArbeit = aDouble(metadatos.get("MundlichArbeit"));
         return (regla.getAlemaniaBase() - ((klassenArbeit + mundlichArbeit) / 2.0)) * regla.getAlemaniaFactor();
     }
 
+    // Guarda un snapshot auditable de la calificacion en Cassandra.
     private void registrarAuditoriaCassandra(String operacion, Calificacion calificacion, RequestRegistrarCalificacion request) {
         Estudiante estudiante = neo4jRepository.findById(calificacion.getEstudianteId()).orElse(null);
         Institucion institucion = institucionNeo4jRepository.findById(request.getInstitucion()).orElse(null);
@@ -338,6 +355,7 @@ public class CalificacionService {
         calificacionCassandraRepository.save(fila);
     }
 
+    // Devuelve metadato string limpio o null cuando no esta informado.
     private String nullableMeta(Map<String, Object> metadatos, String key) {
         if (metadatos == null || metadatos.get(key) == null) {
             return null;
@@ -346,6 +364,7 @@ public class CalificacionService {
         return value.isEmpty() ? null : value;
     }
 
+    // Calcula promedio original numerico segun la escala del pais de origen.
     private double resultadoPromedioOriginalNumerico(RequestRegistrarCalificacion request) {
         Map<String, Object> metadatos = request.getMetadatos();
         if (metadatos == null) {
@@ -376,6 +395,7 @@ public class CalificacionService {
         return 0.0;
     }
 
+    // Construye la representacion textual de la nota original por pais.
     private String construirNotaOriginalTexto(RequestRegistrarCalificacion request) {
         Map<String, Object> metadatos = request.getMetadatos();
         if (metadatos == null) {
@@ -405,6 +425,7 @@ public class CalificacionService {
         return "";
     }
 
+    // Mapea calificaciones USA en letras a valor numerico interno.
     private double convertirEscalaUsaRaw(Object valor) {
         if (valor == null) {
             return 0.0;
@@ -418,6 +439,7 @@ public class CalificacionService {
         };
     }
 
+    // Mapea calificaciones UK en letras a valor numerico interno.
     private double convertirEscalaUkRaw(Object valor) {
         if (valor == null) {
             return 0.0;
@@ -434,6 +456,7 @@ public class CalificacionService {
         };
     }
 
+    // Ajusta un promedio al valor valido mas cercano de la escala USA.
     private double normalizarEscalaUsa(double promedio) {
         double[] escala = {4.0, 3.0, 2.0, 1.0, 0.0};
         double elegido = escala[0];
@@ -448,6 +471,7 @@ public class CalificacionService {
         return elegido;
     }
 
+    // Ajusta un promedio al rango permitido de la escala UK.
     private double normalizarEscalaUk(double promedio) {
         long redondeado = Math.round(promedio);
         if (redondeado < 1) {
@@ -459,11 +483,13 @@ public class CalificacionService {
         return (double) redondeado;
     }
 
+    // Ajusta un promedio al rango 1.0-6.0 de la escala alemana.
     private double normalizarEscalaAlemania(double promedio) {
         double acotado = Math.max(1.0, Math.min(6.0, promedio));
         return Math.round(acotado * 10.0) / 10.0;
     }
 
+    // Convierte valor numerico interno a letra equivalente USA.
     private String escalaUsaTexto(double valor) {
         if (valor >= 4.0) {
             return "A";
@@ -480,6 +506,7 @@ public class CalificacionService {
         return "F";
     }
 
+    // Convierte valor numerico interno a letra equivalente UK.
     private String escalaUkTexto(double valor) {
         int v = (int) Math.round(valor);
         return switch (v) {
@@ -493,10 +520,12 @@ public class CalificacionService {
         };
     }
 
+    // Formatea un decimal con un digito fraccional.
     private String formatearDecimal(double valor) {
         return String.format(java.util.Locale.US, "%.1f", valor);
     }
 
+    // Serializa un objeto a JSON para auditoria o snapshots.
     private String toJson(Object value) {
         if (value == null) {
             return null;

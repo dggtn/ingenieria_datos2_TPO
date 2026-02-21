@@ -14,7 +14,7 @@ public class InstitucionService {
     @Autowired
     private InstitucionNeo4jRepository institucionRepository;
 
-
+    // Crea una institucion validando padron obligatorio.
     public Institucion registrarInstitucion(RequestRegistrarInstitucion requestRegistrarInstitucion) {
             if (requestRegistrarInstitucion.getPadron() == null || requestRegistrarInstitucion.getPadron().isBlank()) {
                 throw new IllegalArgumentException("padron es obligatorio");
@@ -30,14 +30,17 @@ public class InstitucionService {
             return guardada;
         }
 
+    // Lista todas las instituciones registradas.
     public List<Institucion> listarInstituciones() {
         return institucionRepository.findAll();
     }
 
+    // Busca una institucion por su ID.
     public Optional<Institucion> obtenerPorId(String id) {
         return institucionRepository.findById(id);
     }
 
+    // Devuelve opciones resumidas de instituciones para el frontend.
     public List<InstitucionOpcion> listarOpcionesInstituciones() {
         return institucionRepository.listarOpciones();
     }

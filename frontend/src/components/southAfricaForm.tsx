@@ -3,7 +3,7 @@ const toNumber = (value: unknown): number => {
   return Number.isFinite(n) ? n : 0;
 };
 
-const southAfricaForm = ({ setGradeDetails }: any) => {
+const southAfricaForm = ({ setGradeDetails, fieldErrors = {}, clearFieldError = () => {} }: any) => {
   const updateField = (field: 'parcial' | 'trabajos_practicos' | 'final', value: string) => {
     setGradeDetails((prev: any) => {
       const next = {
@@ -24,21 +24,33 @@ const southAfricaForm = ({ setGradeDetails }: any) => {
       <input
         type="number"
         placeholder="Parcial"
-        onChange={(e) => updateField('parcial', e.target.value)}
-        className="w-full border p-2 rounded-lg"
+        onChange={(e) => {
+          clearFieldError('parcial');
+          updateField('parcial', e.target.value);
+        }}
+        className={`w-full border p-2 rounded-lg ${fieldErrors.parcial ? 'border-red-500 bg-red-50' : ''}`}
       />
+      {fieldErrors.parcial && <p className="text-sm text-red-600">{fieldErrors.parcial}</p>}
       <input
         type="number"
-        placeholder="Trabajos Prácticos"
-        onChange={(e) => updateField('trabajos_practicos', e.target.value)}
-        className="w-full border p-2 rounded-lg"
+        placeholder="Trabajos Practicos"
+        onChange={(e) => {
+          clearFieldError('trabajos_practicos');
+          updateField('trabajos_practicos', e.target.value);
+        }}
+        className={`w-full border p-2 rounded-lg ${fieldErrors.trabajos_practicos ? 'border-red-500 bg-red-50' : ''}`}
       />
+      {fieldErrors.trabajos_practicos && <p className="text-sm text-red-600">{fieldErrors.trabajos_practicos}</p>}
       <input
         type="number"
         placeholder="Final"
-        onChange={(e) => updateField('final', e.target.value)}
-        className="w-full border p-2 rounded-lg"
+        onChange={(e) => {
+          clearFieldError('final');
+          updateField('final', e.target.value);
+        }}
+        className={`w-full border p-2 rounded-lg ${fieldErrors.final ? 'border-red-500 bg-red-50' : ''}`}
       />
+      {fieldErrors.final && <p className="text-sm text-red-600">{fieldErrors.final}</p>}
     </div>
   );
 };
