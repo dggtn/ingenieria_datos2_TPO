@@ -20,17 +20,18 @@ import com.example.demo.service.CalificacionService;
 import com.example.demo.service.EstudianteService;
 import com.example.demo.service.MateriaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 @Component
 public class OnStartup implements ApplicationListener<ApplicationReadyEvent> {
@@ -59,9 +60,19 @@ public class OnStartup implements ApplicationListener<ApplicationReadyEvent> {
     @Autowired
     private MateriaService materiaService;
 
+    private Random random = new Random();
+
+    private Map<String, List<Estudiante>> estudiantesPorPais;
+    private Map<String, List<Institucion>> institucionesPorPais;
+
+    @Value("${numero.registros}")
+    Integer registros;
+
     @Override
     @Transactional
     public void onApplicationEvent(ApplicationReadyEvent event) {
+
+        inicializarMapas();
 
         materiaRepo.deleteAll();
         institucionRepo.deleteAll();
@@ -153,6 +164,9 @@ public class OnStartup implements ApplicationListener<ApplicationReadyEvent> {
                 "Buenos Aires",
                 "Secundaria",
                 p1Matematica, p1Literatura, p1Biologia, p1Arte, p1Informatica, p1Fisica);
+
+        institucionesPorPais.get("ARGENTINA").add(uade);
+
         Institucion unlam = insertarInstitucion(
                 "PADRON-002",
                 "Colegio 3 de febrero",
@@ -160,6 +174,9 @@ public class OnStartup implements ApplicationListener<ApplicationReadyEvent> {
                 "California",
                 "Secundaria",
                 p2Matematica, p2Quimica, p2Futbol, p2Gimnasia, p2Carpinteria, p2Informatica);
+
+        institucionesPorPais.get("USA").add(unlam);
+
         Institucion ukLondon = insertarInstitucion(
                 "PADRON-UK-001",
                 "London College of Sciences",
@@ -167,6 +184,9 @@ public class OnStartup implements ApplicationListener<ApplicationReadyEvent> {
                 "England",
                 "Secundaria",
                 ukMatematica, ukLiteratura, ukBiologia, ukArte, ukInformatica, ukFisica);
+
+        institucionesPorPais.get("UK").add(ukLondon);
+
         Institucion deBerlin = insertarInstitucion(
                 "PADRON-DE-001",
                 "Berlin Technische Schule",
@@ -174,6 +194,8 @@ public class OnStartup implements ApplicationListener<ApplicationReadyEvent> {
                 "Berlin",
                 "Secundaria",
                 deMatematica, deQuimica, deFisica, deInformatica, deCarpinteria, deGimnasia);
+        institucionesPorPais.get("ALEMANIA").add(deBerlin);
+
         Institucion zaCapeTown = insertarInstitucion(
                 "PADRON-ZA-001",
                 "Cape Town Central School",
@@ -237,6 +259,8 @@ public class OnStartup implements ApplicationListener<ApplicationReadyEvent> {
                 "California",
                 "Universidad",
                 usUniCalculus, usUniPhysics, usUniProgramming, usUniEconomics, usUniHistory);
+        institucionesPorPais.get("USA").add(usTransferUniversity);
+
         Institucion zaTransferUniversity = insertarInstitucion(
                 "PADRON-ZA-UNI-07",
                 "Cape Peninsula University of Technology",
@@ -270,28 +294,28 @@ public class OnStartup implements ApplicationListener<ApplicationReadyEvent> {
         crearEstudianteViaApi("39111222", "Sophia Johnson", "USA", "PADRON-US-UNI-01", "sophia.johnson@mail.com");
 
         // Argentina
-        registrarCalificacionArgentina("35111222", "PADRON-001", p1Matematica.getId(), 9, 8, 10, "2023-2024", "SECUNDARIA");
-        registrarCalificacionArgentina("35111222", "PADRON-001", p1Literatura.getId(), 8, 9, 8, "2023-2024", "SECUNDARIA");
-        registrarCalificacionArgentina("31111222", "PADRON-001", p1Biologia.getId(), 7, 8, 9, "2023-2024", "SECUNDARIA");
-        registrarCalificacionArgentina("31111222", "PADRON-001", p1Fisica.getId(), 8, 7, 8, "2023-2024", "SECUNDARIA");
+//        registrarCalificacionArgentina("35111222", "PADRON-001", p1Matematica.getId(), 9, 8, 10, "2023-2024", "SECUNDARIA");
+//        registrarCalificacionArgentina("35111222", "PADRON-001", p1Literatura.getId(), 8, 9, 8, "2023-2024", "SECUNDARIA");
+//        registrarCalificacionArgentina("31111222", "PADRON-001", p1Biologia.getId(), 7, 8, 9, "2023-2024", "SECUNDARIA");
+//        registrarCalificacionArgentina("31111222", "PADRON-001", p1Fisica.getId(), 8, 7, 8, "2023-2024", "SECUNDARIA");
 
         // USA
-        registrarCalificacionUsa("34111222", "PADRON-002", p2Quimica.getId(), "B", "A", "2018-2019", "SECUNDARIA");
-        registrarCalificacionUsa("34111222", "PADRON-002", p2Informatica.getId(), "A", "B", "2018-2019", "SECUNDARIA");
-        registrarCalificacionUsa("30111222", "PADRON-002", p2Gimnasia.getId(), "C", "B", "2019-2020", "SECUNDARIA");
-        registrarCalificacionUsa("30111222", "PADRON-002", p2Futbol.getId(), "B", "B", "2019-2020", "SECUNDARIA");
+//        registrarCalificacionUsa("34111222", "PADRON-002", p2Quimica.getId(), "B", "A", "2018-2019", "SECUNDARIA");
+//        registrarCalificacionUsa("34111222", "PADRON-002", p2Informatica.getId(), "A", "B", "2018-2019", "SECUNDARIA");
+//        registrarCalificacionUsa("30111222", "PADRON-002", p2Gimnasia.getId(), "C", "B", "2019-2020", "SECUNDARIA");
+//        registrarCalificacionUsa("30111222", "PADRON-002", p2Futbol.getId(), "B", "B", "2019-2020", "SECUNDARIA");
 
         // UK
-        registrarCalificacionUk("33111222", "PADRON-UK-001", ukArte.getId(), "A", "B", "A*", "2020-2021", "SECUNDARIA");
-        registrarCalificacionUk("33111222", "PADRON-UK-001", ukMatematica.getId(), "B", "B", "A", "2020-2021", "SECUNDARIA");
-        registrarCalificacionUk("33111222", "PADRON-UK-001", ukLiteratura.getId(), "A", "A", "A", "2021-2022", "SECUNDARIA");
-        registrarCalificacionUk("33111222", "PADRON-UK-001", ukBiologia.getId(), "C", "B", "B", "2021-2022", "SECUNDARIA");
+//        registrarCalificacionUk("33111222", "PADRON-UK-001", ukArte.getId(), "A", "B", "A*", "2020-2021", "SECUNDARIA");
+//        registrarCalificacionUk("33111222", "PADRON-UK-001", ukMatematica.getId(), "B", "B", "A", "2020-2021", "SECUNDARIA");
+//        registrarCalificacionUk("33111222", "PADRON-UK-001", ukLiteratura.getId(), "A", "A", "A", "2021-2022", "SECUNDARIA");
+//        registrarCalificacionUk("33111222", "PADRON-UK-001", ukBiologia.getId(), "C", "B", "B", "2021-2022", "SECUNDARIA");
 
         // Alemania
-        registrarCalificacionAlemania("32111222", "PADRON-DE-001", deCarpinteria.getId(), 2.3, 2.0, "2022-2023", "SECUNDARIA");
-        registrarCalificacionAlemania("32111222", "PADRON-DE-001", deQuimica.getId(), 1.7, 2.3, "2022-2023", "SECUNDARIA");
-        registrarCalificacionAlemania("32111222", "PADRON-DE-001", deInformatica.getId(), 2.0, 1.7, "2023-2024", "SECUNDARIA");
-        registrarCalificacionAlemania("32111222", "PADRON-DE-001", deGimnasia.getId(), 2.7, 2.3, "2023-2024", "SECUNDARIA");
+//        registrarCalificacionAlemania("32111222", "PADRON-DE-001", deCarpinteria.getId(), 2.3, 2.0, "2022-2023", "SECUNDARIA");
+//        registrarCalificacionAlemania("32111222", "PADRON-DE-001", deQuimica.getId(), 1.7, 2.3, "2022-2023", "SECUNDARIA");
+//        registrarCalificacionAlemania("32111222", "PADRON-DE-001", deInformatica.getId(), 2.0, 1.7, "2023-2024", "SECUNDARIA");
+//        registrarCalificacionAlemania("32111222", "PADRON-DE-001", deGimnasia.getId(), 2.7, 2.3, "2023-2024", "SECUNDARIA");
 
         // Sudafrica
         registrarCalificacionSudafrica("29111222", "PADRON-ZA-001", za1Matematica.getId(), 72, 78, 81, "2024-2025", "SECUNDARIA");
@@ -313,7 +337,7 @@ public class OnStartup implements ApplicationListener<ApplicationReadyEvent> {
         registrarCalificacionSudafrica("24111222", "PADRON-ZA-006", za6Literatura.getId(), 72, 74, 73, "2024-2025", "PRIMARIA");
         registrarCalificacionSudafrica("24111222", "PADRON-ZA-006", za6Gimnasia.getId(), 80, 82, 81, "2024-2025", "PRIMARIA");
 
-        // USA UNIVERSIDAD - AVANCE PARCIAL (NO COMPLETAN TODO EL CURRICULUM)
+         //USA UNIVERSIDAD - AVANCE PARCIAL (NO COMPLETAN TODO EL CURRICULUM)
         // Emily: 2 equivalentes + 1 no equivalente, faltan materias por cerrar.
         registrarCalificacionUsa("37111222", "PADRON-US-UNI-01", usUniCalculus.getId(), "A", "B", "2024-FALL", "UNIVERSIDAD");
         registrarCalificacionUsa("37111222", "PADRON-US-UNI-01", usUniProgramming.getId(), "A", "A", "2024-FALL", "UNIVERSIDAD");
@@ -323,10 +347,13 @@ public class OnStartup implements ApplicationListener<ApplicationReadyEvent> {
         registrarCalificacionUsa("38111222", "PADRON-US-UNI-01", usUniPhysics.getId(), "B", "A", "2024-FALL", "UNIVERSIDAD");
         registrarCalificacionUsa("38111222", "PADRON-US-UNI-01", usUniEconomics.getId(), "A", "B", "2024-FALL", "UNIVERSIDAD");
 
-        // Sophia: 2 equivalentes + 1 no equivalente.
+         //Sophia: 2 equivalentes + 1 no equivalente.
         registrarCalificacionUsa("39111222", "PADRON-US-UNI-01", usUniCalculus.getId(), "B", "B", "2024-FALL", "UNIVERSIDAD");
         registrarCalificacionUsa("39111222", "PADRON-US-UNI-01", usUniPhysics.getId(), "A", "A", "2024-FALL", "UNIVERSIDAD");
         registrarCalificacionUsa("39111222", "PADRON-US-UNI-01", usUniEconomics.getId(), "C", "B", "2024-FALL", "UNIVERSIDAD");
+
+         //GENERACION N REGISTROS
+        script(registros);
     }
 
     private void seedLegislacionConversion() {
@@ -466,7 +493,12 @@ public class OnStartup implements ApplicationListener<ApplicationReadyEvent> {
         request.setPaisOrigen(pais);
         request.setInstitucionActual(institucionActual);
         request.setEmail(email);
-        estudianteService.registrarEstudiante(request);
+        Estudiante e = estudianteService.registrarEstudiante(request);
+        String paisEnMayusculas = pais.toUpperCase();
+
+        if (paisEnMayusculas.equals("SUDAFRICA")) return;
+
+        estudiantesPorPais.get(paisEnMayusculas).add(e);
     }
 
     private void registrarCalificacionArgentina(
@@ -600,4 +632,109 @@ public class OnStartup implements ApplicationListener<ApplicationReadyEvent> {
 
         calificacionService.registrarCalificacionOriginal(request);
     }
+
+    private void script (int cota) {
+        int registros = 0;
+
+        while(registros < cota) {
+            float r = random.nextFloat();
+            if (r <= 0.25) {
+                registros += insertarCalificaciones("ARGENTINA", () -> {
+                    int primerParcial= random.nextInt(4, 10);
+                    int segundoParcial= random.nextInt(4, 10);
+                    int examenFinal = random.nextInt(4, 10);
+                    return new HashMap<>(
+                            Map.of(
+                                    "primer_parcial", primerParcial,
+                                    "segundo_parcial", segundoParcial,
+                                    "examen_final", examenFinal
+                            )
+                    );
+                });
+            } else if (r > 0.25 && r <= 0.5) {
+                registros += insertarCalificaciones("ALEMANIA", () -> {
+                    double klassenArbeit = random.nextDouble(1.0, 5.0);
+                    double mundlichArbeit=random.nextDouble(1.0, 5.0);
+                    return new HashMap<>(
+                            Map.of(
+                                    "KlassenArbeit", klassenArbeit,
+                                    "MundlichArbeit", mundlichArbeit
+                            )
+                    );
+                });
+            } else if (r > 0.5 && r <= 0.75) {
+                registros += insertarCalificaciones("UK", () -> {
+                    String[] notasPosibles = new String[]{"A*", "A","B","C","D","E","F"};
+                    int indiceNota1 = random.nextInt(notasPosibles.length);
+                    int indiceNota2 = random.nextInt(notasPosibles.length);
+                    int indiceNota3 = random.nextInt(notasPosibles.length);
+                    return new HashMap<>(
+                            Map.of(
+                                    "coursework", notasPosibles[indiceNota1],
+                                    "mock_exam", notasPosibles[indiceNota2],
+                                    "final_grade", notasPosibles[indiceNota3]
+                            )
+                    );
+                });
+            } else {
+                registros += insertarCalificaciones("USA", () -> {
+                    String letra= "ABCDEF";
+                    int indiceNota1 = random.nextInt(letra.length());
+                    int indiceNota2 = random.nextInt(letra.length());
+                    return new HashMap<>(
+                            Map.of(
+                                    "semester", String.valueOf(letra.charAt(indiceNota1)),
+                                    "semester_2", String.valueOf(letra.charAt(indiceNota2))
+                            )
+                    );
+                });
+            }
+        }
+    }
+
+    private int insertarCalificaciones(String pais, Supplier<Map<String, Object>> generadorMetadatos) {
+        AtomicInteger contador = new AtomicInteger(0);
+        Institucion institucion = obtenerEntidadRandom(institucionesPorPais.get(pais));
+        Estudiante estudiante = obtenerEntidadRandom(estudiantesPorPais.get(pais));
+
+        String estudianteId = estudiante.getId();
+        String institucionId = institucion.getId();
+
+        institucion.getCurriculum().forEach(m -> {
+            RequestRegistrarCalificacion request = new RequestRegistrarCalificacion();
+            request.setEstudiante(estudianteId);
+            request.setInstitucion(institucionId);
+            request.setMateria(m.getId());
+            request.setPaisOrigen(institucion.getPais());
+            request.setMetadatos(generadorMetadatos.get());
+            calificacionService.registrarCalificacionOriginal(request);
+            contador.incrementAndGet();
+        });
+
+        return contador.get();
+    }
+
+    private <T> T obtenerEntidadRandom(List<T> entidad) {
+        return entidad.get(random.nextInt(entidad.size()));
+    }
+
+
+    private void inicializarMapas() {
+        this.estudiantesPorPais = new HashMap<>(
+                Map.of(
+                        "ARGENTINA", new LinkedList<>(),
+                        "ALEMANIA", new LinkedList<>(),
+                        "UK", new LinkedList<>(),
+                        "USA", new LinkedList<>()
+                ));
+        this.institucionesPorPais = new HashMap<>(
+                Map.of(
+                        "ARGENTINA", new LinkedList<>(),
+                        "ALEMANIA", new LinkedList<>(),
+                        "UK", new LinkedList<>(),
+                        "USA", new LinkedList<>()
+                ));
+    }
 }
+
+

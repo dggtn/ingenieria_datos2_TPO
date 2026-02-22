@@ -431,7 +431,7 @@ export default function App() {
                 >
                   <option value="">Seleccionar Estudiante</option>
                   {opcionesEstudiantes.map((op) => (
-                    <option key={op.id} value={op.id}>{op.nombre}</option>
+                    <option key={op.id} value={op.id}>{op.nombre}[{op.id}]</option>
                   ))}
                 </select>
                 <button onClick={consultarDetalle}
