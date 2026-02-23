@@ -5,14 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
+    <h1>Dashboard Grafana prometheus </h1>
+    <img width="1641" height="803" alt="{4E296FEE-797D-4F8C-B512-7D05B07FA585}" src="https://github.com/user-attachments/assets/3e770467-ba89-4628-9a2b-80650510380f" />
+    <p>http://localhost:3001</p>
+    <p>JVM Heap Usage: Cuánta memoria está consumiendo  Java mientras procesa datos</p>
+    <p>HTTP Requests: Cuántas veces el frontend llamó a a la API.</p>
+    <p>CPU Usage: El esfuerzo del procesador al calcular las equivalencias de Sudáfrica.</p>
 <h1>Diagrama de Arquitectura</h1>
     <img width="713" height="453" alt="{9FA1ADBC-D515-4034-95C8-5A1924F28CC1}" src="https://github.com/user-attachments/assets/b05f7d56-28f5-40aa-bc22-bef0b1469ac3" />
 
 <div class="container">
     <h1>UX/UI</h1>
-<img width="912" height="753" alt="image" src="https://github.com/user-attachments/assets/8e82ed61-600e-4064-8dae-018ee0e466d2" />
-
-
+<img width="1122" height="805" alt="{D211EE1D-9CD2-4DF4-B4C0-373F302FC67C}" src="https://github.com/user-attachments/assets/dcbfa1a5-edfe-407f-a2d1-7f7ce48eb664" />
 
 <h1>EduGrade Global - Sistema de Equivalencias</h1>
 <p>Plataforma de gestión académica integral diseñada para el registro de calificaciones internacionales y cálculo de equivalencias para el sistema de <strong>Sudáfrica</strong>.</p>
