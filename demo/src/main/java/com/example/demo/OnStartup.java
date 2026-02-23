@@ -67,10 +67,13 @@ public class OnStartup implements ApplicationListener<ApplicationReadyEvent> {
 
     @Value("${numero.registros}")
     Integer registros;
+    @Value("${dbInicializarDatos}")
+    boolean inicializar;
 
     @Override
     @Transactional
     public void onApplicationEvent(ApplicationReadyEvent event) {
+        if(!inicializar)return;
 
         inicializarMapas();
 
